@@ -1,0 +1,9 @@
+---
+description:        "Recursive fibonacci function"
+name:               fibonacci_tc_1
+src:                fibonacci_tc_1.dwt
+out:                fibonacci_tc_1.out
+err:                fibonacci_tc_1.err
+exitcode:           0
+skip:               false
+

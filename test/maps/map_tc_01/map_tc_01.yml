@@ -1,0 +1,9 @@
+---
+description:      "basic map lookup"
+name:             map_tc_01
+src:              map_tc_01.dwt
+out:              map_tc_01.out
+err:              map_tc_01.err
+exitcode:         0
+loop:             1
+skip:             false

@@ -1,0 +1,9 @@
+---
+description:      "Declare lambda using the utf-8 lambda symbol"
+name:             lambda_tc_2
+src:              lambda_tc_2.dwt
+out:              lambda_tc_2.out
+err:              lambda_tc_2.err
+exitcode:         0
+loop:             1
+skip:             false

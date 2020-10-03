@@ -1,0 +1,8 @@
+fun always_zero(var n) {
+    if n == 0 {
+        return n
+    }
+    return self(n - 1)
+}
+
+print always_zero(100)

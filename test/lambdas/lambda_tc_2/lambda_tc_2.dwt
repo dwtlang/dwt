@@ -1,0 +1,2 @@
+print λ() { return "Hello, world!" }
+

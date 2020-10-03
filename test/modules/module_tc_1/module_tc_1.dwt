@@ -1,0 +1,18 @@
+mod foo {
+    fun bar() {
+        print "bar()"
+    }
+}
+
+foo::bar()
+
+mod foo {
+    fun abc(var x) {
+        print x
+    }
+}
+
+foo::abc(foo::bar)
+
+
+

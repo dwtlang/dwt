@@ -1,0 +1,14 @@
+fun adder(var i) {
+        fun add(var n) {
+                return i + n
+        }
+        return add
+}
+
+fun f() {
+	var add_5 = adder(5)
+	print add_5(10)
+}
+
+f()
+

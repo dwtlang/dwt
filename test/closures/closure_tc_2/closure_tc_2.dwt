@@ -1,0 +1,9 @@
+fun a() {
+        var x = 123
+        fun b() {
+                print x
+        }
+        b()
+}
+
+a()

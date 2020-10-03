@@ -1,0 +1,9 @@
+---
+description:        "and operator"
+name:               and_tc_1
+src:                and_tc_1.dwt
+out:                and_tc_1.out
+err:                and_tc_1.err
+exitcode:           0
+skip:               false
+

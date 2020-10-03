@@ -1,0 +1,9 @@
+---
+description:        "Simple if statement"
+name:               if_tc_2
+src:                if_tc_2.dwt
+out:                if_tc_2.out
+err:                if_tc_2.err
+exitcode:           0
+skip:               false
+

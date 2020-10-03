@@ -1,0 +1,6 @@
+fun Σ(var x, var y) {
+    return x + y
+}
+
+print Σ(5, 3)
+

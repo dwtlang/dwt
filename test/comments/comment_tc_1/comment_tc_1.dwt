@@ -1,0 +1,12 @@
+/* This is
+   a
+   comment */
+
+/* So is this
+ */
+
+/*
+ * and this */
+
+print /* here too */ "happy"
+

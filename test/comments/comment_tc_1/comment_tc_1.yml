@@ -1,0 +1,9 @@
+---
+description:        "C89 style comments"
+name:               comment_tc_1
+src:                comment_tc_1.dwt
+out:                comment_tc_1.out
+err:                comment_tc_1.err
+exitcode:           0
+skip:               false
+

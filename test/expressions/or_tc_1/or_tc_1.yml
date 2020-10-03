@@ -1,0 +1,9 @@
+---
+description:        "or operator"
+name:               or_tc_1
+src:                or_tc_1.dwt
+out:                or_tc_1.out
+err:                or_tc_1.err
+exitcode:           0
+skip:               false
+

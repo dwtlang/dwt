@@ -1,0 +1,7 @@
+print λ(28){ |var n|
+    if n < 2 {
+        return n
+    }
+    return self(n - 1) + self(n - 2)
+}
+

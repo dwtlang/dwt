@@ -1,0 +1,16 @@
+obj foo() {
+    api fun x() {
+        print "x"
+    }
+}
+
+var o = foo()
+
+obj bar(): o {
+    api fun y() {
+        print "y"
+    }
+}
+
+var b = bar()
+b.x()

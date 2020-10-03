@@ -1,0 +1,11 @@
+print 0 is 0
+print 0 is -0
+print 1 is 2
+
+var x = 3
+var y = 4
+var z = 4
+
+print x is y
+print y is z
+

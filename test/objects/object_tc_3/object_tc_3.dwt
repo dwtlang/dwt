@@ -1,0 +1,17 @@
+fun f() {
+    var x = 123
+
+    fun g() {
+        obj o() {
+            api fun foo() {
+                return x
+            }
+        }
+
+        return o
+    }
+
+    return g()().foo()
+}
+
+print f()

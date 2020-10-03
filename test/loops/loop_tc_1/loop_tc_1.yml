@@ -1,0 +1,9 @@
+---
+description:        "Some simple loop formats"
+name:               loop_tc_1
+src:                loop_tc_1.dwt
+out:                loop_tc_1.out
+err:                loop_tc_1.err
+exitcode:           0
+skip:               false
+

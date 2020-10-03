@@ -1,0 +1,9 @@
+---
+description:        "Call within a loop"
+name:               call_tc_1
+src:                call_tc_1.dwt
+out:                call_tc_1.out
+err:                call_tc_1.err
+exitcode:           0
+skip:               false
+

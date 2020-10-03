@@ -1,0 +1,9 @@
+---
+description:      "inherit from instance of another class"
+name:             object_tc_5
+src:              object_tc_5.dwt
+out:              object_tc_5.out
+err:              object_tc_5.err
+exitcode:         0
+loop:             1
+skip:             false

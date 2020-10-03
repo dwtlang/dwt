@@ -1,0 +1,8 @@
+---
+description:        "Call lambda via variable"
+name:               lambda_tc_1
+src:                lambda_tc_1.dwt
+out:                lambda_tc_1.out           
+err:                lambda_tc_1.err
+exitcode:           0
+skip:               false

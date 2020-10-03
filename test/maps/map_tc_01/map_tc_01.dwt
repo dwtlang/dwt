@@ -1,0 +1,8 @@
+var whatis = {
+    "apple" : "fruit",
+    "carrot" : "vegetable",
+    "banana" : "fruit"
+}
+
+print whatis["carrot"]
+

@@ -1,0 +1,9 @@
+obj foo() {
+    api fun bar() {
+        print "bar"
+    }
+}
+
+var o = foo()
+o["bar"]()
+

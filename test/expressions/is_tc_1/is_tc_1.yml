@@ -1,0 +1,9 @@
+---
+description:      "Test 'is' expression outcomes"
+name:             is_tc_1
+src:              is_tc_1.dwt
+out:              is_tc_1.out
+err:              is_tc_1.err
+exitcode:         0
+loop:             1
+skip:             false

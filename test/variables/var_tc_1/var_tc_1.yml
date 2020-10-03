@@ -1,0 +1,9 @@
+---
+description:        "Variable declaration"
+name:               var_tc_1
+src:                var_tc_1.dwt
+out:                var_tc_1.out
+err:                var_tc_1.err
+exitcode:           0
+skip:               false
+

@@ -1,0 +1,12 @@
+obj pet() {
+}
+
+obj dog(var name): pet() {
+    api fun nameOf() {
+        return name
+    }
+}
+
+var fido = dog("Fido")
+print fido.nameOf()
+

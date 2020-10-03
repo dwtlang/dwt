@@ -1,0 +1,6 @@
+var l = \(){
+        return self
+}
+
+print l()
+

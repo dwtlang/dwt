@@ -1,0 +1,10 @@
+*.o
+*.*~
+*.d
+*.swp
+*.gcda
+tags
+IDEAS
+bin/*
+tools/fuzzer
+test/fuzz_tc*

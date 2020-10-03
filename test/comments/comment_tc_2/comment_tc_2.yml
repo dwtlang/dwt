@@ -1,0 +1,9 @@
+---
+description:        "C++ style comments"
+name:               comment_tc_2
+src:                comment_tc_2.dwt
+out:                comment_tc_2.out
+err:                comment_tc_2.err
+exitcode:           0
+skip:               false
+
