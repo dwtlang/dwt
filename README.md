@@ -3,6 +3,8 @@ A simple scripting language called Dwt (rhymes with "put"), which is Welsh for a
 
 Dwt is written in modern C++ and has no external dependencies beyond the C++ standard library.
 
+Dwt was inspired by the charming book "Crafting Interpreters" by Bob Nystrom who helped to lift the veil on a subject I had wrongly considered witchcraft and wizardry and way beyond my abilities. See https://craftinginterpreters.com/ 
+
 ## Feaures
 * A multi-pass, multi-threaded optimising compiler
 * A fast and efficient bytecode interpreter 
