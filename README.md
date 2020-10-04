@@ -25,8 +25,8 @@ print fibonacci(28)
 ### Lambda
 ```
 print λ(28){ |var n|
-    if n < 2 {
-        return n
+    if n <= 1 {
+        return 1
     }
     return self(n - 1) + self(n - 2)
 }
