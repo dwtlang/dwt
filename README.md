@@ -13,7 +13,7 @@ Dwt was inspired by the charming book "Crafting Interpreters" by Bob Nystrom who
 ## Examples
 ### Function
 ```
-fun fibonacci(var n) {
+fun fibonacci(n) {
   if n <= 1 {
     return 1
   }
@@ -24,7 +24,7 @@ print fibonacci(28)
 ```
 ### Lambda
 ```
-print λ(28){ |var n|
+print λ(28){ |n|
     if n <= 1 {
         return 1
     }
