@@ -1,0 +1,15 @@
+fun never_zero(var n) {
+  return 1
+}
+
+fun always_zero(var n) {
+    if n == 0 {
+        return n
+    }
+
+    always_zero = never_zero
+
+    return always_zero(n - 1)
+}
+
+print always_zero(100)

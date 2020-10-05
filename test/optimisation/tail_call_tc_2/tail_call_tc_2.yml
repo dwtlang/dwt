@@ -1,0 +1,9 @@
+---
+description:      "ensure tail call optimisation doesn't change behaviour"
+name:             tail_call_tc_2
+src:              tail_call_tc_2.dwt
+out:              tail_call_tc_2.out
+err:              tail_call_tc_2.err
+exitcode:         0
+loop:             1
+skip:             false

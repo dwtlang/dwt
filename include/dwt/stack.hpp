@@ -121,9 +121,11 @@ public:
     bp[off] = v;
   }
 
-  inline void squash(size_t n) {
+  inline void squash(size_t pos, size_t n) {
+    size_t shift = (sp - n) - pos;
+
     while (n) {
-      bp[sp - n] = bp[sp];
+      bp[sp - shift] = bp[sp];
       --n;
       --sp;
     }

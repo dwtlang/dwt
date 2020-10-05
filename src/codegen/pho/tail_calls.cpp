@@ -73,11 +73,6 @@ void tail_calls::peep(uint8_t *op, size_t extent) {
   auto fun_obj = static_cast<function_obj *>(VAR_AS_OBJ(v));
   if (&fun_obj->bytecode() == &_code) {
     op[0] = OP_TAILCALL;
-    op[1] = nr_args;
-    op[2] = OP_SKIP;
-    ip[0] = OP_SKIP;
-    ip[1] = OP_SKIP;
-    ip[2] = OP_SKIP;
   }
 }
 

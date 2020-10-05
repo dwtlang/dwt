@@ -352,10 +352,23 @@ void interpreter::interpret(function_obj *fun_obj) {
       }
 
       CASE_OP(TAILCALL) {
-        exec_stack.squash(*op);
-        op = call_stack.top_ref().fn->bytecode().entry();
         if (unlikely(garbage_collector::get().is_waiting)) {
           garbage_collector::get().collect_garbage(this);
+        }
+        o0 = *op++;
+        v0 = exec_stack.top(o0);
+        if (VAR_IS_OBJ(v0)) {
+          if (VAR_AS_OBJ(v0) == call_stack.top_ref().fn) {
+            exec_stack.squash(fp, o0);
+            op = call_stack.top_ref().fn->bytecode().entry();
+          } else {
+            call_stack.top_ref().ip = op;
+            VAR_AS_OBJ(v0)->call(*this, o0);
+            op = call_stack.top_ref().ip;
+            fp = call_stack.top_ref().sp;
+          }
+        } else {
+          throw std::logic_error("e@1 value is not callable");
         }
         DISPATCH();
       }
