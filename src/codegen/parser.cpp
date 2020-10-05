@@ -513,7 +513,7 @@ std::shared_ptr<ir::parameters> parser::parameters() {
     if (prev(TOK_COMMA)) {
       skip_any(TOK_BREAK);
     }
-    expect(KW_VAR);
+    accept(KW_VAR);
     expect(TOK_IDENT);
     auto identifier = gettok();
     auto param = std::make_shared<ir::parameter>(gettok());

@@ -1,4 +1,4 @@
-fun fibonacci(var n) {
+fun fibonacci(n) {
     if n < 2 {
         return n
     }
