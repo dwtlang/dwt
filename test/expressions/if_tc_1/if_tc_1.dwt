@@ -1,5 +1,5 @@
-var x = 10
-var y = 5
+var x := 10
+var y := 5
 
 if (x) {
     print x

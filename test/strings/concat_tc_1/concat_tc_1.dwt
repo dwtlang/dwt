@@ -1,4 +1,4 @@
-var str0 = "Hello"
-var str1 = ", world!"
+var str0 := "Hello"
+var str1 := ", world!"
 
 print str0 + str1

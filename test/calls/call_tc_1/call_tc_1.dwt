@@ -1,14 +1,14 @@
 
-var y= 0
+var y := 0
 fun f(var a, var b, var c, var d) {
-	y = y + 1
+	y := y + 1
 }
 
 
-var x = 20
+var x := 20
 loop while x > 0 {
-	var y = f(1,2,3)
-	x = x - 1
+	var y := f(1,2,3)
+	x := x - 1
 }
 
 print y

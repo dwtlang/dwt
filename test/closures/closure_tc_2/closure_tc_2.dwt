@@ -1,5 +1,5 @@
 fun a() {
-        var x = 123
+        var x := 123
         fun b() {
                 print x
         }

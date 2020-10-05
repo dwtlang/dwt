@@ -428,6 +428,10 @@ token_ref scanner::next_token(bool skip_whitespace) {
       sym = TOK_SCOPE;
       ch = next_char();
       lexeme += utf8_encode(ch);
+    } else if (peek_char() == '=') {
+      sym = TOK_ASSIGN;
+      ch = next_char();
+      lexeme += utf8_encode(ch);
     } else {
       sym = TOK_COLON;
     }
@@ -567,8 +571,6 @@ token_ref scanner::next_token(bool skip_whitespace) {
       sym = TOK_EQUALS;
       ch = next_char();
       lexeme += utf8_encode(ch);
-    } else {
-      sym = TOK_ASSIGN;
     }
     break;
 

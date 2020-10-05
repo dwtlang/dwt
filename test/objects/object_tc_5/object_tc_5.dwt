@@ -4,7 +4,7 @@ obj foo() {
     }
 }
 
-var o = foo()
+var o := foo()
 
 obj bar(): o {
     api fun y() {
@@ -12,5 +12,5 @@ obj bar(): o {
     }
 }
 
-var b = bar()
+var b := bar()
 b.x()

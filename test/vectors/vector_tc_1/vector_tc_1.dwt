@@ -1,8 +1,8 @@
-var v = { 1, 2, 3 }
+var v := { 1, 2, 3 }
 
 print v[2]
 
-v[100] = 543
+v[100] := 543
 
 print v[100]
 print v[99]
