@@ -32,18 +32,6 @@ string_obj *string_mgr::get(std::string str) {
   return get(str, hash);
 }
 
-void string_mgr::merge(string_mgr &other) {
-  for (size_t i = 0; i < other._capacity; ++i) {
-    auto entry = &other._buckets[i];
-
-    if (!VAR_IS_NIL(entry->key)) {
-      string_obj *key = static_cast<string_obj *>(VAR_AS_OBJ(entry->key));
-      add(key->text());
-      other.del(entry->key);
-    }
-  }
-}
-
 string_obj *string_mgr::add(std::string str) {
   std::scoped_lock hold(_add_mutex);
   hash_t hash = fnv1a(str.c_str(), str.size());

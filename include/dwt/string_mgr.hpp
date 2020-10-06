@@ -28,8 +28,6 @@ public:
   static string_mgr &get_global();
   static string_mgr &get();
 
-  void merge(string_mgr &);
-
   string_obj *add(std::string);
   string_obj *get(std::string);
   string_obj *get(std::string &, hash_t);
