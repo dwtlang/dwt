@@ -69,7 +69,6 @@ private:
   token_ref _name_ref;
   int32_t _index;
   uint64_t _id;
-  int _flags;
 };
 
 } // namespace dwt
