@@ -1,0 +1,9 @@
+---
+description:      "break out of infinite nested loop by label"
+name:             loop_tc_3
+src:              loop_tc_3.dwt
+out:              loop_tc_3.out
+err:              loop_tc_3.err
+exitcode:         0
+loop:             1
+skip:             false

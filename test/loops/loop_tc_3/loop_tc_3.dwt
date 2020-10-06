@@ -1,0 +1,7 @@
+loop foo while 1 {
+  loop bar while 1 {
+    break foo
+  }
+}
+
+print "done"

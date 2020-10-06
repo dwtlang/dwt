@@ -1,5 +1,5 @@
 ---
-description:      "short description goes here"
+description:      "break out of infinite loop"
 name:             loop_tc_2
 src:              loop_tc_2.dwt
 out:              loop_tc_2.out
