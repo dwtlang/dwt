@@ -1,0 +1,9 @@
+---
+description:      "short description goes here"
+name:             loop_tc_2
+src:              loop_tc_2.dwt
+out:              loop_tc_2.out
+err:              loop_tc_2.err
+exitcode:         0
+loop:             1
+skip:             false

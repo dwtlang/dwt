@@ -724,15 +724,20 @@ void compiler::loop_until(ir::loop_stmt &loop) {
   patch_jump(addr_after_cond);
 
   if (loop.is_tagged()) {
-    auto patch_points = _continue_map.find(loop.name());
-    if (patch_points != _continue_map.end()) {
-      for (auto pp : patch_points->second) {
+    auto itr = _continue_map.find(loop.name());
+    if (itr != _continue_map.end()) {
+
+      for (auto pp : itr->second.patch_points()) {
+        // because continue is a jump forward, cannot use OP_LOOP
+        patch_op(pp - 1, OP_BRA);
         patch_jump(pp, addr_after_loop_body);
       }
     }
   }
 
-  for (auto cp : _continue_stack.top()) {
+  for (auto cp : _continue_stack.top().patch_points()) {
+    // because continue is a jump forward, cannot use OP_LOOP
+    patch_op(cp - 1, OP_BRA);
     patch_jump(cp, addr_after_loop_body);
   }
 }
@@ -753,15 +758,20 @@ void compiler::loop_while(ir::loop_stmt &loop) {
   patch_jump(addr_after_cond);
 
   if (loop.is_tagged()) {
-    auto patch_points = _continue_map.find(loop.name());
-    if (patch_points != _continue_map.end()) {
-      for (auto pp : patch_points->second) {
+    auto itr = _continue_map.find(loop.name());
+    if (itr != _continue_map.end()) {
+
+      for (auto pp : itr->second.patch_points()) {
+        // because continue is a jump forward, cannot use OP_LOOP
+        patch_op(pp - 1, OP_BRA);
         patch_jump(pp, addr_after_loop_body);
       }
     }
   }
 
-  for (auto cp : _continue_stack.top()) {
+  for (auto cp : _continue_stack.top().patch_points()) {
+    // because continue is a jump forward, cannot use OP_LOOP
+    patch_op(cp - 1, OP_BRA);
     patch_jump(cp, addr_after_loop_body);
   }
 }
@@ -774,19 +784,20 @@ void compiler::loop_while(ir::loop_stmt &loop) {
 void compiler::basic_loop(ir::loop_stmt &loop) {
   auto addr_before_loop_body = bytecode_pos();
   walk(loop.body());
-  emit_op(OP_LOOP);
-  emit_operand(addr_before_loop_body);
+  mark_jump(OP_LOOP, addr_before_loop_body);
 
   if (loop.is_tagged()) {
-    auto patch_points = _continue_map.find(loop.name());
-    if (patch_points != _continue_map.end()) {
-      for (auto pp : patch_points->second) {
+    auto itr = _continue_map.find(loop.name());
+    if (itr != _continue_map.end()) {
+
+      for (auto pp : itr->second.patch_points()) {
+        // because continue is a jump forward, cannot use OP_LOOP
         patch_jump(pp, addr_before_loop_body);
       }
     }
   }
 
-  for (auto cp : _continue_stack.top()) {
+  for (auto cp : _continue_stack.top().patch_points()) {
     patch_jump(cp, addr_before_loop_body);
   }
 }
@@ -1141,19 +1152,20 @@ void compiler::while_loop(ir::loop_stmt &loop) {
   patch_jump(addr_after_cond);
 
   if (loop.is_tagged()) {
-    auto patch_points = _continue_map.find(loop.name());
-    if (patch_points != _continue_map.end()) {
-      for (auto pp : patch_points->second) {
+    auto itr = _continue_map.find(loop.name());
+    if (itr != _continue_map.end()) {
+
+      for (auto pp : itr->second.patch_points()) {
         patch_jump(pp, addr_before_loop);
       }
     }
   }
 
-  for (auto cp : _continue_stack.top()) {
+  for (auto cp : _continue_stack.top().patch_points()) {
     patch_jump(cp, addr_before_loop);
   }
 
-  for (auto bp : _break_stack.top()) {
+  for (auto bp : _break_stack.top().patch_points()) {
     patch_jump(bp);
   }
 }
@@ -1172,19 +1184,20 @@ void compiler::until_loop(ir::loop_stmt &loop) {
   patch_jump(addr_after_cond);
 
   if (loop.is_tagged()) {
-    auto patch_points = _continue_map.find(loop.name());
-    if (patch_points != _continue_map.end()) {
-      for (auto pp : patch_points->second) {
+    auto itr = _continue_map.find(loop.name());
+    if (itr != _continue_map.end()) {
+
+      for (auto pp : itr->second.patch_points()) {
         patch_jump(pp, addr_before_loop);
       }
     }
   }
 
-  for (auto cp : _continue_stack.top()) {
+  for (auto cp : _continue_stack.top().patch_points()) {
     patch_jump(cp, addr_before_loop);
   }
 
-  for (auto bp : _break_stack.top()) {
+  for (auto bp : _break_stack.top().patch_points()) {
     patch_jump(bp);
   }
 }
@@ -1524,14 +1537,13 @@ void compiler::visit(ir::object &obj) {
  */
 void compiler::visit(ir::loop_stmt &loop) {
   if (loop.is_tagged()) {
-    std::vector<size_t> empty = {};
-    auto entry = std::make_pair(loop.name(), empty);
+    auto entry = std::make_pair(loop.name(), loop_info(_stack_pos));
     _continue_map.insert(entry);
     _break_map.insert(entry);
   }
 
-  _continue_stack.push(std::vector<size_t>());
-  _break_stack.push(std::vector<size_t>());
+  _continue_stack.push(loop_info(_stack_pos));
+  _break_stack.push(loop_info(_stack_pos));
 
   switch (loop.get_type()) {
   case ir::WHILE_LOOP:
@@ -1554,15 +1566,15 @@ void compiler::visit(ir::loop_stmt &loop) {
   }
 
   if (loop.is_tagged()) {
-    auto patch_points = _break_map.find(loop.name());
-    if (patch_points != _break_map.end()) {
-      for (auto pp : patch_points->second) {
+    auto itr = _break_map.find(loop.name());
+    if (itr != _break_map.end()) {
+      for (auto pp : itr->second.patch_points()) {
         patch_jump(pp);
       }
     }
   }
 
-  for (auto bp : _break_stack.top()) {
+  for (auto bp : _break_stack.top().patch_points()) {
     patch_jump(bp);
   }
 
@@ -1650,10 +1662,22 @@ void compiler::visit(ir::lambda &lambda) {
 void compiler::visit(ir::break_stmt &stmt) {
   auto itr = _break_map.find(stmt.name());
   if (itr != _break_map.end()) {
-    itr->second.push_back(mark_jump(OP_BRA, TBD));
+    auto nr_pops = _stack_pos - itr->second.base_pos();
+
+    while (nr_pops--) {
+      emit_op(OP_POP);
+    }
+
+    itr->second.add_patch_point(mark_jump(OP_BRA, TBD));
   } else {
+    auto nr_pops = _stack_pos - _break_stack.top().base_pos();
+
+    while (nr_pops--) {
+      emit_op(OP_POP);
+    }
+
     auto jump_pos = mark_jump(OP_BRA, TBD);
-    _break_stack.top().push_back(jump_pos);
+    _break_stack.top().add_patch_point(jump_pos);
   }
 }
 
@@ -1665,10 +1689,22 @@ void compiler::visit(ir::break_stmt &stmt) {
 void compiler::visit(ir::continue_stmt &stmt) {
   auto itr = _continue_map.find(stmt.name());
   if (itr != _continue_map.end()) {
-    itr->second.push_back(mark_jump(OP_BRA, TBD));
+    auto nr_pops = _stack_pos - itr->second.base_pos();
+
+    while (nr_pops--) {
+      emit_op(OP_POP);
+    }
+
+    itr->second.add_patch_point(mark_jump(OP_LOOP, TBD));
   } else {
-    auto jump_pos = mark_jump(OP_BRA, TBD);
-    _continue_stack.top().push_back(jump_pos);
+    auto nr_pops = _stack_pos - _continue_stack.top().base_pos();
+
+    while (nr_pops--) {
+      emit_op(OP_POP);
+    }
+
+    auto jump_pos = mark_jump(OP_LOOP, TBD);
+    _continue_stack.top().add_patch_point(jump_pos);
   }
 }
 

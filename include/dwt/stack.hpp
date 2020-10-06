@@ -74,18 +74,23 @@ public:
   }
 
   inline void pop(int n) {
+    BUG_UNLESS(sp >= (n - 1));
+
     sp -= n;
   }
 
   inline void pop_and_swap(int n, T v) {
+    BUG_UNLESS(sp >= n);
     bp[sp -= n] = v;
   }
 
   inline void pop() {
+    BUG_UNLESS(sp >= 0);
     --sp;
   }
 
   inline void pop_and_swap(T v) {
+    BUG_UNLESS(sp > 0);
     bp[--sp] = v;
   }
 

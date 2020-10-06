@@ -27,6 +27,29 @@ namespace dwt {
 class bytecode;
 class function_obj;
 
+class loop_info {
+public:
+  loop_info(size_t base_pos)
+    : _base_pos(base_pos) {
+  }
+
+  void add_patch_point(size_t patch_point) {
+    _patch_points.push_back(patch_point);
+  }
+
+  std::vector<size_t> &patch_points() {
+    return _patch_points;
+  }
+
+  size_t base_pos() const {
+    return _base_pos;
+  }
+
+private:
+  size_t _base_pos;
+  std::vector<size_t> _patch_points;
+};
+
 class compiler : public ir::visitor {
 public:
   compiler(function_obj *, compiler *, bool concurrent);
@@ -188,10 +211,10 @@ private:
 
   static std::atomic<unsigned int> concurrency;
 
-  std::map<std::string, std::vector<size_t>> _continue_map;
-  std::map<std::string, std::vector<size_t>> _break_map;
-  std::stack<std::vector<size_t>> _continue_stack;
-  std::stack<std::vector<size_t>> _break_stack;
+  std::map<std::string, loop_info> _continue_map;
+  std::map<std::string, loop_info> _break_map;
+  std::stack<loop_info> _continue_stack;
+  std::stack<loop_info> _break_stack;
   std::vector<std::shared_future<function_obj *>> _fun_objs;
 };
 
