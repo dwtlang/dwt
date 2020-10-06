@@ -11,7 +11,6 @@
 #include <dwt/constants.hpp>
 #include <dwt/decompiler.hpp>
 #include <dwt/feedback.hpp>
-#include <dwt/future_obj.hpp>
 #include <dwt/garbage_collector.hpp>
 #include <dwt/globals.hpp>
 #include <dwt/instance_obj.hpp>

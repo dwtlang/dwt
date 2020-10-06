@@ -12,7 +12,6 @@
 #include <dwt/bytecode.hpp>
 #include <dwt/call_frame.hpp>
 #include <dwt/closure_obj.hpp>
-#include <dwt/condvar.hpp>
 #include <dwt/debug.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/function_obj.hpp>
@@ -20,7 +19,6 @@
 #include <dwt/map_obj.hpp>
 #include <dwt/mapfn_obj.hpp>
 #include <dwt/obj.hpp>
-#include <dwt/semaphore.hpp>
 #include <dwt/stack.hpp>
 #include <dwt/syscall_obj.hpp>
 #include <dwt/upvar_obj.hpp>
