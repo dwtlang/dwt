@@ -245,16 +245,15 @@ std::shared_ptr<ir::lambda> parser::lambda() {
   auto lam = std::make_shared<ir::lambda>();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
-  expect(TOK_LCURLY);
-
-  skip_any(TOK_BREAK);
   if (accept(TOK_OR)) {
     skip_any(TOK_BREAK);
     lam->params(parameters());
     skip_any(TOK_BREAK);
     expect(TOK_OR);
+    skip_any(TOK_BREAK);
   }
 
+  expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
 
   auto body = std::make_shared<ir::function_body>();
