@@ -24,7 +24,7 @@ print fibonacci(28)
 ```
 ### Lambda
 ```
-print λ(28){ |n|
+print λ(28) |n| {
     if n <= 1 {
         return 1
     }
