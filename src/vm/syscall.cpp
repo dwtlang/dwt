@@ -18,10 +18,15 @@
 namespace dwt {
 
 void add_syscall(std::string scope_str, syscall call) {
-  auto sc = scope::add(scope_str, SCOPE_CREATE | SCOPE_APPEND);
   var call_obj =
     OBJ_AS_VAR(new syscall_obj(call, string_mgr::get().add_r(scope_str)));
-  globals::table().set_r(sc->lookup(), call_obj);
+
+  int idx = globals::table().index_of(scope_str);
+  if (idx < 0) {
+    idx = globals::table().add_r(scope_str);
+  }
+
+  globals::table().set_r(idx, call_obj);
 }
 
 } // namespace dwt

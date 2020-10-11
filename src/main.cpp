@@ -26,6 +26,11 @@
 
 using namespace dwt;
 
+var hello(size_t nr_args, var *args) {
+  std::cout << "hello\n";
+  return nil;
+}
+
 int main(int argc, char **argv) {
   std::string filename;
   int ret = 0;
@@ -37,6 +42,8 @@ int main(int argc, char **argv) {
   }
 
   try {
+    add_syscall("::foo::hello", hello);
+
     utf8_source src(filename);
     parser p(std::move(src));
 

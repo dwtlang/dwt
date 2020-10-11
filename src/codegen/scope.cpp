@@ -25,8 +25,12 @@ scope::scope(std::shared_ptr<scope> parent_scope, token_ref name_ref, int flags)
   , _name_ref(name_ref)
   , _index(-1)
   , _id(next_id++) {
+
   if (is_global()) {
-    _index = globals::table().add_r(qualified_name());
+    _index = globals::table().index_of(qualified_name());
+    if (_index < 0) {
+      _index = globals::table().add_r(qualified_name());
+    }
   }
 }
 

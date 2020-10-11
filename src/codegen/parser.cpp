@@ -280,7 +280,7 @@ std::shared_ptr<ir::ffi_decl> parser::ffi_decl() {
   expect(TOK_IDENT);
 
   auto decl = std::make_shared<ir::ffi_decl>(gettok());
-  scope::current->add(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
+  scope::add(gettok(), SCOPE_CREATE);
 
   skip_any(TOK_BREAK);
   expect(TOK_LPAREN);

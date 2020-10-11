@@ -29,9 +29,9 @@ public:
     return instance;
   }
 
-  size_t add_r(std::string name) {
+  int add_r(std::string name) {
     std::scoped_lock hold(_mutex);
-    size_t idx = vars.size();
+    int idx = vars.size();
     var v = nil;
     vars.push(v);
     auto entry = std::make_pair(name, idx);
@@ -41,39 +41,37 @@ public:
     return idx;
   }
 
-  inline var get_r(size_t idx) {
+  inline var get_r(int idx) {
     std::scoped_lock hold(_mutex);
     return vars.get(idx);
   }
 
-  inline var get(size_t idx) const {
+  inline var get(int idx) const {
     return vars.get(idx);
   }
 
-  std::string name_at(size_t idx) {
+  std::string name_at(int idx) {
     std::scoped_lock hold(_mutex);
     return _names.at(idx);
   }
 
-  size_t index_of(std::string name) {
+  int index_of(std::string name) {
     std::scoped_lock hold(_mutex);
-    size_t index = 0;
+    int index = -1;
     auto it = index_map.find(name);
     if (it != index_map.end()) {
       index = it->second;
-    } else {
-      BUG();
     }
 
     return index;
   }
 
-  inline void set_r(size_t idx, var v) {
+  inline void set_r(int idx, var v) {
     std::scoped_lock hold(_mutex);
     vars.set(idx, v);
   }
 
-  inline void set(size_t idx, var v) {
+  inline void set(int idx, var v) {
     vars.set(idx, v);
   }
 
@@ -89,7 +87,7 @@ private:
   std::mutex _mutex;
   stack<var> vars;
   std::vector<std::string> _names;
-  std::unordered_map<std::string, size_t> index_map;
+  std::unordered_map<std::string, int> index_map;
 };
 
 } // namespace dwt
