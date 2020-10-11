@@ -22,7 +22,7 @@ function_obj::function_obj(function_type type,
   , _name(name_str) {
 
   _short_name =
-    string_mgr::get_global().add(name().substr(name().find_last_of(":") + 1));
+    string_mgr::get().add(name().substr(name().find_last_of(":") + 1));
 }
 
 function_obj::function_obj(const function_obj &other)
@@ -36,7 +36,7 @@ function_obj::function_obj(const function_obj &other)
   , _optimised(other._optimised) {
 
   _short_name =
-    string_mgr::get_global().add(name().substr(name().find_last_of(":") + 1));
+    string_mgr::get().add(name().substr(name().find_last_of(":") + 1));
 }
 
 function_obj::~function_obj() {

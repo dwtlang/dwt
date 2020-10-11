@@ -190,7 +190,7 @@ compiler::compiler(function_obj *fun_obj, compiler *enclosing, bool concurrent)
 
 compiler::compiler()
   : _enclosing(nullptr)
-  , _fun_obj(new function_obj(FN_NORMAL, 0, string_mgr::get_global().add("::")))
+  , _fun_obj(new function_obj(FN_NORMAL, 0, string_mgr::get().add("::")))
   , _concurrent(false)
   , _stack_pos(1)
   , _prev_op(OP_CALL) {
@@ -229,7 +229,7 @@ void compiler::emit_const(var &v) {
  * @param s The const string to add.
  */
 void compiler::emit_const(std::string &s) {
-  obj *obj = string_mgr::get_global().add(s);
+  obj *obj = string_mgr::get().add(s);
   emit_const(obj);
 }
 
@@ -810,8 +810,8 @@ void compiler::basic_loop(ir::loop_stmt &loop) {
 void compiler::visit(ir::lambda_decl &decl) {
   std::string name = decl.qualified_name();
 
-  function_obj *fun_obj = new function_obj(
-    FN_NORMAL, decl.arity(), string_mgr::get_global().add(name));
+  function_obj *fun_obj =
+    new function_obj(FN_NORMAL, decl.arity(), string_mgr::get().add(name));
 
   auto decl_scope = decl.get_scope();
 
@@ -1316,8 +1316,8 @@ void compiler::visit(ir::function &fun) {
 void compiler::visit(ir::function_decl &decl) {
   std::string name = decl.qualified_name();
 
-  function_obj *fun_obj = new function_obj(
-    FN_NORMAL, decl.arity(), string_mgr::get_global().add(name));
+  function_obj *fun_obj =
+    new function_obj(FN_NORMAL, decl.arity(), string_mgr::get().add(name));
 
   fun_obj->is_api(decl.is_api());
 
@@ -1369,8 +1369,7 @@ void compiler::visit(ir::type5 &decl) {
 void compiler::visit(ir::object_decl &decl) {
   std::string name = decl.qualified_name();
 
-  class_obj *klass =
-    new class_obj(decl.arity(), string_mgr::get_global().add(name));
+  class_obj *klass = new class_obj(decl.arity(), string_mgr::get().add(name));
 
   if (decl.get_scope()->is_global()) {
     globals::table().set_r(find_global(name), OBJ_AS_VAR(klass));
@@ -1483,7 +1482,7 @@ void compiler::visit(ir::object_body &body) {
  * @param expr The expression AST.
  */
 void compiler::visit(ir::member_expr &expr) {
-  obj *obj = string_mgr::get_global().add(expr.name());
+  obj *obj = string_mgr::get().add(expr.name());
 
   walk(expr.children_of());
 
@@ -1716,7 +1715,7 @@ void compiler::visit(ir::continue_stmt &stmt) {
 void compiler::visit(ir::map_expr &expr) {
   std::string name = expr.qualified_name();
 
-  mapfn_obj *map_obj = new mapfn_obj(string_mgr::get_global().add(name));
+  mapfn_obj *map_obj = new mapfn_obj(string_mgr::get().add(name));
 
   map_obj->set_patchpoint(bytecode_pos());
   declare_variable(expr);

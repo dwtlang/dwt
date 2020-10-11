@@ -16,13 +16,8 @@ string_mgr::string_mgr() {
 string_mgr::~string_mgr() {
 }
 
-string_mgr &string_mgr::get_global() {
-  static string_mgr instance;
-  return instance;
-}
-
 string_mgr &string_mgr::get() {
-  thread_local string_mgr instance;
+  static string_mgr instance;
   return instance;
 }
 

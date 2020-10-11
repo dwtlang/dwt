@@ -25,7 +25,6 @@ private:
   std::mutex _get_mutex;
 
 public:
-  static string_mgr &get_global();
   static string_mgr &get();
 
   string_obj *add(std::string);
