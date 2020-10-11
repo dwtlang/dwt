@@ -21,12 +21,14 @@ private:
   string_mgr();
   virtual ~string_mgr();
 
-  std::mutex _add_mutex;
-  std::mutex _get_mutex;
+  std::mutex _mutex;
 
 public:
   static string_mgr &get();
 
+  string_obj *add_r(std::string);
+  string_obj *get_r(std::string);
+  string_obj *get_r(std::string &, hash_t);
   string_obj *add(std::string);
   string_obj *get(std::string);
   string_obj *get(std::string &, hash_t);

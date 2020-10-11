@@ -21,14 +21,23 @@ string_mgr &string_mgr::get() {
   return instance;
 }
 
+string_obj *string_mgr::get_r(std::string str) {
+  std::scoped_lock hold(_mutex);
+  return get(str);
+}
+
 string_obj *string_mgr::get(std::string str) {
   hash_t hash = fnv1a(str.c_str(), str.size());
 
   return get(str, hash);
 }
 
+string_obj *string_mgr::add_r(std::string str) {
+  std::scoped_lock hold(_mutex);
+  return add(str);
+}
+
 string_obj *string_mgr::add(std::string str) {
-  std::scoped_lock hold(_add_mutex);
   hash_t hash = fnv1a(str.c_str(), str.size());
   auto obj = get(str, hash);
 
@@ -41,9 +50,12 @@ string_obj *string_mgr::add(std::string str) {
   return obj;
 }
 
-string_obj *string_mgr::get(std::string &str, hash_t hash) {
-  std::scoped_lock hold(_get_mutex);
+string_obj *string_mgr::get_r(std::string &str, hash_t hash) {
+  std::scoped_lock hold(_mutex);
+  return get(str, hash);
+}
 
+string_obj *string_mgr::get(std::string &str, hash_t hash) {
   auto pos = hash & (_capacity - 1);
 
   for (size_t i = 0; i < _capacity; ++i) {
