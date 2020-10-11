@@ -6,6 +6,7 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
+#include <dwt/interpreter.hpp>
 #include <dwt/string_obj.hpp>
 #include <dwt/syscall_obj.hpp>
 #include <dwt/var.hpp>
@@ -39,6 +40,10 @@ void syscall_obj::mark_immutable() {
 
 void syscall_obj::blacken() {
   _name->mark_as(MARK_GREY);
+}
+
+void syscall_obj::call(interpreter &interpreter, int nr_args) {
+  interpreter.invoke(this, nr_args);
 }
 
 std::string syscall_obj::to_string() {

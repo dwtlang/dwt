@@ -36,6 +36,7 @@ public:
   virtual obj *clone() override;
   virtual void mark_immutable() override;
   virtual void blacken() override;
+  virtual void call(interpreter &, int) override;
 
   virtual std::string to_string() override;
 

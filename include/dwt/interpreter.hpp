@@ -61,13 +61,8 @@ public:
   }
 
   inline void invoke(syscall_obj *syscall, int num_args) {
-    std::vector<var> args;
-
-    while (num_args--) {
-      args.emplace_back(exec_stack.top(num_args));
-    }
-
-    exec_stack.push(syscall->impl()(args));
+    var *args = &exec_stack.top_ref(num_args);
+    exec_stack.push(syscall->impl()(num_args, args));
   }
 
   void mark_roots(std::vector<obj *> &grey_objs);

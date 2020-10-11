@@ -17,14 +17,11 @@
 
 namespace dwt {
 
-void register_syscall(std::string scope_str, syscall call) {
-  /*    var v = OBJ_AS_VAR(heap::get().new_obj<syscall_obj>(
-          call, string_mgr::get().add(scope_str)));
-
-      auto s = scope::add(scope_str, SCOPE_CREATE | SCOPE_APPEND);
-      globals::table().set(s->lookup(), v);
-
-      scope::current = scope::global;*/
+void add_syscall(std::string scope_str, syscall call) {
+  auto sc = scope::add(scope_str, SCOPE_CREATE | SCOPE_APPEND);
+  var call_obj =
+    OBJ_AS_VAR(new syscall_obj(call, string_mgr::get_global().add(scope_str)));
+  globals::table().set_r(sc->lookup(), call_obj);
 }
 
 } // namespace dwt

@@ -15,11 +15,9 @@
 
 namespace dwt {
 
-typedef std::vector<var> argv_t;
+typedef std::function<var(size_t nr_args, var *args)> syscall;
 
-typedef std::function<var(argv_t)> syscall;
-
-void register_syscall(std::string, syscall);
+void add_syscall(std::string, syscall);
 
 } // namespace dwt
 
