@@ -77,7 +77,7 @@ all: $(LIBRARY) $(BINARY) $(FUZZER) $(FFI_BIN)
 .PHONY: asm
 asm: $(ASM_FILES)
 
-$(FFI_BIN): $(FFI_OBJ)
+$(FFI_BIN): $(FFI_OBJ) $(LIBRARY)
 	@echo "   $(CPP_COMPILER)      $(FFI_BIN)"
 	$(V)$(CPP_COMPILER) -I$(INC_DIR) $(FFI_OBJ) $(OBJ_FILES) $(CPP_FLAGS) -L$(LIB_DIR) -ldwt -lpthread -o $@
 
