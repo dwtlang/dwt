@@ -714,14 +714,14 @@ void compiler::visit(ir::use_stmt &spec) {
  * @param loop The loop AST.
  */
 void compiler::loop_until(ir::loop_stmt &loop) {
-  auto addr_before_loop_body = bytecode_pos();
+  auto instr_before_loop_body = bytecode_pos();
   walk(loop.body());
-  auto addr_after_loop_body = bytecode_pos();
+  auto instr_after_loop_body = bytecode_pos();
 
   walk(loop.cond());
-  auto addr_after_cond = mark_jump(OP_BNZ, TBD);
-  mark_jump(OP_LOOP, addr_before_loop_body);
-  patch_jump(addr_after_cond);
+  auto instr_after_cond = mark_jump(OP_BNZ, TBD);
+  mark_jump(OP_LOOP, instr_before_loop_body);
+  patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
     auto itr = _continue_map.find(loop.name());
@@ -730,7 +730,7 @@ void compiler::loop_until(ir::loop_stmt &loop) {
       for (auto pp : itr->second.patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
         patch_op(pp - 1, OP_BRA);
-        patch_jump(pp, addr_after_loop_body);
+        patch_jump(pp, instr_after_loop_body);
       }
     }
   }
@@ -738,7 +738,7 @@ void compiler::loop_until(ir::loop_stmt &loop) {
   for (auto cp : _continue_stack.top().patch_points()) {
     // because continue is a jump forward, cannot use OP_LOOP
     patch_op(cp - 1, OP_BRA);
-    patch_jump(cp, addr_after_loop_body);
+    patch_jump(cp, instr_after_loop_body);
   }
 }
 
@@ -748,14 +748,14 @@ void compiler::loop_until(ir::loop_stmt &loop) {
  * @param loop The loop AST.
  */
 void compiler::loop_while(ir::loop_stmt &loop) {
-  auto addr_before_loop_body = bytecode_pos();
+  auto instr_before_loop_body = bytecode_pos();
   walk(loop.body());
-  auto addr_after_loop_body = bytecode_pos();
+  auto instr_after_loop_body = bytecode_pos();
 
   walk(loop.cond());
-  auto addr_after_cond = mark_jump(OP_BRZ, TBD);
-  mark_jump(OP_LOOP, addr_before_loop_body);
-  patch_jump(addr_after_cond);
+  auto instr_after_cond = mark_jump(OP_BRZ, TBD);
+  mark_jump(OP_LOOP, instr_before_loop_body);
+  patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
     auto itr = _continue_map.find(loop.name());
@@ -764,7 +764,7 @@ void compiler::loop_while(ir::loop_stmt &loop) {
       for (auto pp : itr->second.patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
         patch_op(pp - 1, OP_BRA);
-        patch_jump(pp, addr_after_loop_body);
+        patch_jump(pp, instr_after_loop_body);
       }
     }
   }
@@ -772,7 +772,7 @@ void compiler::loop_while(ir::loop_stmt &loop) {
   for (auto cp : _continue_stack.top().patch_points()) {
     // because continue is a jump forward, cannot use OP_LOOP
     patch_op(cp - 1, OP_BRA);
-    patch_jump(cp, addr_after_loop_body);
+    patch_jump(cp, instr_after_loop_body);
   }
 }
 
@@ -782,9 +782,9 @@ void compiler::loop_while(ir::loop_stmt &loop) {
  * @param loop The loop AST.
  */
 void compiler::basic_loop(ir::loop_stmt &loop) {
-  auto addr_before_loop_body = bytecode_pos();
+  auto instr_before_loop_body = bytecode_pos();
   walk(loop.body());
-  mark_jump(OP_LOOP, addr_before_loop_body);
+  mark_jump(OP_LOOP, instr_before_loop_body);
 
   if (loop.is_tagged()) {
     auto itr = _continue_map.find(loop.name());
@@ -792,13 +792,13 @@ void compiler::basic_loop(ir::loop_stmt &loop) {
 
       for (auto pp : itr->second.patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
-        patch_jump(pp, addr_before_loop_body);
+        patch_jump(pp, instr_before_loop_body);
       }
     }
   }
 
   for (auto cp : _continue_stack.top().patch_points()) {
-    patch_jump(cp, addr_before_loop_body);
+    patch_jump(cp, instr_before_loop_body);
   }
 }
 
@@ -1144,25 +1144,25 @@ void compiler::visit(ir::return_stmt &stmt) {
  * @param loop The loop AST.
  */
 void compiler::while_loop(ir::loop_stmt &loop) {
-  auto addr_before_loop = bytecode_pos();
+  auto instr_before_loop = bytecode_pos();
   walk(loop.cond());
-  auto addr_after_cond = mark_jump(OP_BRZ, TBD);
+  auto instr_after_cond = mark_jump(OP_BRZ, TBD);
   walk(loop.body());
-  mark_jump(OP_LOOP, addr_before_loop);
-  patch_jump(addr_after_cond);
+  mark_jump(OP_LOOP, instr_before_loop);
+  patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
     auto itr = _continue_map.find(loop.name());
     if (itr != _continue_map.end()) {
 
       for (auto pp : itr->second.patch_points()) {
-        patch_jump(pp, addr_before_loop);
+        patch_jump(pp, instr_before_loop);
       }
     }
   }
 
   for (auto cp : _continue_stack.top().patch_points()) {
-    patch_jump(cp, addr_before_loop);
+    patch_jump(cp, instr_before_loop);
   }
 
   for (auto bp : _break_stack.top().patch_points()) {
@@ -1176,25 +1176,25 @@ void compiler::while_loop(ir::loop_stmt &loop) {
  * @param loop The statement AST.
  */
 void compiler::until_loop(ir::loop_stmt &loop) {
-  auto addr_before_loop = bytecode_pos();
+  auto instr_before_loop = bytecode_pos();
   walk(loop.cond());
-  auto addr_after_cond = mark_jump(OP_BNZ, TBD);
+  auto instr_after_cond = mark_jump(OP_BNZ, TBD);
   walk(loop.body());
-  mark_jump(OP_LOOP, addr_before_loop);
-  patch_jump(addr_after_cond);
+  mark_jump(OP_LOOP, instr_before_loop);
+  patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
     auto itr = _continue_map.find(loop.name());
     if (itr != _continue_map.end()) {
 
       for (auto pp : itr->second.patch_points()) {
-        patch_jump(pp, addr_before_loop);
+        patch_jump(pp, instr_before_loop);
       }
     }
   }
 
   for (auto cp : _continue_stack.top().patch_points()) {
-    patch_jump(cp, addr_before_loop);
+    patch_jump(cp, instr_before_loop);
   }
 
   for (auto bp : _break_stack.top().patch_points()) {
@@ -1224,16 +1224,16 @@ void compiler::visit(ir::print_stmt &stmt) {
  */
 void compiler::visit(ir::if_stmt &stmt) {
   walk(stmt.cond());
-  auto addr_before_if = mark_jump(OP_BRZ, TBD);
+  auto instr_before_if = mark_jump(OP_BRZ, TBD);
   walk(stmt.if_body());
 
   if (stmt.else_body()) {
-    auto addr_after_if_body = mark_jump(OP_BRA, TBD);
-    patch_jump(addr_before_if);
+    auto instr_after_if_body = mark_jump(OP_BRA, TBD);
+    patch_jump(instr_before_if);
     walk(stmt.else_body());
-    patch_jump(addr_after_if_body);
+    patch_jump(instr_after_if_body);
   } else {
-    patch_jump(addr_before_if);
+    patch_jump(instr_before_if);
   }
 }
 

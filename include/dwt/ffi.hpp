@@ -6,8 +6,8 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_SYSCALL_HPP
-#define GUARD_DWT_SYSCALL_HPP
+#ifndef GUARD_DWT_FFI_HPP
+#define GUARD_DWT_FFI_HPP
 
 #include <dwt/var.hpp>
 
@@ -17,7 +17,10 @@ namespace dwt {
 
 typedef std::function<var(size_t nr_args, var *args)> syscall;
 
-void add_syscall(std::string, syscall);
+var ffi_bind(std::string identifier, syscall);
+var ffi_find(std::string identifier);
+var ffi_call(std::string identifier, var *args, size_t nr_args);
+var ffi_call(var callable, var *args, size_t nr_args);
 
 } // namespace dwt
 

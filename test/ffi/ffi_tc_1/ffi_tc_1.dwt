@@ -1,2 +1,10 @@
-ffi foo(var k,var v)
-print "foo"
+ffi ping()
+ping(3)
+
+fun pong(n) {
+  print "pong"
+  if n >= 0 {
+    ping(n - 1)
+  }
+}
+

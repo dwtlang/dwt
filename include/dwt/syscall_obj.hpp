@@ -9,9 +9,9 @@
 #ifndef GUARD_DWT_SYSCALL_OBJ_HPP
 #define GUARD_DWT_SYSCALL_OBJ_HPP
 
+#include <dwt/ffi.hpp>
 #include <dwt/obj.hpp>
 #include <dwt/stack.hpp>
-#include <dwt/syscall.hpp>
 #include <dwt/var.hpp>
 
 #include <atomic>

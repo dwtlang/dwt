@@ -61,13 +61,13 @@ public:
   }
 
   inline void invoke(syscall_obj *syscall, int num_args) {
-    var *args = &exec_stack.top_ref(num_args);
+    var *args = exec_stack.top_ptr(num_args - 1);
     exec_stack.push(syscall->impl()(num_args, args));
   }
 
   void mark_roots(std::vector<obj *> &grey_objs);
 
-  void interpret(function_obj *fun_obj);
+  var interpret(obj *callable_obj, var *args, size_t nr_args);
 
 private:
   upvar_obj *capture_upvar(size_t, size_t);

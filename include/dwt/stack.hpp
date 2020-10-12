@@ -106,6 +106,10 @@ public:
     return bp[sp - off];
   }
 
+  inline T *top_ptr(size_t off) {
+    return &bp[sp - off];
+  }
+
   inline T &top_ref() {
     return bp[sp];
   }

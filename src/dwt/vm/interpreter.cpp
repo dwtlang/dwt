@@ -213,9 +213,17 @@ token_ref interpreter::get_op_token(function_obj *fun_obj, uint8_t *op_ptr) {
   return fun_obj->bytecode().token_at(op_idx);
 }
 
-void interpreter::interpret(function_obj *fun_obj) {
-  exec_stack.push(OBJ_AS_VAR(fun_obj));
-  invoke(fun_obj, 0);
+var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
+  exec_stack.push(OBJ_AS_VAR(callable_obj));
+  for (size_t i = 0; i < nr_args; ++i) {
+    exec_stack.push(args[i]);
+  }
+
+  callable_obj->call(*this, nr_args);
+
+  if (callable_obj->type() == OBJ_SYSCALL) {
+    return exec_stack.top_and_pop();
+  }
 
   uint8_t *op = call_stack.top_ref().ip;
   size_t fp = 0;
@@ -292,7 +300,7 @@ void interpreter::interpret(function_obj *fun_obj) {
           op = call_stack.top_ref().ip;
           fp = call_stack.top_ref().sp;
         } else {
-          return;
+          return exec_stack.top_and_pop();
         }
         DISPATCH();
       }
@@ -602,10 +610,12 @@ void interpreter::interpret(function_obj *fun_obj) {
 
   } catch (std::runtime_error &e) {
     err(e.what());
-    oops("n@1 from...", get_op_token(fun_obj, op - 1));
+    oops("n@1 from...", get_op_token(call_stack.top_ref().fn, op - 1));
   } catch (std::logic_error &e) {
-    oops(e.what(), get_op_token(fun_obj, op - 1));
+    oops(e.what(), get_op_token(call_stack.top_ref().fn, op - 1));
   }
+
+  return nil;
 }
 
 } // namespace dwt

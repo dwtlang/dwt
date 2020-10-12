@@ -1,9 +1,14 @@
 MAKEFLAGS += --no-print-directory --keep-going
 
+LIB_DIR := lib
 BIN_DIR := bin
 INC_DIR := include
-SRC_DIR := src
+SRC_DIR := src/dwt
 CPP_SRC := $(shell find $(SRC_DIR) -name "*.cpp")
+
+FFI_DIR := test/ffi/ffi_tc_1
+FFI_SRC := $(shell find $(FFI_DIR) -name "ffi_tc_1.cpp")
+FFI_OBJ := $(FFI_SRC:%.cpp=%.o)
 
 CPP_COMPILER = $(CXX)
 CPP_COMPILER ?= g++
@@ -36,6 +41,8 @@ OBJ_FILES := $(CPP_SRC:%.cpp=%.o)
 PGO_FILES := $(CPP_SRC:%.cpp=%.gcda)
 ASM_FILES := $(CPP_SRC:%.cpp=%.s)
 BINARY := $(BIN_DIR)/dwt
+LIBRARY := $(LIB_DIR)/libdwt.so
+FFI_BIN := $(BIN_DIR)/ffi
 
 FUZZER_SRC := tools/fuzzer.cpp
 FUZZER_OBJ := $(FUZZER_SRC:%.cpp=%.o)
@@ -65,19 +72,28 @@ endif
 pgo: merge clean release
 
 .PHONY: all
-all: $(BINARY) $(FUZZER)
+all: $(LIBRARY) $(BINARY) $(FUZZER) $(FFI_BIN)
 
 .PHONY: asm
 asm: $(ASM_FILES)
+
+$(FFI_BIN): $(FFI_OBJ)
+	@echo "   $(CPP_COMPILER)      $(FFI_BIN)"
+	$(V)$(CPP_COMPILER) -I$(INC_DIR) $(FFI_OBJ) $(OBJ_FILES) $(CPP_FLAGS) -L$(LIB_DIR) -ldwt -lpthread -o $@
 
 $(FUZZER): $(FUZZER_OBJ) $(OBJ_FILES)
 	@echo "   $(CPP_COMPILER)      $(FUZZER)"
 	$(V)$(CPP_COMPILER) $(FUZZER_OBJ) $(filter-out %/main.o,$(OBJ_FILES)) $(CPP_FLAGS) -lpthread -o $@
 
-$(BINARY): $(OBJ_FILES)
+$(LIBRARY): $(OBJ_FILES)
+	@mkdir -p $(LIB_DIR)
+	@echo "   $(CPP_COMPILER)      $(LIBRARY)"
+	$(V)$(CPP_COMPILER) $(OBJ_FILES) $(CPP_FLAGS) -shared -fPIC -lpthread -o $(LIBRARY)
+
+$(BINARY): $(LIBRARY)
 	@mkdir -p $(BIN_DIR)
 	@echo "   $(CPP_COMPILER)      $(BINARY)"
-	$(V)$(CPP_COMPILER) $(OBJ_FILES) $(CPP_FLAGS) -lpthread -o $@
+	$(V)$(CPP_COMPILER) $(SRC_DIR)/../main.cpp -I$(INC_DIR) $(OBJ_FILES) $(CPP_FLAGS) -L$(LIB_DIR) -ldwt -lpthread -o $@
 
 %.o: %.cpp
 	@echo "   $(CPP_COMPILER)      $(patsubst src/%.cpp,%.o,$<)"
@@ -96,6 +112,8 @@ clean:
 	$(V)rm -rf $(ASM_FILES)
 	$(V)rm -rf $(BINARY)
 	$(V)rm -rf $(FUZZER)
+	$(V)rm -rf $(FFI_BIN)
+	$(V)rm -rf $(FFI_OBJ)
 
 .PHONY: purge
 purge: clean

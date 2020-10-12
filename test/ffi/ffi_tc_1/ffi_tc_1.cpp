@@ -26,6 +26,18 @@
 
 using namespace dwt;
 
+var ping(size_t nr_args, var *args) {
+  var n = *args;
+  std::cout << "ping\n";
+
+  if (VAR_IS_NUM(n)) {
+    n = var_dec(n);
+    ffi_call("::pong", &n, 1);
+  }
+
+  return n;
+}
+
 int main(int argc, char **argv) {
   std::string filename;
   int ret = 0;
@@ -37,6 +49,8 @@ int main(int argc, char **argv) {
   }
 
   try {
+    ffi_bind("::ping", ping);
+
     utf8_source src(filename);
     parser p(std::move(src));
 

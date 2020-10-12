@@ -161,6 +161,11 @@ def run_tc(tc):
         tc_skip(tc['name'])
         return
 
+    exe = cmd
+
+    if 'cmd' in tc:
+        exe = tc['cmd']
+
     loops = 1
     try:
         loops = tc['loop']
@@ -177,7 +182,7 @@ def run_tc(tc):
             tcname = tc['name']
             start_time = time.time()
             try:
-                p = subprocess.run([cmd, srcfile],
+                p = subprocess.run([exe, srcfile],
                                    timeout=300,
                                    universal_newlines=True,
                                    stdout=subprocess.PIPE,
