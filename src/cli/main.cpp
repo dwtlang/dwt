@@ -17,6 +17,7 @@
 #include <dwt/parser.hpp>
 #include <dwt/scope.hpp>
 #include <dwt/string_mgr.hpp>
+#include <dwt/version.hpp>
 
 #include <cstring>
 #include <ctime>
@@ -33,6 +34,14 @@ int main(int argc, char **argv) {
   if (argc > 1) {
     filename = argv[1];
   } else {
+    std::string year_range = "2020";
+    if (year_range != BUILD_YEAR) {
+      year_range += "-";
+      year_range += BUILD_YEAR;
+    }
+    err("Dwt " + version::to_string());
+    err(" Copyright (c) ");
+    err(year_range + " Andrew Scott and Contributors\n");
     return ret = 1;
   }
 
