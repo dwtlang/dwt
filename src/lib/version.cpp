@@ -13,15 +13,15 @@
 
 namespace dwt {
 
-unsigned int version::major() {
+unsigned int version::major_no() {
   return MAJOR_VER;
 }
 
-unsigned int version::minor() {
+unsigned int version::minor_no() {
   return MINOR_VER;
 }
 
-unsigned int version::patch() {
+unsigned int version::patch_no() {
   return PATCH_VER;
 }
 

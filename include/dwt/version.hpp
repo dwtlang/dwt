@@ -15,9 +15,9 @@ namespace dwt {
 
 class version {
 public:
-  static unsigned int major();
-  static unsigned int minor();
-  static unsigned int patch();
+  static unsigned int major_no();
+  static unsigned int minor_no();
+  static unsigned int patch_no();
   static const char *tag();
   static std::string to_string();
 
