@@ -49,9 +49,9 @@ FFI_TEST_OBS    := $(FFI_TEST_SRC:%.cpp=%.o)
 COMPILER         = $(CXX)
 COMPILER        ?= g++
 COMPILER_FLAGS   = -pipe -pthread -Wall -Wno-unused-parameter \
-                      -fno-rtti -march=native \
-                      -D_FILE_OFFSET_BITS=64 -fPIC \
-                      $(CXXFLAGS) $(USE_FLAGS)
+                   -fno-rtti -march=native \
+                   -D_FILE_OFFSET_BITS=64 -fPIC \
+                   $(CXXFLAGS) $(USE_FLAGS)
 
 ifneq "$(findstring USE_COMPUTED_GOTO=1,$(USE_FLAGS))" ""
 # Only use gnu++17 for computed goto support
@@ -126,9 +126,9 @@ $(DWT_LIB): $(LIB_OBS)
 	@echo "   LD      $(DWT_LIB)"
 	$(V)$(COMPILER) $(LIB_OBS) $(COMPILER_FLAGS) -shared -fPIC -o $(DWT_LIB)
 	@echo "   LN      $(LIB_LNK) ~> $(DWT_LIB)"
-	$(V)ln -nrs $(DWT_LIB) $(LIB_LNK)
+	$(V)ln -sf $(PWD)/$(DWT_LIB) $(LIB_LNK)
 	@echo "   LN      $(LIB_DIR)/$(LIB_BASENAME) ~> $(LIB_LNK)"
-	$(V)ln -nrs $(LIB_LNK) $(PWD)/$(LIB_DIR)/$(LIB_BASENAME)
+	$(V)ln -sf $(PWD)/$(LIB_LNK) $(PWD)/$(LIB_DIR)/$(LIB_BASENAME)
 
 $(DWT_AR): $(LIB_OBS)
 	@mkdir -p $(LIB_DIR)
@@ -136,9 +136,9 @@ $(DWT_AR): $(LIB_OBS)
 	$(V)ar -rcs $(DWT_AR) $(LIB_OBS)
 	$(V)ranlib $(DWT_AR)
 	@echo "   LN      $(AR_LNK) ~> $(DWT_AR)"
-	$(V)ln -nrs $(DWT_AR) $(AR_LNK)
+	$(V)ln -sf $(PWD)/$(DWT_AR) $(AR_LNK)
 	@echo "   LN      $(LIB_DIR)/$(AR_BASENAME) ~> $(AR_LNK)"
-	$(V)ln -nrs $(AR_LNK) $(PWD)/$(LIB_DIR)/$(AR_BASENAME)
+	$(V)ln -sf $(PWD)/$(AR_LNK) $(PWD)/$(LIB_DIR)/$(AR_BASENAME)
 
 $(DWT_CLI): $(DWT_LIB) $(CLI_OBS)
 	@mkdir -p $(BIN_DIR)
