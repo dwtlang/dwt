@@ -6,12 +6,7 @@ BUILD_YEAR      := $(shell date +"%Y")
 
 USE_FLAGS       ?= -DUSE_STRICT_IEEE_754=1 \
                    -DUSE_COMPUTED_GOTO=1 \
-                   -DUSE_DOUBLE_PRECISION_FP=1 \
-                   -DMAJOR_VER=$(MAJOR_VER) \
-                   -DMINOR_VER=$(MINOR_VER) \
-                   -DPATCH_VER=$(PATCH_VER) \
-                   -DBUILD_TAG=\"$(BUILD_TAG)\" \
-                   -DBUILD_YEAR=\"$(BUILD_YEAR)\"
+                   -DUSE_DOUBLE_PRECISION_FP=1
 
 VERBOSE         := @
 V               := $(VERBOSE)
@@ -51,7 +46,12 @@ COMPILER        ?= g++
 COMPILER_FLAGS   = -pipe -pthread -Wall -Wno-unused-parameter \
                    -fno-rtti -march=native \
                    -D_FILE_OFFSET_BITS=64 -fPIC \
-                   $(CXXFLAGS) $(USE_FLAGS)
+                   $(CXXFLAGS) $(USE_FLAGS) \
+                   -DMAJOR_VER=$(MAJOR_VER) \
+                   -DMINOR_VER=$(MINOR_VER) \
+                   -DPATCH_VER=$(PATCH_VER) \
+                   -DBUILD_TAG=\"$(BUILD_TAG)\" \
+                   -DBUILD_YEAR=\"$(BUILD_YEAR)\"
 
 ifneq "$(findstring USE_COMPUTED_GOTO=1,$(USE_FLAGS))" ""
 # Only use gnu++17 for computed goto support
