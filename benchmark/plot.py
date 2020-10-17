@@ -1,7 +1,10 @@
+import matplotlib
+matplotlib.use('Agg') # apparently stops it from trying to load GTK as we want to run headless
 import matplotlib.pyplot as plt; plt.rcdefaults()
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+
 
 objects = []
 performance = []
