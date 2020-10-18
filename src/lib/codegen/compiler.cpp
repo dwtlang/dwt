@@ -516,7 +516,9 @@ function_obj *compiler::operator()(ir::ast *tree) {
 
   emit_op(OP_RET);
 
+#if USE_THREADED_COMPILER
   await();
+#endif
 
   debug {
     decompiler decompiler(_fun_obj);
@@ -548,7 +550,7 @@ function_obj *compiler::operator()(ir::ast *tree) {
  * @param node The function AST.
  */
 void compiler::subcompile(function_obj *fun_obj, ir::ast *node) {
-
+#if USE_THREADED_COMPILER
   if (concurrency > std::thread::hardware_concurrency()) {
     compiler c(fun_obj, this, false /* concurrent */);
     finalise(c(node));
@@ -556,6 +558,10 @@ void compiler::subcompile(function_obj *fun_obj, ir::ast *node) {
     compiler c(fun_obj, this, true /* concurrent */);
     defer(std::move(c), node);
   }
+#else
+  compiler c(fun_obj, this, false /* concurrent */);
+  finalise(c(node));
+#endif
 }
 
 /**
@@ -572,6 +578,8 @@ void compiler::finalise(function_obj *fun_obj) {
 
   fun_obj->bytecode().compact();
 }
+
+#if USE_THREADED_COMPILER
 
 /**
  * Move a sub-compiler instance into an async thread for deferred execution.
@@ -604,6 +612,8 @@ void compiler::await() {
     await(future_obj);
   }
 }
+
+#endif
 
 /**
  * Compile a numeric expression.

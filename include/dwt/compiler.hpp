@@ -126,10 +126,14 @@ public:
 
 private:
   void subcompile(function_obj *, ir::ast *);
+
+#if USE_THREADED_COMPILER
   void defer(compiler &&, ir::ast *node);
-  void finalise(function_obj *);
   void await();
   void await(std::shared_future<function_obj *> &);
+#endif
+
+  void finalise(function_obj *);
 
   void walk(std::shared_ptr<ir::ast> obj) {
     walk(obj.get());
