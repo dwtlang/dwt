@@ -6,7 +6,8 @@ BUILD_YEAR      := $(shell date +"%Y")
 
 USE_FLAGS       ?= -DUSE_STRICT_IEEE_754=1 \
                    -DUSE_COMPUTED_GOTO=1 \
-                   -DUSE_DOUBLE_PRECISION_FP=1
+                   -DUSE_DOUBLE_PRECISION_FP=1 \
+                   -DUSE_BYTECODE_OPTIMISER=1
 
 VERBOSE         := @
 V               := $(VERBOSE)

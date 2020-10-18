@@ -60,7 +60,9 @@ public:
   function_obj *compile(std::shared_ptr<ir::ast>);
   function_obj *operator()(ir::ast *);
 
+#if USE_BYTECODE_OPTIMISER
   void optimise(bytecode &);
+#endif
 
   static std::atomic<unsigned int> peak_concurrency;
   static std::atomic<unsigned int> peak_serial;

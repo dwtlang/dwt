@@ -66,15 +66,18 @@
 #include <dwt/ir/xor_expr.hpp>
 #include <dwt/mapfn_obj.hpp>
 #include <dwt/opcode.hpp>
+#include <dwt/reporting.hpp>
+#include <dwt/string_mgr.hpp>
+#include <dwt/var.hpp>
+
+#if USE_BYTECODE_OPTIMISER
 #include <dwt/pho/constant_folding.hpp>
 #include <dwt/pho/merge_pops.hpp>
 #include <dwt/pho/set_pop_get.hpp>
 #include <dwt/pho/tail_calls.hpp>
 #include <dwt/pho/unreachable_code.hpp>
 #include <dwt/pho/zero_branching.hpp>
-#include <dwt/reporting.hpp>
-#include <dwt/string_mgr.hpp>
-#include <dwt/var.hpp>
+#endif
 
 #include <sstream>
 
@@ -83,6 +86,7 @@
 
 namespace dwt {
 
+#if USE_BYTECODE_OPTIMISER
 namespace {
 
 static const int offsets[] = {
@@ -173,6 +177,7 @@ void remove_skips(bytecode &code) {
 }
 
 } // namespace
+#endif
 
 std::atomic<unsigned int> compiler::concurrency = 0;
 
@@ -259,16 +264,22 @@ void compiler::emit_const(double d) {
    * All skip ops are eventually removed from the optimised bytecode.
    */
   if (d == 0) {
+#if USE_BYTECODE_OPTIMISER
     emit_op(OP_SKIP);
     emit_op(OP_SKIP);
+#endif
     emit_op(OP_ZERO);
   } else if (d == 1) {
+#if USE_BYTECODE_OPTIMISER
     emit_op(OP_SKIP);
     emit_op(OP_SKIP);
+#endif
     emit_op(OP_ONE);
   } else if (d == 2) {
+#if USE_BYTECODE_OPTIMISER
     emit_op(OP_SKIP);
     emit_op(OP_SKIP);
+#endif
     emit_op(OP_TWO);
   } else {
     var v;
@@ -451,6 +462,7 @@ function_obj *compiler::compile(std::shared_ptr<ir::ast> tree) {
   return (*this)(tree.get());
 }
 
+#if USE_BYTECODE_OPTIMISER
 void compiler::optimise(bytecode &code) {
   { pho::unreachable_code pass(code); }
   { pho::merge_pops pass(code); }
@@ -462,6 +474,7 @@ void compiler::optimise(bytecode &code) {
   patch_jumps(code);
   remove_skips(code);
 }
+#endif
 
 /**
  * Patch OP_CONST with OP_CLOSURE.
@@ -494,8 +507,10 @@ function_obj *compiler::operator()(ir::ast *tree) {
   } else if (_fun_obj->type() == OBJ_MAPINI) {
     emit_op(OP_MAP);
   } else {
+#if USE_BYTECODE_OPTIMISER
     emit_op(OP_SKIP);
     emit_op(OP_SKIP);
+#endif
     emit_op(OP_NIL);
   }
 
@@ -508,6 +523,7 @@ function_obj *compiler::operator()(ir::ast *tree) {
     decompiler.decompile();
   }
 
+#if USE_BYTECODE_COMPILER
   optimise(_fun_obj->bytecode());
   _fun_obj->optimised(true);
 
@@ -515,6 +531,7 @@ function_obj *compiler::operator()(ir::ast *tree) {
     decompiler decompiler(_fun_obj);
     decompiler.decompile();
   }
+#endif
 
   if (_concurrent) {
     --concurrency;
@@ -1617,13 +1634,17 @@ void compiler::visit(ir::xor_expr &expr) {
 void compiler::visit(ir::boolean &expr) {
   switch (expr.name_tok().type()) {
   case KW_TRUE:
+#if USE_BYTECODE_OPTIMISER
     emit_op(OP_SKIP);
     emit_op(OP_SKIP);
+#endif
     emit_op(OP_TRUE);
     break;
   case KW_FALSE:
+#if USE_BYTECODE_OPTIMISER
     emit_op(OP_SKIP);
     emit_op(OP_SKIP);
+#endif
     emit_op(OP_FALSE);
     break;
   default:
