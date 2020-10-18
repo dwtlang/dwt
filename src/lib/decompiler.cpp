@@ -305,7 +305,7 @@ void decompiler::pass() {
 
   if (_pass == 2) {
     std::stringstream ss;
-    ss << TERM_BOLD << "<fun " << scope::prettify_name(_fun_obj->name()) << ">"
+    ss << TERM_BOLD << "<fun " << _fun_obj->name() << ">"
        << (_fun_obj->optimised() ? " (optimised)" : " (unoptimised)")
        << TERM_RESET << std::endl;
 

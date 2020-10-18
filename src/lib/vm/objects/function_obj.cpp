@@ -79,10 +79,7 @@ void function_obj::blacken() {
 }
 
 std::string function_obj::to_string() {
-  std::string n = scope::prettify_name(_name->text());
-  std::string s = "<fun " + n + ">";
-
-  return s;
+  return "<fun " + _name->text() + ">";
 }
 
 } // namespace dwt

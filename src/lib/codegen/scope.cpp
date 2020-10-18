@@ -104,11 +104,6 @@ std::string scope::qualified_name() const {
   return qualified;
 }
 
-std::string scope::prettify_name(std::string name) {
-  std::regex re("<anon[[:digit:]]+>::");
-  return std::regex_replace(name, re, "");
-}
-
 std::shared_ptr<scope> scope::add(token_ref name_ref, int flags) {
   std::shared_ptr<scope> s;
   std::string name = name_ref.text();

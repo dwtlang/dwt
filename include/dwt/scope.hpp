@@ -55,7 +55,6 @@ public:
   static std::shared_ptr<scope> add(token_ref, int = SCOPE_EXCLUSIVE);
   static std::shared_ptr<scope> close();
   static std::string to_string();
-  static std::string prettify_name(std::string);
 
 private:
   static std::shared_ptr<scope>
