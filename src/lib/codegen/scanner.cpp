@@ -71,7 +71,7 @@ void scanner::decimal(std::string &lexeme, token_type &sym, bool dp) {
   int ch;
 
   while (isalpha(ch = peek_char()) || isdigit(ch) || ch == '_' || ch == '.') {
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (ch == '.') {
       if (dp) {
@@ -123,7 +123,7 @@ void scanner::hexadecimal(std::string &lexeme, token_type &sym) {
   int ch;
 
   while (isalpha(ch = peek_char()) || isdigit(ch) || ch == '_') {
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     next_char();
 
     if (!ishexdigit(ch)) {
@@ -145,7 +145,7 @@ void scanner::octal(std::string &lexeme, token_type &sym) {
   int ch;
 
   while (isalpha(ch = peek_char()) || isoctdigit(ch) || ch == '_') {
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (!isoctdigit(ch) && (isalpha(ch) || ch == '_') && sym != TOK_INV) {
       oops("e@1 expected octal literal", bad_token(lexeme));
@@ -207,12 +207,12 @@ void scanner::string_literal(std::string &lexeme, token_type &sym) {
     case ' ':
     case '!':
     case '=':
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       break;
 
     case '"':
       sym = TOK_STRING;
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       return;
 
     case '\\':
@@ -221,7 +221,7 @@ void scanner::string_literal(std::string &lexeme, token_type &sym) {
 
     default:
       if ((ch >= 32 && ch < 127) || (ch > 127)) {
-        lexeme += utf8_encode(ch);
+        lexeme += ch;
       } else {
         oops("e@1 invalid character in string literal", bad_token(lexeme));
       }
@@ -266,7 +266,7 @@ void scanner::line_comment(std::string &lexeme) {
     ch = peek_char();
 
     if (ch != '\n' && ch != EOF) {
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       next_char();
     } else {
       break;
@@ -282,12 +282,12 @@ bool scanner::comment(std::string &lexeme) {
 
   if (ch == '/') {
     is_comment = true;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     ch = next_char();
     line_comment(lexeme);
   } else if (ch == '*') {
     is_comment = true;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     next_char();
     block_comment(lexeme);
   }
@@ -301,7 +301,7 @@ void scanner::whitespace(std::string &lexeme) {
     int ch = peek_char();
 
     if (ch == ' ' || ch == '\t') {
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       next_char();
     } else {
       break;
@@ -333,7 +333,7 @@ token_ref scanner::next_token(bool skip_whitespace) {
 
   while (ch == '\t' || ch == ' ' || ch == '/') {
     if (ch == '/') {
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       if (comment(lexeme)) {
         ch = next_char();
         continue;
@@ -343,7 +343,7 @@ token_ref scanner::next_token(bool skip_whitespace) {
     } else {
       if (skip_whitespace) {
         sym = TOK_WS;
-        lexeme += utf8_encode(ch);
+        lexeme += ch;
         whitespace(lexeme);
         ch = next_char();
       } else {
@@ -361,13 +361,13 @@ token_ref scanner::next_token(bool skip_whitespace) {
   case '\t':
   case ' ':
     sym = TOK_WS;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     whitespace(lexeme);
     break;
 
   case '\n':
     sym = TOK_BREAK;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '\r') {
       lexeme += next_char();
@@ -376,35 +376,35 @@ token_ref scanner::next_token(bool skip_whitespace) {
 
   case '\\':
     sym = TOK_BSLASH;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '\'':
     sym = TOK_SQUOTE;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '/':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     sym = TOK_FWDSLASH;
     break;
 
   case '+':
     sym = TOK_PLUS;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '-':
     sym = TOK_MINUS;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '.':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '.') {
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       sym = TOK_RANGE;
     } else if (isdigit(peek_char())) {
       sym = TOK_DEC;
@@ -415,43 +415,43 @@ token_ref scanner::next_token(bool skip_whitespace) {
     break;
 
   case '~':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     sym = TOK_TILDE;
     break;
 
   case '(':
     sym = TOK_LPAREN;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case ')':
     sym = TOK_RPAREN;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case ':':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == ':') {
       sym = TOK_SCOPE;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else if (peek_char() == '=') {
       sym = TOK_ASSIGN;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_COLON;
     }
     break;
 
   case '|':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '|') {
       sym = TOK_LOG_OR;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_OR;
     }
@@ -459,53 +459,53 @@ token_ref scanner::next_token(bool skip_whitespace) {
 
   case '*':
     sym = TOK_STAR;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '^':
     sym = TOK_XOR;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '&':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '&') {
       sym = TOK_LOG_AND;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_AND;
     }
     break;
 
   case '<':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '<') {
       sym = TOK_LSHIFT;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else if (peek_char() == '=') {
       sym = TOK_LT_EQ;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_LT;
     }
     break;
 
   case '>':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '>') {
       sym = TOK_RSHIFT;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else if (peek_char() == '=') {
       sym = TOK_GT_EQ;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_GT;
     }
@@ -513,16 +513,16 @@ token_ref scanner::next_token(bool skip_whitespace) {
 
   case '%':
     sym = TOK_MODULO;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '!':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '=') {
       sym = TOK_NOT_EQ;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_BANG;
     }
@@ -530,28 +530,28 @@ token_ref scanner::next_token(bool skip_whitespace) {
 
   case ';':
     sym = TOK_SEMICOLON;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '[':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '[') {
       sym = TOK_DOUBLE_LSQ;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_LSQUARE;
     }
     break;
 
   case ']':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == ']') {
       sym = TOK_DOUBLE_RSQ;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     } else {
       sym = TOK_RSQUARE;
     }
@@ -559,36 +559,36 @@ token_ref scanner::next_token(bool skip_whitespace) {
 
   case '{':
     sym = TOK_LCURLY;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '}':
     sym = TOK_RCURLY;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case ',':
     sym = TOK_COMMA;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case '=':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == '=') {
       sym = TOK_EQUALS;
       ch = next_char();
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
     }
     break;
 
   case '?':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     sym = TOK_QMARK;
     break;
 
   case '0':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
 
     if (peek_char() == 'x' || ch == 'X') {
       lexeme += next_char();
@@ -603,14 +603,14 @@ token_ref scanner::next_token(bool skip_whitespace) {
     break;
 
   case '"':
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     string_literal(lexeme, sym);
     break;
 
   case -1:
   case 0:
     sym = TOK_EOF;
-    lexeme += utf8_encode(ch);
+    lexeme += ch;
     break;
 
   case 0x3bb:
@@ -625,7 +625,7 @@ token_ref scanner::next_token(bool skip_whitespace) {
       alphanumeric(lexeme, sym);
       is_keyword(lexeme, sym);
     } else if (isdigit(ch)) {
-      lexeme += utf8_encode(ch);
+      lexeme += ch;
       decimal(lexeme, sym, false);
     } else {
       lexeme += utf8_encode(ch);
