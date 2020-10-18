@@ -38,7 +38,7 @@ private:
   void escape_seq(std::string &, token_type &);
   void string_literal(std::string &, token_type &);
   bool comment(std::string &);
-  bool block_comment(std::string &);
+  void block_comment(std::string &);
   void line_comment(std::string &);
   void whitespace(std::string &);
   size_t starting_column(std::string &);

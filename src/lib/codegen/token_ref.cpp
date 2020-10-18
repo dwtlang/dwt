@@ -38,10 +38,6 @@ std::string token_ref::in_context(int ctx_lines) {
     }
   });
 
-  if (ss.str().back() != '\n' && ss.str().back() != '\r') {
-    ss << TERM_BOLD << "\t ...\n" << TERM_RESET;
-  }
-
   int i = 0;
   for (; i < column() + margin; ++i) {
     ss << " ";

@@ -229,42 +229,51 @@ void scanner::string_literal(std::string &lexeme, token_type &sym) {
   }
 }
 
-bool scanner::block_comment(std::string &lexeme) {
-  bool is_comment = false;
+void scanner::block_comment(std::string &lexeme) {
   int ch;
 
-  do {
-    ch = next_char();
-    lexeme += utf8_encode(ch);
+  while (1) {
+    ch = peek_char();
 
-    if (ch == '*') {
+    if (ch == '\n') {
+      int col = starting_column(lexeme);
+      lexeme += next_char();
+      _tokens->add(token(TOK_COMMENT, lexeme, _lineno - 1, col));
+      lexeme = "";
+    } else if (ch == '*') {
+      lexeme += ch;
+      next_char();
       if (peek_char() == '/') {
-        ch = next_char();
-        lexeme += utf8_encode(ch);
-        is_comment = true;
+        lexeme += next_char();
+        _tokens->add(
+          token(TOK_COMMENT, lexeme, _lineno, starting_column(lexeme)));
         break;
       }
     } else if (ch == EOF) {
       oops("e@1 expected '/'", bad_token(lexeme));
       break;
+    } else {
+      lexeme += ch;
+      next_char();
     }
-
-  } while (1);
-
-  return is_comment;
+  }
 }
 
 void scanner::line_comment(std::string &lexeme) {
   int ch;
 
   while (1) {
-    ch = next_char();
-    if (ch != '\n' && ch != 0) {
+    ch = peek_char();
+
+    if (ch != '\n' && ch != EOF) {
       lexeme += utf8_encode(ch);
+      next_char();
     } else {
       break;
     }
   }
+
+  _tokens->add(token(TOK_COMMENT, lexeme, _lineno, starting_column(lexeme)));
 }
 
 bool scanner::comment(std::string &lexeme) {
@@ -275,7 +284,6 @@ bool scanner::comment(std::string &lexeme) {
     is_comment = true;
     lexeme += utf8_encode(ch);
     ch = next_char();
-    lexeme += utf8_encode(ch);
     line_comment(lexeme);
   } else if (ch == '*') {
     is_comment = true;
@@ -327,8 +335,8 @@ token_ref scanner::next_token(bool skip_whitespace) {
     if (ch == '/') {
       lexeme += utf8_encode(ch);
       if (comment(lexeme)) {
-        sym = TOK_COMMENT;
         ch = next_char();
+        continue;
       } else {
         break;
       }
