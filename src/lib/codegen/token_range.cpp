@@ -10,15 +10,18 @@
 #include <dwt/token.hpp>
 #include <dwt/token_range.hpp>
 
-#include <sstream>
-
 namespace dwt {
 
 std::string token_range::in_context(int ctx_lines) {
-  std::stringstream ss;
+  std::string s;
 
-  ss << _seq->to_string() << ":" << from_line() << ":" << leftmost_column()
-     << ":\n";
+  s += _seq->to_string();
+  s += ":";
+  s += std::to_string(from_line());
+  s += ":";
+  s += std::to_string(leftmost_column());
+  s += ":\n";
+
   int start_line = from_line() < ctx_lines + 1 ? 0 : from_line() - ctx_lines;
   int ln_digits = digits(_seq->size());
   int margin = ln_digits + 6;
@@ -26,32 +29,33 @@ std::string token_range::in_context(int ctx_lines) {
   _seq->for_all([&](auto tok) {
     if (tok.line() >= start_line && tok.line() <= to_line()) {
       if (tok.column() == 0) {
-        ss << TERM_BOLD;
+        s += TERM_BOLD;
         if (tok.line() == to_line()) {
-          ss << " ~> ";
+          s += " ~> ";
         } else {
-          ss << "    ";
+          s += "    ";
         }
-        ss << TERM_RESET;
-        ss << format_decimal(tok.line(), ln_digits) << "  ";
+        s += TERM_RESET;
+        s += format_decimal(tok.line(), ln_digits);
+        s += "  ";
       }
-      ss << tok.text();
+      s += tok.text();
     }
   });
 
   int i = 0;
   for (; i < leftmost_column() + margin; ++i) {
-    ss << " ";
+    s += " ";
   }
-  ss << TERM_BOLD << "^";
+  s += TERM_BOLD "^";
 
   i = width();
   while (--i) {
-    ss << "~";
+    s += "~";
   }
-  ss << TERM_RESET << "\n";
+  s += TERM_RESET "\n";
 
-  return ss.str();
+  return s;
 }
 
 } // namespace dwt

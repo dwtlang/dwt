@@ -12,7 +12,6 @@
 #include <dwt/utf8.hpp>
 
 #include <cassert>
-#include <iostream>
 
 namespace dwt {
 

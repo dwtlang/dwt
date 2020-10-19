@@ -14,7 +14,6 @@
 #include <dwt/string_obj.hpp>
 #include <dwt/syscall_obj.hpp>
 
-#include <iostream>
 #include <stdexcept>
 
 namespace dwt {

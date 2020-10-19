@@ -12,7 +12,6 @@
 #include <dwt/token_seq.hpp>
 
 #include <memory>
-#include <sstream>
 
 namespace dwt {
 

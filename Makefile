@@ -7,8 +7,8 @@ BUILD_YEAR      := $(shell date +"%Y")
 USE_FLAGS       ?= -DUSE_STRICT_IEEE_754=1 \
                    -DUSE_COMPUTED_GOTO=1 \
                    -DUSE_DOUBLE_PRECISION_FP=1 \
-                   -DUSE_BYTECODE_OPTIMISER=1 \
-                   -DUSE_THREADED_COMPILER=1
+                   -DUSE_BYTECODE_OPTIMISER=0 \
+                   -DUSE_THREADED_COMPILER=0
 
 VERBOSE         := @
 V               := $(VERBOSE)
@@ -45,7 +45,7 @@ FFI_TEST_SRC    := $(shell find $(FFI_TEST_DIR) -name "*.cpp")
 FFI_TEST_OBS    := $(FFI_TEST_SRC:%.cpp=%.o)
 COMPILER         = $(CXX)
 COMPILER        ?= g++
-COMPILER_FLAGS   = -pipe -pthread -Wall -Wno-unused-parameter \
+COMPILER_FLAGS   = -pipe -Wall -Wno-unused-parameter \
                    -fno-rtti -march=native \
                    -D_FILE_OFFSET_BITS=64 -fPIC \
                    $(CXXFLAGS) $(USE_FLAGS) \
@@ -54,6 +54,11 @@ COMPILER_FLAGS   = -pipe -pthread -Wall -Wno-unused-parameter \
                    -DPATCH_VER=$(PATCH_VER) \
                    -DBUILD_TAG=\"$(BUILD_TAG)\" \
                    -DBUILD_YEAR=\"$(BUILD_YEAR)\"
+
+ifneq "$(findstring USE_THREADED_COMPILER=1,$(USE_FLAGS))" ""
+EXT_LIBS += -lpthread
+COMPILER_FLAGS += -pthread
+endif
 
 ifneq "$(findstring USE_COMPUTED_GOTO=1,$(USE_FLAGS))" ""
 # Only use gnu++17 for computed goto support
@@ -78,11 +83,12 @@ profile: COMPILER_FLAGS += -fprofile-generate -O2 -flto -DNDEBUG=1
 pgo: COMPILER_FLAGS += -fprofile-use
 pgo: MAKEFLAGS += --always-make
 
-.PHONY: optimised
-optimised: all
-
+# default target
 .PHONY: small
 small: all
+
+.PHONY: optimised
+optimised: all
 
 .PHONY: debug
 debug: all
@@ -146,19 +152,19 @@ $(DWT_AR): $(LIB_OBS)
 	@echo "   LN      $(LIB_DIR)/$(AR_BASENAME) ~> $(AR_LNK)"
 	$(V)ln -sf $(PWD)/$(AR_LNK) $(PWD)/$(LIB_DIR)/$(AR_BASENAME)
 
-$(DWT_CLI): $(DWT_LIB) $(CLI_OBS)
+$(DWT_CLI): $(DWT_AR) $(DWT_LIB) $(CLI_OBS)
 	@mkdir -p $(BIN_DIR)
 	@echo "   LD      $(DWT_CLI)"
-	$(V)$(COMPILER) $(CLI_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt -lpthread -o $@
+	$(V)$(COMPILER) $(CLI_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -static-libstdc++ -static-libgcc -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) $(DWT_AR) $(EXT_LIBS) -o $@
 
 $(FUZZ_BIN): $(DWT_LIB) $(FUZZ_OBS)
 	@mkdir -p $(FUZZ_DIR)
 	@echo "   LD      $(FUZZ_BIN)"
-	$(V)$(COMPILER) $(FUZZ_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt -lpthread -o $@
+	$(V)$(COMPILER) $(FUZZ_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(FFI_TEST_BIN): $(DWT_LIB) $(FFI_TEST_OBS)
 	@mkdir -p $(BIN_DIR)
 	@echo "   LD      $(FFI_TEST_BIN)"
-	$(V)$(COMPILER) $(FFI_TEST_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt -lpthread -o $@
+	$(V)$(COMPILER) $(FFI_TEST_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 -include $(ALL_DEPS)

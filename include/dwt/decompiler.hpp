@@ -74,8 +74,6 @@ private:
 
   void emit(std::string, double operand);
 
-  void emit_upvar(uint32_t idx, uint32_t loc);
-
   void op_loop();
   void op_bra();
   void op_brz();

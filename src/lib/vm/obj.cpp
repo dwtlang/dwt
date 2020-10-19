@@ -11,8 +11,6 @@
 
 #include <cstddef>
 #include <cstring>
-#include <iomanip>
-#include <sstream>
 #include <stdexcept>
 
 namespace dwt {
@@ -192,17 +190,21 @@ void obj::op_keyset(var k, var v) {
 }
 
 std::string decode(obj *obj) {
-  std::stringstream ss;
+  char addrbuf[(sizeof(uint64_t) * 2) + 3];
+  std::string s;
 
   if (obj) {
-    ss << decode(obj->type()) << " @ ";
+    s += decode(obj->type());
+    s += " @ ";
   } else {
-    ss << "nil @ ";
+    s += "nil @ ";
   }
 
-  ss << std::hex << obj;
+  sprintf(addrbuf, "0x%p", obj);
 
-  return ss.str();
+  s += addrbuf;
+
+  return s;
 }
 
 } // namespace dwt

@@ -79,8 +79,6 @@
 #include <dwt/pho/zero_branching.hpp>
 #endif
 
-#include <sstream>
-
 #define TBD 0
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 

@@ -24,10 +24,8 @@
 #include <dwt/upvar_obj.hpp>
 #include <dwt/var.hpp>
 
-#include <atomic>
-#include <future>
 #include <list>
-#include <sstream>
+#include <random>
 #include <vector>
 
 namespace dwt {
@@ -85,7 +83,6 @@ private:
   stack<call_frame> call_stack;
   stack<var> exec_stack;
   std::list<upvar_obj *> open_upvars;
-  // function_obj *_fun_obj;
 };
 
 } // namespace dwt

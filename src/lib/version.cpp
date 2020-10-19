@@ -9,7 +9,6 @@
 #include <dwt/version.hpp>
 
 #include <cstring>
-#include <sstream>
 
 namespace dwt {
 
@@ -30,14 +29,20 @@ const char *version::tag() {
 }
 
 std::string version::to_string() {
-  std::stringstream ss;
-  ss << MAJOR_VER << "." << MINOR_VER << "." << PATCH_VER;
+  std::string s;
+
+  s += std::to_string(MAJOR_VER);
+  s += ".";
+  s += std::to_string(MINOR_VER);
+  s += ".";
+  s += std::to_string(PATCH_VER);
 
   if (strlen(tag()) > 0) {
-    ss << "-" << tag();
+    s += "-";
+    s += tag();
   }
 
-  return ss.str();
+  return s;
 }
 
 } // namespace dwt

@@ -9,7 +9,6 @@
 #ifndef GUARD_DWT_FEEDBACK_HPP
 #define GUARD_DWT_FEEDBACK_HPP
 
-#include <sstream>
 #include <string>
 
 #ifndef JENKINS

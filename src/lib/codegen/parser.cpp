@@ -16,8 +16,6 @@
 #include <dwt/reporting.hpp>
 #include <dwt/scope.hpp>
 
-#include <sstream>
-
 namespace dwt {
 
 parser::parser(utf8_source &&utf8)
@@ -1407,13 +1405,13 @@ std::shared_ptr<ir::expr> parser::paren_expr() {
 std::shared_ptr<ir::scoped_name> parser::scoped_name() {
   auto name = std::make_shared<ir::scoped_name>();
   token_ref begintok;
-  std::stringstream ss;
+  std::string s;
 
   if (accept(KW_SELF)) {
     name->set_referenced_scope(self());
     name->is_abs(false);
     name->is_self(true);
-    ss << gettok().text();
+    s += gettok().text();
     begintok = gettok();
   } else {
     name->is_abs(accept(TOK_SCOPE));
@@ -1424,12 +1422,12 @@ std::shared_ptr<ir::scoped_name> parser::scoped_name() {
 
     do {
       if (prev(TOK_SCOPE)) {
-        ss << "::";
+        s += "::";
         skip_any(TOK_BREAK);
       }
 
       expect(TOK_IDENT);
-      ss << gettok().text();
+      s += gettok().text();
 
       if (begintok.type() == TOK_INV) {
         begintok = gettok();
@@ -1442,7 +1440,7 @@ std::shared_ptr<ir::scoped_name> parser::scoped_name() {
 
   name->set_token_range(range);
   name->set_scope(scope::current);
-  name->set_ident(ss.str());
+  name->set_ident(s);
 
   return name;
 }

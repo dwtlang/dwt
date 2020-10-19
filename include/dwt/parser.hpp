@@ -69,7 +69,6 @@
 #include <dwt/token_type.hpp>
 
 #include <cassert>
-#include <iostream>
 #include <memory>
 #include <stack>
 

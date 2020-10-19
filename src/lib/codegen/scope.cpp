@@ -11,8 +11,6 @@
 #include <dwt/reporting.hpp>
 #include <dwt/scope.hpp>
 
-#include <regex>
-
 namespace dwt {
 
 std::shared_ptr<scope> scope::global = std::make_shared<scope>();

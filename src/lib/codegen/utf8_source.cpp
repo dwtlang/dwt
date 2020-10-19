@@ -8,9 +8,6 @@
 
 #include <dwt/utf8_source.hpp>
 
-#include <fstream>
-#include <iostream>
-
 namespace dwt {
 
 utf8_source::utf8_source(std::string filename)
@@ -19,11 +16,9 @@ utf8_source::utf8_source(std::string filename)
   , _char_size(0)
   , _name(filename) {
 
-  auto ifs = std::make_shared<std::ifstream>();
-  ifs->open(filename, std::ifstream::in | std::ifstream::binary);
+  _bytes = fopen(filename.c_str(), "rb");
 
-  if (ifs->is_open()) {
-    _bytes = ifs;
+  if (_bytes) {
     _char_code = decode();
     _char_size = _bytes_read;
   }
@@ -32,6 +27,9 @@ utf8_source::utf8_source(std::string filename)
 }
 
 utf8_source::~utf8_source() {
+  if (_bytes) {
+    fclose(_bytes);
+  }
 }
 
 std::string utf8_source::name() const {
@@ -67,15 +65,16 @@ int utf8_source::peek() {
 }
 
 int utf8_source::get_byte() {
-  int b = _bytes->get();
+  uint8_t octet;
+  int val = -1;
 
-  if (b > 0) {
-    uint8_t octet = b & 0xff;
+  if (fread(&octet, 1, 1, _bytes) == 1) {
     _sha3.update(&octet, 1);
     ++_bytes_read;
+    val = octet;
   }
 
-  return b;
+  return val;
 }
 
 int utf8_source::decode() {

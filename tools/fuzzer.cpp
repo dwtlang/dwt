@@ -2,9 +2,6 @@
 #include <dwt/scanner.hpp>
 #include <dwt/utf8_source.hpp>
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
 #include <memory>
 #include <random>
 

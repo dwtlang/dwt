@@ -9,9 +9,6 @@
 #include <dwt/closure_obj.hpp>
 #include <dwt/interpreter.hpp>
 
-#include <iomanip>
-#include <sstream>
-
 namespace dwt {
 
 closure_obj::closure_obj(function_obj *fun_obj)

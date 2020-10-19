@@ -20,15 +20,13 @@
 
 #include <cstring>
 #include <ctime>
-#include <fstream>
-#include <iostream>
 #include <memory>
 
 using namespace dwt;
 
 var ping(size_t nr_args, var *args) {
   var n = *args;
-  std::cout << "ping\n";
+  printf("ping\n");
 
   if (VAR_IS_NUM(n)) {
     n = var_dec(n);

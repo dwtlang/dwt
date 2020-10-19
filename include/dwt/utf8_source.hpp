@@ -13,7 +13,7 @@
 #include <dwt/token_seq.hpp>
 #include <dwt/uncopyable.hpp>
 
-#include <istream>
+#include <cstdio>
 #include <memory>
 
 namespace dwt {
@@ -38,7 +38,7 @@ private:
   int decode();
 
   sha3<256> _sha3;
-  std::shared_ptr<std::istream> _bytes;
+  FILE *_bytes;
   size_t _bytes_read;
   int _char_code;
   int _char_size;

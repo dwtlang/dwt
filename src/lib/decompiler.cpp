@@ -16,8 +16,6 @@
 #include <cassert>
 #include <cstdarg>
 #include <cstdlib>
-#include <iomanip>
-#include <sstream>
 #include <stack>
 #include <string>
 
@@ -81,41 +79,37 @@ void decompiler::read(uint8_t &v) {
 
 void decompiler::emit(std::string op) {
   if (_pass == 2) {
-    std::stringstream ss;
+    char strbuf[256];
+    std::string s;
 
     if (op == "SKIP") {
-      ss << TERM_GREY;
+      s += TERM_GREY;
     }
 
-    ss << "\t" << std::setfill('0') << std::setw(4) << std::hex << (_ip - 1)
-       << "\t" << op << "\n";
+    snprintf(strbuf, 256, "\t%04x\t%s\n", (unsigned int) _ip - 1, op.c_str());
+    s += strbuf;
 
     if (op == "SKIP") {
-      ss << TERM_RESET;
+      s += TERM_RESET;
     }
 
-    err(ss);
+    err(s);
   }
 }
 
 void decompiler::emit(std::string op, std::string operand) {
   if (_pass == 2) {
-    std::stringstream ss;
+    char strbuf[256];
     size_t offset = op == "CALL" ? _ip - 2 : _ip - 3;
-    ss << "\t" << std::setfill('0') << std::setw(4) << std::hex << (offset)
-       << "\t" << op << "\t" << operand << "\n";
-    err(ss);
-  }
-}
 
-void decompiler::emit_upvar(uint32_t idx, uint32_t loc) {
-  if (_pass == 2) {
-    std::stringstream ss;
-    ss << "\t" << std::setfill('0') << std::setw(4) << std::hex << (_ip - 3)
-       << "\t~"
-       << "\t" << std::to_string(idx) << (loc ? " (local)\n" : " (upvar)\n");
+    snprintf(strbuf,
+             256,
+             "\t%04x\t%s\t%s\n",
+             (unsigned int) offset,
+             op.c_str(),
+             operand.c_str());
 
-    err(ss);
+    err(strbuf);
   }
 }
 
@@ -304,12 +298,15 @@ void decompiler::pass() {
   uint8_t op;
 
   if (_pass == 2) {
-    std::stringstream ss;
-    ss << TERM_BOLD << "<fun " << _fun_obj->name() << ">"
-       << (_fun_obj->optimised() ? " (optimised)" : " (unoptimised)")
-       << TERM_RESET << std::endl;
+    std::string s;
 
-    err(ss);
+    s += TERM_BOLD "<fun ";
+    s += _fun_obj->name();
+    s += ">";
+    s += (_fun_obj->optimised() ? " (optimised)" : " (unoptimised)");
+    s += TERM_RESET "\n";
+
+    err(s);
   }
 
   do {

@@ -10,56 +10,44 @@
 #include <dwt/feedback.hpp>
 
 #include <cassert>
-#include <iostream>
+#include <cstdio>
 
 namespace dwt {
 
-void out(std::stringstream &ss) {
-  std::cout << ss.str();
-}
-
 void out(std::string s) {
-  std::cout << s;
+  printf("%s", s.c_str());
 }
 
 void out(const char c) {
-  std::cout << c;
+  printf("%c", c);
 }
 
 void out(const char *s) {
-  std::cout << s;
-}
-
-void err(std::stringstream &ss) {
-  std::cerr << ss.str();
+  printf("%s", s);
 }
 
 void err(std::string s) {
-  std::cerr << s;
+  fprintf(stderr, "%s", s.c_str());
 }
 
 void err(const char c) {
-  std::cerr << c;
+  fprintf(stderr, "%c", c);
 }
 
 void err(const char *s) {
-  std::cerr << s;
-}
-
-void dbg(std::stringstream &ss) {
-  debug { std::cerr << ss.str(); }
+  fprintf(stderr, "%s", s);
 }
 
 void dbg(std::string s) {
-  debug { std::cerr << s; }
+  debug { fprintf(stderr, "%s", s.c_str()); }
 }
 
 void dbg(const char c) {
-  debug { std::cerr << c; }
+  debug { fprintf(stderr, "%c", c); }
 }
 
 void dbg(const char *s) {
-  debug { std::cerr << s; }
+  debug { fprintf(stderr, "%s", s); }
 }
 
 std::string format_decimal(size_t dec, size_t max) {

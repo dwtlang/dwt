@@ -22,15 +22,12 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iomanip>
-#include <ios>
 #include <map>
-#include <sstream>
 
 namespace dwt {
 
 interpreter::interpreter()
-  : exec_stack(4096) {
+  : exec_stack(64) {
 }
 
 interpreter::~interpreter() {

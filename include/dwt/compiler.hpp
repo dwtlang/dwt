@@ -15,7 +15,10 @@
 #include <dwt/opcode.hpp>
 #include <dwt/var.hpp>
 
+#if USE_THREADED_COMPILER
 #include <future>
+#endif
+
 #include <map>
 #include <mutex>
 #include <stack>
@@ -221,7 +224,9 @@ private:
   std::map<std::string, loop_info> _break_map;
   std::stack<loop_info> _continue_stack;
   std::stack<loop_info> _break_stack;
+#if USE_THREADED_COMPILER
   std::vector<std::shared_future<function_obj *>> _fun_objs;
+#endif
 };
 
 } // namespace dwt

@@ -9,8 +9,6 @@
 #include <dwt/instance_obj.hpp>
 #include <dwt/interpreter.hpp>
 
-#include <iomanip>
-
 namespace dwt {
 
 instance_obj::instance_obj(class_obj *klass)
