@@ -282,7 +282,7 @@ bool scanner::comment(std::string &lexeme) {
   if (ch == '/') {
     is_comment = true;
     lexeme += ch;
-    ch = next_char();
+    next_char();
     line_comment(lexeme);
   } else if (ch == '*') {
     is_comment = true;
