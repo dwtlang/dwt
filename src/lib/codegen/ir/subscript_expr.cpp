@@ -11,8 +11,7 @@
 
 namespace dwt {
 
-ir::subscript_expr::subscript_expr(std::shared_ptr<expr> e,
-                                   std::shared_ptr<expr> i) {
+ir::subscript_expr::subscript_expr(expr *e, expr *i) {
   splice(e);
   splice(i);
 }

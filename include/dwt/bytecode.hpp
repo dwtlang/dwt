@@ -13,8 +13,8 @@
 #include <dwt/token_ref.hpp>
 
 #include <cstdint>
-#include <map>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace dwt {
@@ -64,7 +64,7 @@ public:
 
 private:
   std::vector<uint8_t> _bytes;
-  std::map<size_t, token_ref> _tokens;
+  std::unordered_map<size_t, token_ref> _tokens;
 };
 
 } // namespace dwt

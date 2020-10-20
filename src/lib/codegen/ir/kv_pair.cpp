@@ -11,7 +11,7 @@
 
 namespace dwt {
 
-ir::kv_pair::kv_pair(std::shared_ptr<expr> k, std::shared_ptr<expr> v) {
+ir::kv_pair::kv_pair(expr *k, expr *v) {
   splice(k);
   splice(v);
 }

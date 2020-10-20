@@ -456,7 +456,7 @@ bytecode &compiler::current_bytecode() {
  * @param tree The AST.
  * @return The executable function object.
  */
-function_obj *compiler::compile(std::shared_ptr<ir::ast> tree) {
+function_obj *compiler::compile(std::unique_ptr<ir::ast> &&tree) {
   return (*this)(tree.get());
 }
 

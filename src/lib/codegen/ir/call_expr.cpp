@@ -12,8 +12,7 @@
 namespace dwt {
 namespace ir {
 
-call_expr::call_expr(std::shared_ptr<expr> callee,
-                     std::shared_ptr<arguments> args)
+call_expr::call_expr(expr *callee, arguments *args)
   : _callee(callee)
   , _args(args) {
   if (args) {

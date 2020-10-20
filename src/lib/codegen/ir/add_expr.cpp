@@ -12,9 +12,7 @@
 namespace dwt {
 namespace ir {
 
-add_expr::add_expr(std::shared_ptr<expr> lhs,
-                   std::shared_ptr<expr> rhs,
-                   token_ref tok)
+add_expr::add_expr(expr *lhs, expr *rhs, token_ref tok)
   : _tok(tok) {
   splice(lhs);
   splice(rhs);

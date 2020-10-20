@@ -26,27 +26,27 @@ public:
   virtual ~lambda_expr();
   virtual void accept(ir::visitor &visitor);
 
-  std::shared_ptr<ir::arguments> args() {
+  ir::arguments *args() {
     return _args;
   }
 
-  std::shared_ptr<ir::lambda_decl> impl() {
+  ir::lambda_decl *impl() {
     return _impl;
   }
 
-  void args(std::shared_ptr<ir::arguments> args) {
+  void args(ir::arguments *args) {
     splice(args);
     _args = args;
   }
 
-  void impl(std::shared_ptr<ir::lambda_decl> lambda) {
+  void impl(ir::lambda_decl *lambda) {
     splice(lambda);
     _impl = lambda;
   }
 
 private:
-  std::shared_ptr<ir::arguments> _args;
-  std::shared_ptr<ir::lambda_decl> _impl;
+  ir::arguments *_args = nullptr;
+  ir::lambda_decl *_impl = nullptr;
 };
 
 } // namespace ir

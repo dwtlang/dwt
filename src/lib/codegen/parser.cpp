@@ -119,10 +119,10 @@ void parser::stmt_end() {
  *
  * @return The AST.
  */
-std::shared_ptr<ir::script> parser::parse() {
+std::unique_ptr<ir::ast> parser::parse() {
   advance();
 
-  return script();
+  return std::unique_ptr<ir::ast>(script());
 }
 
 /**
@@ -130,8 +130,8 @@ std::shared_ptr<ir::script> parser::parse() {
  *
  * @return The script AST
  */
-std::shared_ptr<ir::script> parser::script() {
-  auto scr = std::make_shared<ir::script>();
+ir::script *parser::script() {
+  auto scr = new ir::script();
 
   push_self(scope::current);
 
@@ -149,7 +149,7 @@ std::shared_ptr<ir::script> parser::script() {
  *
  * @return The declaration AST.
  */
-std::shared_ptr<ir::declaration> parser::declaration() {
+ir::declaration *parser::declaration() {
   skip_any(TOK_BREAK);
 
   bool api = accept(KW_API);
@@ -179,11 +179,11 @@ std::shared_ptr<ir::declaration> parser::declaration() {
  *
  * @return The declaration AST.
  */
-std::shared_ptr<ir::object_decl> parser::object_decl() {
+ir::object_decl *parser::object_decl() {
   expect(KW_OBJ);
   skip_any(TOK_BREAK);
   expect(TOK_IDENT);
-  auto decl = std::make_shared<ir::object_decl>(gettok());
+  auto decl = new ir::object_decl(gettok());
   scope::open(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
   skip_any(TOK_BREAK);
 
@@ -213,8 +213,8 @@ std::shared_ptr<ir::object_decl> parser::object_decl() {
  *
  * @return The lambda expression AST.
  */
-std::shared_ptr<ir::lambda_expr> parser::lambda_expr() {
-  auto exp = std::make_shared<ir::lambda_expr>();
+ir::lambda_expr *parser::lambda_expr() {
+  auto exp = new ir::lambda_expr();
 
   expect_any(TOK_BSLASH, KW_LAMBDA);
   skip_any(TOK_BREAK);
@@ -224,7 +224,7 @@ std::shared_ptr<ir::lambda_expr> parser::lambda_expr() {
     exp->args(arguments());
     expect(TOK_RPAREN);
   } else {
-    auto args = std::make_shared<ir::arguments>();
+    auto args = new ir::arguments();
     exp->args(args);
   }
   skip_any(TOK_BREAK);
@@ -239,8 +239,8 @@ std::shared_ptr<ir::lambda_expr> parser::lambda_expr() {
  *
  * @return The lambda definition AST.
  */
-std::shared_ptr<ir::lambda> parser::lambda() {
-  auto lam = std::make_shared<ir::lambda>();
+ir::lambda *parser::lambda() {
+  auto lam = new ir::lambda();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   if (accept(TOK_OR)) {
@@ -254,7 +254,7 @@ std::shared_ptr<ir::lambda> parser::lambda() {
   expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
 
-  auto body = std::make_shared<ir::function_body>();
+  auto body = new ir::function_body();
 
   while (!accept(TOK_RCURLY)) {
     skip_any(TOK_BREAK);
@@ -273,11 +273,11 @@ std::shared_ptr<ir::lambda> parser::lambda() {
  *
  * @return The FFI declaration AST.
  */
-std::shared_ptr<ir::ffi_decl> parser::ffi_decl() {
+ir::ffi_decl *parser::ffi_decl() {
   expect(KW_FFI);
   expect(TOK_IDENT);
 
-  auto decl = std::make_shared<ir::ffi_decl>(gettok());
+  auto decl = new ir::ffi_decl(gettok());
   scope::add(gettok(), SCOPE_CREATE);
 
   skip_any(TOK_BREAK);
@@ -299,10 +299,10 @@ std::shared_ptr<ir::ffi_decl> parser::ffi_decl() {
  *
  * @return The module declaration AST.
  */
-std::shared_ptr<ir::module_decl> parser::module_decl() {
+ir::module_decl *parser::module_decl() {
   expect(KW_MOD);
   expect(TOK_IDENT);
-  auto module = std::make_shared<ir::module_decl>(gettok());
+  auto module = new ir::module_decl(gettok());
   scope::open(gettok(), SCOPE_APPEND | SCOPE_CREATE);
 
   skip_any(TOK_BREAK);
@@ -326,8 +326,8 @@ std::shared_ptr<ir::module_decl> parser::module_decl() {
  *
  * @return The lambda declaration AST.
  */
-std::shared_ptr<ir::lambda_decl> parser::lambda_decl() {
-  auto decl = std::make_shared<ir::lambda_decl>();
+ir::lambda_decl *parser::lambda_decl() {
+  auto decl = new ir::lambda_decl();
   scope::open(decl->name_tok(), SCOPE_CREATE);
 
   push_self(scope::current);
@@ -354,8 +354,8 @@ std::shared_ptr<ir::lambda_decl> parser::lambda_decl() {
  *
  * @return The map definition AST.
  */
-std::shared_ptr<ir::map_impl> parser::map_impl() {
-  auto impl = std::make_shared<ir::map_impl>();
+ir::map_impl *parser::map_impl() {
+  auto impl = new ir::map_impl();
   scope::open(impl->name_tok(), SCOPE_CREATE);
 
   push_self(scope::current);
@@ -383,8 +383,8 @@ std::shared_ptr<ir::map_impl> parser::map_impl() {
  *
  * @return The vector definition AST.
  */
-std::shared_ptr<ir::type3> parser::type3() {
-  auto impl = std::make_shared<ir::type3>();
+ir::type3 *parser::type3() {
+  auto impl = new ir::type3();
   scope::open(impl->name_tok(), SCOPE_CREATE);
 
   push_self(scope::current);
@@ -412,10 +412,10 @@ std::shared_ptr<ir::type3> parser::type3() {
  *
  * @return The function declaration AST.
  */
-std::shared_ptr<ir::declaration> parser::function_decl(bool api) {
+ir::declaration *parser::function_decl(bool api) {
   expect(KW_FUN);
   expect(TOK_IDENT);
-  auto decl = std::make_shared<ir::function_decl>(gettok());
+  auto decl = new ir::function_decl(gettok());
   decl->is_api(api);
   scope::open(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
   skip_any(TOK_BREAK);
@@ -446,8 +446,8 @@ std::shared_ptr<ir::declaration> parser::function_decl(bool api) {
  *
  * @return The function definition AST.
  */
-std::shared_ptr<ir::function> parser::function() {
-  auto fun = std::make_shared<ir::function>();
+ir::function *parser::function() {
+  auto fun = new ir::function();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(TOK_LPAREN);
@@ -472,8 +472,8 @@ std::shared_ptr<ir::function> parser::function() {
  *
  * @return The object definiton AST.
  */
-std::shared_ptr<ir::object> parser::object() {
-  auto obj = std::make_shared<ir::object>();
+ir::object *parser::object() {
+  auto obj = new ir::object();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(TOK_LPAREN);
@@ -504,8 +504,8 @@ std::shared_ptr<ir::object> parser::object() {
  *
  * @return The parameters AST.
  */
-std::shared_ptr<ir::parameters> parser::parameters() {
-  auto params = std::make_shared<ir::parameters>();
+ir::parameters *parser::parameters() {
+  auto params = new ir::parameters();
   do {
     if (prev(TOK_COMMA)) {
       skip_any(TOK_BREAK);
@@ -513,7 +513,7 @@ std::shared_ptr<ir::parameters> parser::parameters() {
     accept(KW_VAR);
     expect(TOK_IDENT);
     auto identifier = gettok();
-    auto param = std::make_shared<ir::parameter>(gettok());
+    auto param = new ir::parameter(gettok());
     params->splice(param);
     skip_any(TOK_BREAK);
     scope::current->add(identifier, SCOPE_EXCLUSIVE | SCOPE_CREATE);
@@ -529,8 +529,8 @@ std::shared_ptr<ir::parameters> parser::parameters() {
  *
  * @return The scoped block AST.
  */
-std::shared_ptr<ir::block> parser::block() {
-  auto blk = std::make_shared<ir::block>();
+ir::block *parser::block() {
+  auto blk = new ir::block();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(TOK_LCURLY);
@@ -553,8 +553,8 @@ std::shared_ptr<ir::block> parser::block() {
  *
  * @return The function body AST.
  */
-std::shared_ptr<ir::function_body> parser::function_body() {
-  auto body = std::make_shared<ir::function_body>();
+ir::function_body *parser::function_body() {
+  auto body = new ir::function_body();
 
   expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
@@ -574,8 +574,8 @@ std::shared_ptr<ir::function_body> parser::function_body() {
  *
  * @return The object body AST.
  */
-std::shared_ptr<ir::object_body> parser::object_body() {
-  auto body = std::make_shared<ir::object_body>();
+ir::object_body *parser::object_body() {
+  auto body = new ir::object_body();
 
   expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
@@ -615,11 +615,11 @@ std::shared_ptr<ir::object_body> parser::object_body() {
  *
  * @return The variable declaration AST.
  */
-std::shared_ptr<ir::var_decl> parser::var_decl() {
+ir::var_decl *parser::var_decl() {
   expect(KW_VAR);
   expect(TOK_IDENT);
 
-  auto decl = std::make_shared<ir::var_decl>(gettok());
+  auto decl = new ir::var_decl(gettok());
   scope::current->add(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
 
   if (accept(TOK_ASSIGN)) {
@@ -637,7 +637,7 @@ std::shared_ptr<ir::var_decl> parser::var_decl() {
  *
  * @return The statement.
  */
-std::shared_ptr<ir::stmt> parser::stmt() {
+ir::stmt *parser::stmt() {
   if (peek(KW_RET)) {
     return return_stmt();
   } else {
@@ -650,7 +650,7 @@ std::shared_ptr<ir::stmt> parser::stmt() {
  *
  * @return the statement AST.
  */
-std::shared_ptr<ir::stmt> parser::object_stmt() {
+ir::stmt *parser::object_stmt() {
   switch (peek()) {
   case KW_PRINT:
     return print_stmt();
@@ -689,8 +689,8 @@ std::shared_ptr<ir::stmt> parser::object_stmt() {
  *
  * @return The expression statement.
  */
-std::shared_ptr<ir::expr_stmt> parser::expr_stmt() {
-  auto stmt = std::make_shared<ir::expr_stmt>();
+ir::expr_stmt *parser::expr_stmt() {
+  auto stmt = new ir::expr_stmt();
   stmt->splice(expr());
 
   stmt_end();
@@ -703,15 +703,15 @@ std::shared_ptr<ir::expr_stmt> parser::expr_stmt() {
  *
  * @return The statement AST.
  */
-std::shared_ptr<ir::for_stmt> parser::for_stmt() {
-  auto forstmt = std::make_shared<ir::for_stmt>();
+ir::for_stmt *parser::for_stmt() {
+  auto forstmt = new ir::for_stmt();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(KW_FOR);
   skip_any(TOK_BREAK);
   expect(TOK_IDENT);
   skip_any(TOK_BREAK);
-  auto param = std::make_shared<ir::parameter>(gettok());
+  // auto param = new ir::parameter(gettok());
   expect(KW_IN);
   skip_any(TOK_BREAK);
   expr();
@@ -752,14 +752,14 @@ std::shared_ptr<ir::for_stmt> parser::for_stmt() {
  *
  * @return The statement AST.
  */
-std::shared_ptr<ir::use_stmt> parser::use_stmt() {
+ir::use_stmt *parser::use_stmt() {
   expect(KW_USE);
 
-  auto stmt = std::make_shared<ir::use_stmt>();
+  auto stmt = new ir::use_stmt();
 
   expect(TOK_STRING);
 
-  auto file = std::make_shared<ir::string_spec>(gettok());
+  auto file = new ir::string_spec(gettok());
 
   stmt->splice(file);
 
@@ -773,8 +773,8 @@ std::shared_ptr<ir::use_stmt> parser::use_stmt() {
  *
  * @return the statement AST.
  */
-std::shared_ptr<ir::if_stmt> parser::if_stmt() {
-  auto statement = std::make_shared<ir::if_stmt>();
+ir::if_stmt *parser::if_stmt() {
+  auto statement = new ir::if_stmt();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(KW_IF);
@@ -807,8 +807,8 @@ std::shared_ptr<ir::if_stmt> parser::if_stmt() {
  *
  * @return The statement AST.
  */
-std::shared_ptr<ir::print_stmt> parser::print_stmt() {
-  auto stmt = std::make_shared<ir::print_stmt>();
+ir::print_stmt *parser::print_stmt() {
+  auto stmt = new ir::print_stmt();
   expect(KW_PRINT);
   skip_any(TOK_BREAK);
   stmt->splice(expr());
@@ -822,8 +822,8 @@ std::shared_ptr<ir::print_stmt> parser::print_stmt() {
  *
  * @return The statement AST.
  */
-std::shared_ptr<ir::return_stmt> parser::return_stmt() {
-  auto stmt = std::make_shared<ir::return_stmt>();
+ir::return_stmt *parser::return_stmt() {
+  auto stmt = new ir::return_stmt();
   expect(KW_RET);
 
   if (!accept_any(TOK_SEMICOLON, TOK_BREAK)) {
@@ -841,16 +841,16 @@ std::shared_ptr<ir::return_stmt> parser::return_stmt() {
  *
  * @return The statement AST.
  */
-std::shared_ptr<ir::continue_stmt> parser::continue_stmt() {
-  std::shared_ptr<ir::continue_stmt> statement;
+ir::continue_stmt *parser::continue_stmt() {
+  ir::continue_stmt *statement;
 
   expect(KW_CONTINUE);
 
   if (accept(TOK_IDENT)) {
-    statement = std::make_shared<ir::continue_stmt>(gettok());
+    statement = new ir::continue_stmt(gettok());
     stmt_end();
   } else {
-    statement = std::make_shared<ir::continue_stmt>();
+    statement = new ir::continue_stmt();
     stmt_end();
   }
 
@@ -862,16 +862,16 @@ std::shared_ptr<ir::continue_stmt> parser::continue_stmt() {
  *
  * @return The statement AST.
  */
-std::shared_ptr<ir::break_stmt> parser::break_stmt() {
-  std::shared_ptr<ir::break_stmt> statement;
+ir::break_stmt *parser::break_stmt() {
+  ir::break_stmt *statement;
 
   expect(KW_BREAK);
 
   if (accept(TOK_IDENT)) {
-    statement = std::make_shared<ir::break_stmt>(gettok());
+    statement = new ir::break_stmt(gettok());
     stmt_end();
   } else {
-    statement = std::make_shared<ir::break_stmt>();
+    statement = new ir::break_stmt();
     stmt_end();
   }
 
@@ -883,7 +883,7 @@ std::shared_ptr<ir::break_stmt> parser::break_stmt() {
  *
  * @return The loop declaration AST.
  */
-std::shared_ptr<ir::loop_stmt> parser::loop_decl() {
+ir::loop_stmt *parser::loop_decl() {
   token_ref tag;
 
   expect(KW_LOOP);
@@ -893,7 +893,7 @@ std::shared_ptr<ir::loop_stmt> parser::loop_decl() {
     skip_any(TOK_BREAK);
   }
 
-  auto decl = std::make_shared<ir::loop_stmt>(tag);
+  auto decl = new ir::loop_stmt(tag);
   return decl;
 }
 
@@ -902,11 +902,11 @@ std::shared_ptr<ir::loop_stmt> parser::loop_decl() {
  *
  * @return The loop statement AST.
  */
-std::shared_ptr<ir::loop_stmt> parser::loop_stmt() {
+ir::loop_stmt *parser::loop_stmt() {
   ir::loop_type loop_type = ir::BASIC_LOOP;
-  std::shared_ptr<ir::loop_stmt> loop;
-  std::shared_ptr<ir::expr> cond;
-  std::shared_ptr<ir::stmt> body;
+  ir::loop_stmt *loop = nullptr;
+  ir::expr *cond = nullptr;
+  ir::stmt *body = nullptr;
 
   loop = loop_decl();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
@@ -958,8 +958,8 @@ std::shared_ptr<ir::loop_stmt> parser::loop_stmt() {
  *
  * @return The function arguments AST.
  */
-std::shared_ptr<ir::arguments> parser::arguments() {
-  auto args = std::make_shared<ir::arguments>();
+ir::arguments *parser::arguments() {
+  auto args = new ir::arguments();
   do {
     skip_any(TOK_BREAK);
     args->splice(expr());
@@ -975,7 +975,7 @@ std::shared_ptr<ir::arguments> parser::arguments() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::expr() {
+ir::expr *parser::expr() {
   return assign_expr();
 }
 
@@ -984,7 +984,7 @@ std::shared_ptr<ir::expr> parser::expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::assign_expr() {
+ir::expr *parser::assign_expr() {
   class setter : public ir::lazy_visitor {
   public:
     setter() = default;
@@ -1012,7 +1012,7 @@ std::shared_ptr<ir::expr> parser::assign_expr() {
     setter s;
     lhs->accept(s);
     skip_any(TOK_BREAK);
-    auto expr = std::make_shared<ir::assign_expr>();
+    auto expr = new ir::assign_expr();
     expr->splice(lhs);
     auto rhs = assign_expr();
     expr->splice(rhs);
@@ -1027,15 +1027,15 @@ std::shared_ptr<ir::expr> parser::assign_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::or_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::or_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::or_expr>(e, xor_expr(), t);
+      e = new ir::or_expr(e, xor_expr(), t);
     } else {
       e = xor_expr();
     }
@@ -1049,15 +1049,15 @@ std::shared_ptr<ir::expr> parser::or_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::xor_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::xor_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::xor_expr>(e, and_expr(), t);
+      e = new ir::xor_expr(e, and_expr(), t);
     } else {
       e = and_expr();
     }
@@ -1071,15 +1071,15 @@ std::shared_ptr<ir::expr> parser::xor_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::and_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::and_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::and_expr>(e, equality_expr(), t);
+      e = new ir::and_expr(e, equality_expr(), t);
     } else {
       e = equality_expr();
     }
@@ -1093,15 +1093,15 @@ std::shared_ptr<ir::expr> parser::and_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::equality_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::equality_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::equality_expr>(e, is_expr(), t);
+      e = new ir::equality_expr(e, is_expr(), t);
     } else {
       e = is_expr();
     }
@@ -1115,15 +1115,15 @@ std::shared_ptr<ir::expr> parser::equality_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::is_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::is_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::is_expr>(e, compare_expr(), t);
+      e = new ir::is_expr(e, compare_expr(), t);
     } else {
       e = compare_expr();
     }
@@ -1137,15 +1137,15 @@ std::shared_ptr<ir::expr> parser::is_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::compare_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::compare_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::compare_expr>(e, add_expr(), t);
+      e = new ir::compare_expr(e, add_expr(), t);
     } else {
       e = add_expr();
     }
@@ -1159,15 +1159,15 @@ std::shared_ptr<ir::expr> parser::compare_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::add_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::add_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::add_expr>(e, mult_expr(), t);
+      e = new ir::add_expr(e, mult_expr(), t);
     } else {
       e = mult_expr();
     }
@@ -1181,15 +1181,15 @@ std::shared_ptr<ir::expr> parser::add_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::mult_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::mult_expr() {
+  ir::expr *e = nullptr;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::mult_expr>(e, unary_expr(), t);
+      e = new ir::mult_expr(e, unary_expr(), t);
     } else {
       e = unary_expr();
     }
@@ -1203,11 +1203,11 @@ std::shared_ptr<ir::expr> parser::mult_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::unary_expr() {
+ir::expr *parser::unary_expr() {
   if (accept_any(TOK_BANG, TOK_MINUS, TOK_PLUS)) {
     auto t = gettok();
     skip_any(TOK_BREAK);
-    return std::make_shared<ir::unary_expr>(unary_expr(), t);
+    return new ir::unary_expr(unary_expr(), t);
   } else {
     return call_expr();
   }
@@ -1218,13 +1218,13 @@ std::shared_ptr<ir::expr> parser::unary_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::call_expr() {
-  std::shared_ptr<ir::expr> e = primary_expr();
+ir::expr *parser::call_expr() {
+  ir::expr *e = primary_expr();
   token_ref lparen;
 
   while (1) {
     if (accept(TOK_LPAREN)) {
-      std::shared_ptr<ir::arguments> args;
+      ir::arguments *args = nullptr;
       auto tok = gettok();
       skip_any(TOK_BREAK);
 
@@ -1233,17 +1233,17 @@ std::shared_ptr<ir::expr> parser::call_expr() {
         expect(TOK_RPAREN);
       }
 
-      e = std::make_shared<ir::call_expr>(e, args);
+      e = new ir::call_expr(e, args);
       e->set_name(tok);
     } else if (accept(TOK_LSQUARE)) {
       skip_any(TOK_BREAK);
-      e = std::make_shared<ir::subscript_expr>(e, expr());
+      e = new ir::subscript_expr(e, expr());
       skip_any(TOK_BREAK);
       expect(TOK_RSQUARE);
     } else if (accept(TOK_DOT)) {
       skip_any(TOK_BREAK);
       expect(TOK_IDENT);
-      e = std::make_shared<ir::member_expr>(e, gettok());
+      e = new ir::member_expr(e, gettok());
     } else {
       break;
     }
@@ -1257,18 +1257,18 @@ std::shared_ptr<ir::expr> parser::call_expr() {
  *
  * @return The key/value pair AST.
  */
-std::shared_ptr<ir::kv_pair> parser::kv_pair(size_t idx) {
-  std::shared_ptr<ir::kv_pair> pair;
+ir::kv_pair *parser::kv_pair(size_t idx) {
+  ir::kv_pair *pair;
 
   auto k_or_v = expr();
   skip_any(TOK_BREAK);
 
   if (accept(TOK_COLON)) {
     skip_any(TOK_BREAK);
-    pair = std::make_shared<ir::kv_pair>(k_or_v, expr());
+    pair = new ir::kv_pair(k_or_v, expr());
   } else {
-    auto k = std::make_shared<ir::numeric_expr>(idx);
-    pair = std::make_shared<ir::kv_pair>(k, k_or_v);
+    auto k = new ir::numeric_expr(idx);
+    pair = new ir::kv_pair(k, k_or_v);
   }
 
   return pair;
@@ -1279,8 +1279,8 @@ std::shared_ptr<ir::kv_pair> parser::kv_pair(size_t idx) {
  *
  * @return The vector type4 AST.
  */
-std::shared_ptr<ir::type4> parser::type4() {
-  return std::make_shared<ir::type4>(expr());
+ir::type4 *parser::type4() {
+  return new ir::type4(expr());
 }
 
 /**
@@ -1288,8 +1288,8 @@ std::shared_ptr<ir::type4> parser::type4() {
  *
  * @return the expression AST.
  */
-std::shared_ptr<ir::expr> parser::map_expr() {
-  auto map = std::make_shared<ir::map_expr>();
+ir::expr *parser::map_expr() {
+  auto map = new ir::map_expr();
 
   map->splice(map_impl());
 
@@ -1301,8 +1301,8 @@ std::shared_ptr<ir::expr> parser::map_expr() {
  *
  * @return the expression AST.
  */
-std::shared_ptr<ir::expr> parser::type2() {
-  auto vec = std::make_shared<ir::type2>();
+ir::expr *parser::type2() {
+  auto vec = new ir::type2();
 
   vec->splice(type3());
 
@@ -1314,9 +1314,9 @@ std::shared_ptr<ir::expr> parser::type2() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::nil_expr() {
+ir::expr *parser::nil_expr() {
   expect(KW_NIL);
-  return std::make_shared<ir::nil_expr>(gettok());
+  return new ir::nil_expr(gettok());
 }
 
 /**
@@ -1324,8 +1324,8 @@ std::shared_ptr<ir::expr> parser::nil_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::primary_expr() {
-  std::shared_ptr<ir::expr> e;
+ir::expr *parser::primary_expr() {
+  ir::expr *e;
 
   switch (peek()) {
   case KW_NIL:
@@ -1334,18 +1334,18 @@ std::shared_ptr<ir::expr> parser::primary_expr() {
   case KW_TRUE:
   case KW_FALSE:
     accept();
-    e = std::make_shared<ir::boolean>(gettok());
+    e = new ir::boolean(gettok());
     break;
   case TOK_DEC:
   case TOK_INT:
   case TOK_HEX:
   case TOK_OCT:
     accept();
-    e = std::make_shared<ir::numeric_expr>(gettok());
+    e = new ir::numeric_expr(gettok());
     break;
   case TOK_STRING:
     accept();
-    e = std::make_shared<ir::string_spec>(gettok());
+    e = new ir::string_spec(gettok());
     break;
   case TOK_LPAREN:
     e = paren_expr();
@@ -1373,9 +1373,9 @@ std::shared_ptr<ir::expr> parser::primary_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::super_expr() {
+ir::expr *parser::super_expr() {
   expect(TOK_COLON);
-  auto e = std::make_shared<ir::super_expr>(gettok());
+  auto e = new ir::super_expr(gettok());
   skip_any(TOK_BREAK);
   e->splice(expr());
 
@@ -1387,7 +1387,7 @@ std::shared_ptr<ir::expr> parser::super_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::expr> parser::paren_expr() {
+ir::expr *parser::paren_expr() {
   expect(TOK_LPAREN);
   skip_any(TOK_BREAK);
   auto e = expr();
@@ -1402,8 +1402,8 @@ std::shared_ptr<ir::expr> parser::paren_expr() {
  *
  * @return The expression AST.
  */
-std::shared_ptr<ir::scoped_name> parser::scoped_name() {
-  auto name = std::make_shared<ir::scoped_name>();
+ir::scoped_name *parser::scoped_name() {
+  auto name = new ir::scoped_name();
   token_ref begintok;
   std::string s;
 

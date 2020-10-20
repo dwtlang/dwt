@@ -19,7 +19,7 @@ namespace ir {
 
 class kv_pair : public declaration {
 public:
-  kv_pair(std::shared_ptr<expr> k, std::shared_ptr<expr> v);
+  kv_pair(expr *k, expr *v);
   virtual ~kv_pair();
   virtual void accept(ir::visitor &visitor);
 };

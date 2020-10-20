@@ -19,15 +19,15 @@ namespace ir {
 
 class call_expr : public expr {
 public:
-  call_expr(std::shared_ptr<expr>, std::shared_ptr<arguments>);
+  call_expr(expr *, arguments *);
   virtual ~call_expr();
   virtual void accept(ir::visitor &visitor);
 
-  std::shared_ptr<expr> callee() {
+  expr *callee() {
     return _callee;
   }
 
-  std::shared_ptr<arguments> args() {
+  arguments *args() {
     return _args;
   }
 
@@ -42,8 +42,8 @@ public:
   }
 
 private:
-  std::shared_ptr<expr> _callee;
-  std::shared_ptr<arguments> _args;
+  expr *_callee = nullptr;
+  arguments *_args = nullptr;
 };
 
 } // namespace ir

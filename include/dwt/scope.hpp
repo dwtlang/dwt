@@ -12,9 +12,9 @@
 #include <dwt/token_ref.hpp>
 
 #include <atomic>
-#include <map>
 #include <memory>
 #include <mutex>
+#include <unordered_map>
 #include <vector>
 
 namespace dwt {
@@ -60,7 +60,7 @@ private:
   static std::shared_ptr<scope>
     resolve(std::vector<std::string>, std::shared_ptr<scope> = scope::current);
 
-  typedef std::map<std::string, std::shared_ptr<scope>> subscopes;
+  typedef std::unordered_map<std::string, std::shared_ptr<scope>> subscopes;
   std::vector<std::shared_ptr<scope>> _anonymous_subscopes;
   subscopes _visible_subscopes;
   subscopes _token_types;

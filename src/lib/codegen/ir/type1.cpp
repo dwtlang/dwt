@@ -11,7 +11,7 @@
 
 namespace dwt {
 
-ir::type1::type1(std::shared_ptr<expr> e) {
+ir::type1::type1(expr *e) {
   splice(e);
   std::string name = "__~" + std::to_string(id());
   set_name(token_ref(name));

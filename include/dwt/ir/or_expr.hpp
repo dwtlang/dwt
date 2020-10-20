@@ -18,7 +18,7 @@ namespace ir {
 
 class or_expr : public expr {
 public:
-  or_expr(std::shared_ptr<expr>, std::shared_ptr<expr>, token_ref);
+  or_expr(expr *, expr *, token_ref);
   virtual ~or_expr();
   virtual void accept(ir::visitor &visitor);
 };

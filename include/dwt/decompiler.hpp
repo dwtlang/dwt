@@ -12,8 +12,8 @@
 #include <dwt/feedback.hpp>
 #include <dwt/function_obj.hpp>
 
-#include <map>
 #include <memory>
+#include <unordered_map>
 
 #ifndef JENKINS
 #define TERM_BOLD "\x1b[1m"
@@ -93,8 +93,8 @@ private:
   void op_popn();
   void op_tailcall();
 
-  std::map<uint32_t, std::string> _labels;
-  std::map<std::string, function_obj *> _calls;
+  std::unordered_map<uint32_t, std::string> _labels;
+  std::unordered_map<std::string, function_obj *> _calls;
 
   function_obj *_fun_obj;
   size_t _ip;

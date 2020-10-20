@@ -40,21 +40,21 @@ public:
     return _type;
   }
 
-  void cond(std::shared_ptr<expr> e) {
+  void cond(expr *e) {
     splice(e);
     _cond = e;
   }
 
-  void body(std::shared_ptr<stmt> s) {
+  void body(stmt *s) {
     splice(s);
     _body = s;
   }
 
-  std::shared_ptr<expr> cond() {
+  expr *cond() {
     return _cond;
   }
 
-  std::shared_ptr<stmt> body() {
+  stmt *body() {
     return _body;
   }
 
@@ -64,8 +64,8 @@ public:
 
 private:
   loop_type _type;
-  std::shared_ptr<expr> _cond;
-  std::shared_ptr<stmt> _body;
+  expr *_cond = nullptr;
+  stmt *_body = nullptr;
 };
 
 } // namespace ir

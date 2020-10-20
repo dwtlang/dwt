@@ -13,7 +13,7 @@ USE_FLAGS       ?= -DUSE_STRICT_IEEE_754=1 \
 VERBOSE         := @
 V               := $(VERBOSE)
 
-MAKEFLAGS       += --no-print-directory --keep-going
+MAKEFLAGS       += --no-print-directory #--keep-going
 LIB_DIR         := lib
 BIN_DIR         := bin
 INC_DIR         := include
@@ -84,11 +84,11 @@ pgo: COMPILER_FLAGS += -fprofile-use
 pgo: MAKEFLAGS += --always-make
 
 # default target
-.PHONY: small
-small: all
-
 .PHONY: optimised
 optimised: all
+
+.PHONY: small
+small: all
 
 .PHONY: debug
 debug: all
@@ -155,7 +155,7 @@ $(DWT_AR): $(LIB_OBS)
 $(DWT_CLI): $(DWT_AR) $(DWT_LIB) $(CLI_OBS)
 	@mkdir -p $(BIN_DIR)
 	@echo "   LD      $(DWT_CLI)"
-	$(V)$(COMPILER) $(CLI_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -static-libstdc++ -static-libgcc -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) $(DWT_AR) $(EXT_LIBS) -o $@
+	$(V)$(COMPILER) $(CLI_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(FUZZ_BIN): $(DWT_LIB) $(FUZZ_OBS)
 	@mkdir -p $(FUZZ_DIR)

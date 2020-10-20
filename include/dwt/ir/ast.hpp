@@ -44,10 +44,10 @@ public:
   virtual ~ast();
 
   virtual void accept(ir::visitor &visitor) = 0;
-  void splice(std::shared_ptr<ir::ast> ast);
+  void splice(ir::ast *ast);
   void set_name(token_ref tok);
   uint64_t id() const;
-  std::vector<std::shared_ptr<ast>> &children_of();
+  std::vector<std::unique_ptr<ast>> &children_of();
   size_t nr_children() const;
   ir::ast *child_at(size_t i);
   ir::ast *parent_of();
@@ -91,7 +91,7 @@ private:
   token_range _token_range;
   std::weak_ptr<dwt::scope> _scope;
   ir::ast *_parent;
-  std::vector<std::shared_ptr<ast>> _children;
+  std::vector<std::unique_ptr<ast>> _children;
   uint64_t _node_number;
 
   static std::atomic<uint64_t> node_number;

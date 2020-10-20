@@ -8,42 +8,44 @@
 
 #include <dwt/token_type.hpp>
 
-#include <map>
+#include <unordered_map>
 
 namespace dwt {
 
-std::map<std::string, token_type> keyword_map = { { "use", KW_USE },
-                                                  { "api", KW_API },
-                                                  { "is", KW_IS },
-                                                  { "mod", KW_MOD },
-                                                  { "fun", KW_FUN },
-                                                  { "ffi", KW_FFI },
-                                                  { "var", KW_VAR },
-                                                  { "true", KW_TRUE },
-                                                  { "false", KW_FALSE },
-                                                  { "nil", KW_NIL },
-                                                  { "obj", KW_OBJ },
-                                                  { "self", KW_SELF },
-                                                  { "for", KW_FOR },
-                                                  { "in", KW_IN },
-                                                  { "if", KW_IF },
-                                                  { "else", KW_ELSE },
-                                                  { "loop", KW_LOOP },
-                                                  { "while", KW_WHILE },
-                                                  { "print", KW_PRINT },
-                                                  { "until", KW_UNTIL },
-                                                  { "return", KW_RET },
-                                                  { "break", KW_BREAK },
-                                                  { "continue", KW_CONTINUE },
+std::unordered_map<std::string, token_type> keyword_map = {
+  { "use", KW_USE },
+  { "api", KW_API },
+  { "is", KW_IS },
+  { "mod", KW_MOD },
+  { "fun", KW_FUN },
+  { "ffi", KW_FFI },
+  { "var", KW_VAR },
+  { "true", KW_TRUE },
+  { "false", KW_FALSE },
+  { "nil", KW_NIL },
+  { "obj", KW_OBJ },
+  { "self", KW_SELF },
+  { "for", KW_FOR },
+  { "in", KW_IN },
+  { "if", KW_IF },
+  { "else", KW_ELSE },
+  { "loop", KW_LOOP },
+  { "while", KW_WHILE },
+  { "print", KW_PRINT },
+  { "until", KW_UNTIL },
+  { "return", KW_RET },
+  { "break", KW_BREAK },
+  { "continue", KW_CONTINUE },
 
-                                                  { u8"λ", KW_LAMBDA },
-                                                  { "as", KW_AS },
-                                                  { "enum", KW_ENUM },
-                                                  { "and", KW_AND },
-                                                  { "or", KW_OR },
-                                                  { "xor", KW_XOR } };
+  { u8"λ", KW_LAMBDA },
+  { "as", KW_AS },
+  { "enum", KW_ENUM },
+  { "and", KW_AND },
+  { "or", KW_OR },
+  { "xor", KW_XOR }
+};
 
-const std::map<token_type, std::string> token_type_map = {
+const std::unordered_map<token_type, std::string> token_type_map = {
 
   { TOK_EOF, "end-of-file" },
   { TOK_INV, "unexpected" },

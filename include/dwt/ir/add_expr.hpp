@@ -18,7 +18,7 @@ namespace ir {
 
 class add_expr : public expr {
 public:
-  add_expr(std::shared_ptr<expr>, std::shared_ptr<expr>, token_ref);
+  add_expr(expr *, expr *, token_ref);
   virtual ~add_expr();
   virtual void accept(ir::visitor &visitor);
   token_ref gettok();

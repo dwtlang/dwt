@@ -12,9 +12,7 @@
 namespace dwt {
 namespace ir {
 
-is_expr::is_expr(std::shared_ptr<expr> lhs,
-                 std::shared_ptr<expr> rhs,
-                 token_ref tok) {
+is_expr::is_expr(expr *lhs, expr *rhs, token_ref tok) {
   splice(lhs);
   splice(rhs);
   set_name(tok);

@@ -25,11 +25,11 @@ void ir::object::accept(ir::visitor &visitor) {
   visitor.visit(*this);
 }
 
-void ir::object::super(std::shared_ptr<expr> s) {
+void ir::object::super(expr *s) {
   _super = s;
 }
 
-std::shared_ptr<ir::expr> ir::object::super() const {
+ir::expr *ir::object::super() const {
   return _super;
 }
 

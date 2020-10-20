@@ -19,7 +19,7 @@ namespace ir {
 
 class type1 : public expr {
 public:
-  type1(std::shared_ptr<expr>);
+  type1(expr *);
   type1();
   virtual ~type1();
   virtual void accept(ir::visitor &visitor);

@@ -11,9 +11,7 @@
 
 namespace dwt {
 
-ir::or_expr::or_expr(std::shared_ptr<ir::expr> lhs,
-                     std::shared_ptr<ir::expr> rhs,
-                     token_ref tok) {
+ir::or_expr::or_expr(ir::expr *lhs, ir::expr *rhs, token_ref tok) {
   splice(lhs);
   splice(rhs);
   set_name(tok);

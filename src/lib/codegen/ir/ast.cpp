@@ -47,21 +47,21 @@ ast *ast::parent_of() {
   return _parent;
 }
 
-void ast::splice(std::shared_ptr<ast> obj) {
+void ast::splice(ast *obj) {
   obj->_parent = this;
-  _children.push_back(obj);
+  _children.emplace_back(std::unique_ptr<ast>(obj));
 }
 
 size_t ast::nr_children() const {
   return _children.size();
 }
 
-std::vector<std::shared_ptr<ast>> &ast::children_of() {
+std::vector<std::unique_ptr<ast>> &ast::children_of() {
   return _children;
 }
 
 ast *ast::child_at(size_t idx) {
-  std::shared_ptr<ast> &child = _children.at(idx);
+  std::unique_ptr<ast> &child = _children.at(idx);
 
   return child.get();
 }

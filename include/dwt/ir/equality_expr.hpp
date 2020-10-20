@@ -18,7 +18,7 @@ namespace ir {
 
 class equality_expr : public expr {
 public:
-  equality_expr(std::shared_ptr<expr>, std::shared_ptr<expr>, token_ref);
+  equality_expr(expr *, expr *, token_ref);
   virtual ~equality_expr();
   virtual void accept(ir::visitor &visitor);
 };

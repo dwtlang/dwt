@@ -23,7 +23,7 @@ public:
   printer();
   virtual ~printer();
 
-  void print(std::shared_ptr<ir::script>);
+  void print(ir::script *);
 
   virtual void visit(ir::numeric_expr &);
   virtual void visit(ir::stmt &);

@@ -19,7 +19,6 @@
 #include <future>
 #endif
 
-#include <map>
 #include <mutex>
 #include <stack>
 #include <string>
@@ -60,7 +59,7 @@ public:
   compiler(compiler &&);
   virtual ~compiler();
 
-  function_obj *compile(std::shared_ptr<ir::ast>);
+  function_obj *compile(std::unique_ptr<ir::ast> &&);
   function_obj *operator()(ir::ast *);
 
 #if USE_BYTECODE_OPTIMISER
@@ -138,7 +137,7 @@ private:
 
   void finalise(function_obj *);
 
-  void walk(std::shared_ptr<ir::ast> obj) {
+  void walk(std::unique_ptr<ir::ast> &obj) {
     walk(obj.get());
   }
 
@@ -152,7 +151,7 @@ private:
     obj.accept(*this);
   }
 
-  void walk(std::vector<std::shared_ptr<ir::ast>> &v) {
+  void walk(std::vector<std::unique_ptr<ir::ast>> &v) {
     for (auto &p : v) {
       walk(p);
     }
@@ -220,8 +219,8 @@ private:
 
   static std::atomic<unsigned int> concurrency;
 
-  std::map<std::string, loop_info> _continue_map;
-  std::map<std::string, loop_info> _break_map;
+  std::unordered_map<std::string, loop_info> _continue_map;
+  std::unordered_map<std::string, loop_info> _break_map;
   std::stack<loop_info> _continue_stack;
   std::stack<loop_info> _break_stack;
 #if USE_THREADED_COMPILER

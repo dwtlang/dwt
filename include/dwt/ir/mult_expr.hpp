@@ -18,7 +18,7 @@ namespace ir {
 
 class mult_expr : public expr {
 public:
-  mult_expr(std::shared_ptr<expr>, std::shared_ptr<expr>, token_ref);
+  mult_expr(expr *, expr *, token_ref);
   virtual ~mult_expr();
   virtual void accept(ir::visitor &visitor);
   token_ref gettok();

@@ -26,37 +26,37 @@ public:
 
   virtual void accept(ir::visitor &visitor);
 
-  void cond(std::shared_ptr<ir::expr> e) {
+  void cond(ir::expr *e) {
     splice(e);
     _cond = e;
   }
 
-  void if_body(std::shared_ptr<ir::stmt> s) {
+  void if_body(ir::stmt *s) {
     splice(s);
     _true = s;
   }
 
-  void else_body(std::shared_ptr<ir::stmt> s) {
+  void else_body(ir::stmt *s) {
     splice(s);
     _false = s;
   }
 
-  std::shared_ptr<ir::expr> cond() {
+  ir::expr *cond() {
     return _cond;
   }
 
-  std::shared_ptr<ir::stmt> if_body() {
+  ir::stmt *if_body() {
     return _true;
   }
 
-  std::shared_ptr<ir::stmt> else_body() {
+  ir::stmt *else_body() {
     return _false;
   }
 
 private:
-  std::shared_ptr<ir::expr> _cond;
-  std::shared_ptr<ir::stmt> _true;
-  std::shared_ptr<ir::stmt> _false;
+  ir::expr *_cond = nullptr;
+  ir::stmt *_true = nullptr;
+  ir::stmt *_false = nullptr;
 };
 
 } // namespace ir

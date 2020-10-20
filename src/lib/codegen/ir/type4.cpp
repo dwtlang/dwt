@@ -11,7 +11,7 @@
 
 namespace dwt {
 
-ir::type4::type4(std::shared_ptr<expr> v) {
+ir::type4::type4(expr *v) {
   splice(v);
 }
 

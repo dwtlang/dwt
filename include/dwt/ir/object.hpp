@@ -25,11 +25,11 @@ public:
   virtual ~object();
   virtual void accept(ir::visitor &visitor);
 
-  std::shared_ptr<expr> super() const;
-  void super(std::shared_ptr<expr>);
+  expr *super() const;
+  void super(expr *);
 
 private:
-  std::shared_ptr<expr> _super;
+  expr *_super = nullptr;
 };
 
 } // namespace ir

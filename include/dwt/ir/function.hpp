@@ -24,27 +24,27 @@ public:
   virtual ~function();
   virtual void accept(ir::visitor &visitor);
 
-  std::shared_ptr<ir::parameters> params() {
+  ir::parameters *params() {
     return _params;
   }
 
-  std::shared_ptr<ir::function_body> body() {
+  ir::function_body *body() {
     return _body;
   }
 
-  void params(std::shared_ptr<ir::parameters> params) {
+  void params(ir::parameters *params) {
     splice(params);
     _params = params;
   }
 
-  void body(std::shared_ptr<ir::function_body> block) {
+  void body(ir::function_body *block) {
     splice(block);
     _body = block;
   }
 
 private:
-  std::shared_ptr<ir::parameters> _params;
-  std::shared_ptr<ir::function_body> _body;
+  ir::parameters *_params = nullptr;
+  ir::function_body *_body = nullptr;
 };
 
 } // namespace ir

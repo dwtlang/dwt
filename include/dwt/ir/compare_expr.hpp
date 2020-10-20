@@ -18,7 +18,7 @@ namespace ir {
 
 class compare_expr : public expr {
 public:
-  compare_expr(std::shared_ptr<expr>, std::shared_ptr<expr>, token_ref);
+  compare_expr(expr *, expr *, token_ref);
   virtual ~compare_expr();
   virtual void accept(ir::visitor &visitor);
   token_ref gettok();
