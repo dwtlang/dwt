@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
       year_range += BUILD_YEAR;
     }
     err("Dwt " + version::to_string());
-    err(" Copyright (c) ");
+    err("\nCopyright (c) ");
     err(year_range + " Andrew Scott and Contributors\n");
     return ret = 1;
   }

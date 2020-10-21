@@ -42,6 +42,8 @@ std::string version::to_string() {
     s += tag();
   }
 
+  s += " (" BUILD_PROF ")";
+
   return s;
 }
 

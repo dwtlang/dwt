@@ -4,16 +4,16 @@ PATCH_VER       := 0
 BUILD_TAG       :=
 BUILD_YEAR      := $(shell date +"%Y")
 
-USE_FLAGS       ?= -DUSE_STRICT_IEEE_754=1 \
-                   -DUSE_COMPUTED_GOTO=1 \
-                   -DUSE_DOUBLE_PRECISION_FP=1 \
-                   -DUSE_BYTECODE_OPTIMISER=1 \
-                   -DUSE_THREADED_COMPILER=1
-
 VERBOSE         := @
 V               := $(VERBOSE)
 
 MAKEFLAGS       += --no-print-directory #--keep-going
+
+profile ?= compact
+include profiles/$(profile)/profile.mk
+
+BUILD_PROF := $(profile)
+
 LIB_DIR         := lib
 BIN_DIR         := bin
 INC_DIR         := include
@@ -53,7 +53,8 @@ COMPILER_FLAGS   = -pipe -Wall -Wno-unused-parameter \
                    -DMINOR_VER=$(MINOR_VER) \
                    -DPATCH_VER=$(PATCH_VER) \
                    -DBUILD_TAG=\"$(BUILD_TAG)\" \
-                   -DBUILD_YEAR=\"$(BUILD_YEAR)\"
+                   -DBUILD_YEAR=\"$(BUILD_YEAR)\" \
+                   -DBUILD_PROF=\"$(BUILD_PROF)\"
 
 ifneq "$(findstring USE_THREADED_COMPILER=1,$(USE_FLAGS))" ""
 EXT_LIBS += -lpthread
