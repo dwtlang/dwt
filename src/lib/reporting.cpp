@@ -42,8 +42,14 @@ std::string ui_msg(std::string fmt, int idx, std::string idstr) {
 
   remove_whitespace(idstr);
 
-  std::string tag("\\$" + std::to_string(idx));
+  std::string tag("$" + std::to_string(idx));
   std::string msg = fmt.substr(pos, end);
+  pos = 0;
+  while ((pos = msg.find(tag, pos)) != std::string::npos) {
+    msg.replace(pos, tag.length(), idstr);
+    pos += idstr.length();
+  }
+  s += msg;
   // s += std::regex_replace(msg, std::regex(tag), idstr);
   s += "\n";
 

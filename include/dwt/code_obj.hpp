@@ -9,20 +9,29 @@
 #ifndef GUARD_DWT_BYTECODE_HPP
 #define GUARD_DWT_BYTECODE_HPP
 
+#include <dwt/hash_map.hpp>
+#include <dwt/map_obj.hpp>
+#include <dwt/obj.hpp>
 #include <dwt/opcode.hpp>
 #include <dwt/token_ref.hpp>
 
 #include <cstdint>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 namespace dwt {
 
-class bytecode {
+class code_obj : public obj {
 public:
-  bytecode();
-  ~bytecode();
+  code_obj();
+  code_obj(const code_obj &);
+  ~code_obj();
+
+  virtual obj_type type() override;
+  virtual obj *clone() override;
+  virtual void mark_immutable() override;
+  virtual void blacken() override;
+  virtual std::string to_string() override;
 
   inline opcode *base() {
     return &_bytes[0];
@@ -64,7 +73,7 @@ public:
 
 private:
   std::vector<uint8_t> _bytes;
-  std::unordered_map<size_t, token_ref> _tokens;
+  map_obj *_token_map;
 };
 
 } // namespace dwt

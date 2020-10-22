@@ -12,20 +12,17 @@
 namespace dwt {
 
 enum obj_type {
-  OBJ_FUTURE,
   OBJ_STRING,
   OBJ_FUNCTION,
   OBJ_CLOSURE,
   OBJ_UPVALUE,
   OBJ_SYSCALL,
+  OBJ_CODE,
   OBJ_CLASS,
   OBJ_INSTANCE,
   OBJ_MAP,
-  OBJ_VECTOR,
   OBJ_MAPINI,
-  OBJ_VECINI,
-  OBJ_CONDVAR,
-  OBJ_SEMAPHORE
+  OBJ_BOX
 };
 
 const char *decode(obj_type);

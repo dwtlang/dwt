@@ -16,7 +16,7 @@ namespace pho {
 
 class tail_calls : public peephole {
 public:
-  tail_calls(bytecode &);
+  tail_calls(code_obj &);
   virtual ~tail_calls();
 
 private:
@@ -24,7 +24,7 @@ private:
 
   virtual void peep(uint8_t *op, size_t extent) override;
 
-  bytecode &_code;
+  code_obj &_code;
 };
 
 } // namespace pho

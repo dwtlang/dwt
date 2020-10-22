@@ -22,7 +22,7 @@ class call_frame {
 public:
   inline call_frame(function_obj *fn, size_t sp)
     : fn(fn)
-    , ip(fn->bytecode().entry())
+    , ip(fn->code().entry())
     , sp(sp)
     , closure(nullptr)
     , map(nullptr) {
@@ -30,7 +30,7 @@ public:
 
   inline call_frame(closure_obj *closure, size_t sp)
     : fn(closure->fun_obj())
-    , ip(fn->bytecode().entry())
+    , ip(fn->code().entry())
     , sp(sp)
     , closure(closure)
     , map(fn->type() == OBJ_CLASS
@@ -40,7 +40,7 @@ public:
 
   inline call_frame(class_obj *klass, size_t sp)
     : fn(klass)
-    , ip(fn->bytecode().entry())
+    , ip(fn->code().entry())
     , sp(sp)
     , closure(nullptr)
     , map(new instance_obj(klass)) {
@@ -48,7 +48,7 @@ public:
 
   inline call_frame(mapfn_obj *mapfn, size_t sp)
     : fn(mapfn)
-    , ip(fn->bytecode().entry())
+    , ip(fn->code().entry())
     , sp(sp)
     , closure(nullptr)
     , map(new map_obj) {

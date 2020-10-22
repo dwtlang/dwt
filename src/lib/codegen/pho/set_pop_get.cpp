@@ -13,7 +13,7 @@
 namespace dwt {
 namespace pho {
 
-set_pop_get::set_pop_get(bytecode &code)
+set_pop_get::set_pop_get(code_obj &code)
   : peephole({ { { OP_STORE, OP_POP, OP_GLOBAL }, 7 },
                { { OP_SET, OP_POP, OP_GET }, 7 } }) {
 

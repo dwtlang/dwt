@@ -12,6 +12,7 @@
 #include <dwt/constants.hpp>
 #include <dwt/debug.hpp>
 #include <dwt/decompiler.hpp>
+#include <dwt/ffi.hpp>
 #include <dwt/globals.hpp>
 #include <dwt/ir/add_expr.hpp>
 #include <dwt/ir/and_expr.hpp>
@@ -109,7 +110,7 @@ int count_nops(uint8_t *op, size_t extent) {
   return nops;
 }
 
-void patch_jumps(bytecode &code) {
+void patch_jumps(code_obj &code) {
   size_t off = 0;
   uint8_t *op = code.entry();
 
@@ -149,7 +150,7 @@ void patch_jumps(bytecode &code) {
   }
 }
 
-void remove_skips(bytecode &code) {
+void remove_skips(code_obj &code) {
   std::vector<uint8_t> new_code;
   uint8_t *op = code.entry();
   size_t off = 0;
@@ -205,8 +206,8 @@ compiler::compiler(compiler &&other)
   , _concurrent(other._concurrent)
   , _stack_pos(other._stack_pos)
   , _prev_op(other._prev_op)
-  , _continue_map(other._continue_map)
-  , _break_map(other._break_map)
+  , _continue_map()
+  , _break_map()
   , _continue_stack(other._continue_stack)
   , _break_stack(other._break_stack) {
 }
@@ -215,7 +216,7 @@ compiler::~compiler() {
 }
 
 /**
- * Add a const and emit a reference to it in the bytecode.
+ * Add a const and emit a reference to it in the code_obj.
  *
  * @param var The const value to add.
  */
@@ -227,7 +228,7 @@ void compiler::emit_const(var &v) {
 }
 
 /**
- * Add a const std::string and emit a reference to it in the bytecode.
+ * Add a const std::string and emit a reference to it in the code_obj.
  *
  * @param s The const string to add.
  */
@@ -237,7 +238,7 @@ void compiler::emit_const(std::string &s) {
 }
 
 /**
- * Add a const object and emit a reference to it in the bytecode.
+ * Add a const object and emit a reference to it in the code_obj.
  *
  * @param obj The object to add.
  */
@@ -250,7 +251,7 @@ void compiler::emit_const(obj *obj) {
 }
 
 /**
- * Add a const double and emit a reference to it in the bytecode.
+ * Add a const double and emit a reference to it in the code_obj.
  *
  * @param d The double to add.
  */
@@ -259,7 +260,7 @@ void compiler::emit_const(double d) {
    * optimiser which it will potentially need to perform
    * iterative constant folding.
    *
-   * All skip ops are eventually removed from the optimised bytecode.
+   * All skip ops are eventually removed from the optimised code_obj.
    */
   if (d == 0) {
 #if USE_BYTECODE_OPTIMISER
@@ -330,7 +331,7 @@ void compiler::emit_op(opcode opcode) {
  * @param tok The input token to map against this byte.
  */
 void compiler::emit_byte(uint8_t octet, token_ref tok) {
-  current_bytecode().emit(octet, tok);
+  current_code_obj().emit(octet, tok);
 }
 
 /**
@@ -339,7 +340,7 @@ void compiler::emit_byte(uint8_t octet, token_ref tok) {
  * @param octet The byte to emit.
  */
 void compiler::emit_byte(uint8_t octet) {
-  current_bytecode().emit(octet);
+  current_code_obj().emit(octet);
 }
 
 /**
@@ -361,10 +362,10 @@ void compiler::emit_operand(uint16_t operand) {
  */
 size_t compiler::mark_jump(opcode jmp, uint32_t pos) {
   emit_op(jmp);
-  size_t off = bytecode_pos();
+  size_t off = code_obj_pos();
 
   /* Jump position provided is absolute but is translated into a
-   * relative offset when committed to bytecode.
+   * relative offset when committed to code_obj.
    */
   if (pos > off) {
     emit_operand(pos - off);
@@ -382,7 +383,7 @@ size_t compiler::mark_jump(opcode jmp, uint32_t pos) {
  * @param pos The new absolute jump destination.
  */
 void compiler::patch_jump(size_t off, size_t pos) {
-  uint8_t *byte_pos = current_bytecode().addr_at(off);
+  uint8_t *byte_pos = current_code_obj().addr_at(off);
   uint16_t operand = 0;
 
   // Convert to relative jump offset.
@@ -398,26 +399,26 @@ void compiler::patch_jump(size_t off, size_t pos) {
 
 /**
  * Patch a jump instruction, given the offset of the jump opcode.
- * Use the current bytecode position as the jump destination.
+ * Use the current code_obj position as the jump destination.
  *
  * @param off The jump instruction offset.
  */
 void compiler::patch_jump(size_t off) {
-  patch_jump(off, bytecode_pos());
+  patch_jump(off, code_obj_pos());
 }
 
 /**
  * Patch the opcode at the given offset with the given opcode.
- * The input token mapping in the bytecode is also replaced.
+ * The input token mapping in the code_obj is also replaced.
  *
  * @param off The offset of the opcode to patch.
  * @param op The new opcode.
  * @param tok The input token to map against the new opcode.
  */
 void compiler::patch_op(size_t off, opcode op, token_ref tok) {
-  uint8_t *byte_pos = current_bytecode().addr_at(off);
+  uint8_t *byte_pos = current_code_obj().addr_at(off);
   *byte_pos = op;
-  current_bytecode().token_at(off, tok);
+  current_code_obj().token_at(off, tok);
 }
 
 /**
@@ -427,7 +428,7 @@ void compiler::patch_op(size_t off, opcode op, token_ref tok) {
  * @param op The new opcode.
  */
 void compiler::patch_op(size_t off, opcode op) {
-  uint8_t *byte_pos = current_bytecode().addr_at(off);
+  uint8_t *byte_pos = current_code_obj().addr_at(off);
   *byte_pos = op;
 }
 
@@ -438,16 +439,16 @@ void compiler::patch_op(size_t off, opcode op) {
  * @return The opcode at the given offset.
  */
 opcode compiler::op_at(size_t off) {
-  return current_bytecode().opcode_at(off);
+  return current_code_obj().opcode_at(off);
 }
 
 /**
- * Get a reference to the current bytecode chunk.
+ * Get a reference to the current code_obj chunk.
  *
- * @return The current bytecode chunk.
+ * @return The current code_obj chunk.
  */
-bytecode &compiler::current_bytecode() {
-  return _fun_obj->bytecode();
+code_obj &compiler::current_code_obj() {
+  return _fun_obj->code();
 }
 
 /**
@@ -461,7 +462,7 @@ function_obj *compiler::compile(std::unique_ptr<ir::ast> &&tree) {
 }
 
 #if USE_BYTECODE_OPTIMISER
-void compiler::optimise(bytecode &code) {
+void compiler::optimise(code_obj &code) {
   { pho::unreachable_code pass(code); }
   { pho::merge_pops pass(code); }
   { pho::tail_calls pass(code); }
@@ -524,7 +525,7 @@ function_obj *compiler::operator()(ir::ast *tree) {
   }
 
 #if USE_BYTECODE_COMPILER
-  optimise(_fun_obj->bytecode());
+  optimise(_fun_obj->code());
   _fun_obj->optimised(true);
 
   debug {
@@ -564,7 +565,7 @@ void compiler::subcompile(function_obj *fun_obj, ir::ast *node) {
 
 /**
  * Finalise the given function object after compilation. This potentially
- * involves patching the closure opcode and compacting the bytecode
+ * involves patching the closure opcode and compacting the code_obj
  * vector.
  *
  * @param fun_obj The function object to finalise.
@@ -574,7 +575,7 @@ void compiler::finalise(function_obj *fun_obj) {
     patch_closure(fun_obj);
   }
 
-  fun_obj->bytecode().compact();
+  fun_obj->code().compact();
 }
 
 #if USE_THREADED_COMPILER
@@ -739,9 +740,9 @@ void compiler::visit(ir::use_stmt &spec) {
  * @param loop The loop AST.
  */
 void compiler::loop_until(ir::loop_stmt &loop) {
-  auto instr_before_loop_body = bytecode_pos();
+  auto instr_before_loop_body = code_obj_pos();
   walk(loop.body());
-  auto instr_after_loop_body = bytecode_pos();
+  auto instr_after_loop_body = code_obj_pos();
 
   walk(loop.cond());
   auto instr_after_cond = mark_jump(OP_BNZ, TBD);
@@ -749,10 +750,13 @@ void compiler::loop_until(ir::loop_stmt &loop) {
   patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
-    auto itr = _continue_map.find(loop.name());
-    if (itr != _continue_map.end()) {
+    kv_pair *kvp = _continue_map.get(to_var(loop.name()));
 
-      for (auto pp : itr->second.patch_points()) {
+    if (kvp) {
+      auto info =
+        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+      for (auto pp : info->patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
         patch_op(pp - 1, OP_BRA);
         patch_jump(pp, instr_after_loop_body);
@@ -773,9 +777,9 @@ void compiler::loop_until(ir::loop_stmt &loop) {
  * @param loop The loop AST.
  */
 void compiler::loop_while(ir::loop_stmt &loop) {
-  auto instr_before_loop_body = bytecode_pos();
+  auto instr_before_loop_body = code_obj_pos();
   walk(loop.body());
-  auto instr_after_loop_body = bytecode_pos();
+  auto instr_after_loop_body = code_obj_pos();
 
   walk(loop.cond());
   auto instr_after_cond = mark_jump(OP_BRZ, TBD);
@@ -783,10 +787,13 @@ void compiler::loop_while(ir::loop_stmt &loop) {
   patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
-    auto itr = _continue_map.find(loop.name());
-    if (itr != _continue_map.end()) {
+    kv_pair *kvp = _continue_map.get(to_var(loop.name()));
 
-      for (auto pp : itr->second.patch_points()) {
+    if (kvp) {
+      auto info =
+        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+      for (auto pp : info->patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
         patch_op(pp - 1, OP_BRA);
         patch_jump(pp, instr_after_loop_body);
@@ -807,16 +814,18 @@ void compiler::loop_while(ir::loop_stmt &loop) {
  * @param loop The loop AST.
  */
 void compiler::basic_loop(ir::loop_stmt &loop) {
-  auto instr_before_loop_body = bytecode_pos();
+  auto instr_before_loop_body = code_obj_pos();
   walk(loop.body());
   mark_jump(OP_LOOP, instr_before_loop_body);
 
   if (loop.is_tagged()) {
-    auto itr = _continue_map.find(loop.name());
-    if (itr != _continue_map.end()) {
+    kv_pair *kvp = _continue_map.get(to_var(loop.name()));
 
-      for (auto pp : itr->second.patch_points()) {
-        // because continue is a jump forward, cannot use OP_LOOP
+    if (kvp) {
+      auto info =
+        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+      for (auto pp : info->patch_points()) {
         patch_jump(pp, instr_before_loop_body);
       }
     }
@@ -845,7 +854,7 @@ void compiler::visit(ir::lambda_decl &decl) {
     emit_op(OP_GLOBAL);
     emit_operand(find_global(name));
   } else {
-    fun_obj->set_patchpoint(bytecode_pos());
+    fun_obj->set_patchpoint(code_obj_pos());
     declare_variable(decl);
     emit_const(fun_obj);
   }
@@ -895,7 +904,7 @@ void compiler::visit(ir::call_expr &call) {
 
   emit_op(OP_CALL, call.name_tok());
   emit_byte(call.num_args());
-  current_bytecode().token_at(current_bytecode().size() - 1, call.name_tok());
+  current_code_obj().token_at(current_code_obj().size() - 1, call.name_tok());
 
   _stack_pos = stack_pos;
 }
@@ -931,7 +940,7 @@ void compiler::visit(ir::add_expr &expr) {
   switch (expr.gettok().type()) {
   case TOK_PLUS:
     if (_prev_op == OP_ONE) {
-      patch_op(bytecode_pos() - 1, OP_INC, expr.gettok());
+      patch_op(code_obj_pos() - 1, OP_INC, expr.gettok());
       pop();
     } else {
       emit_op(OP_ADD, expr.gettok());
@@ -939,7 +948,7 @@ void compiler::visit(ir::add_expr &expr) {
     break;
   case TOK_MINUS:
     if (_prev_op == OP_ONE) {
-      patch_op(bytecode_pos() - 1, OP_DEC, expr.gettok());
+      patch_op(code_obj_pos() - 1, OP_DEC, expr.gettok());
       pop();
     } else {
       emit_op(OP_SUB, expr.gettok());
@@ -1169,7 +1178,7 @@ void compiler::visit(ir::return_stmt &stmt) {
  * @param loop The loop AST.
  */
 void compiler::while_loop(ir::loop_stmt &loop) {
-  auto instr_before_loop = bytecode_pos();
+  auto instr_before_loop = code_obj_pos();
   walk(loop.cond());
   auto instr_after_cond = mark_jump(OP_BRZ, TBD);
   walk(loop.body());
@@ -1177,10 +1186,13 @@ void compiler::while_loop(ir::loop_stmt &loop) {
   patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
-    auto itr = _continue_map.find(loop.name());
-    if (itr != _continue_map.end()) {
+    kv_pair *kvp = _continue_map.get(to_var(loop.name()));
 
-      for (auto pp : itr->second.patch_points()) {
+    if (kvp) {
+      auto info =
+        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+      for (auto pp : info->patch_points()) {
         patch_jump(pp, instr_before_loop);
       }
     }
@@ -1201,7 +1213,7 @@ void compiler::while_loop(ir::loop_stmt &loop) {
  * @param loop The statement AST.
  */
 void compiler::until_loop(ir::loop_stmt &loop) {
-  auto instr_before_loop = bytecode_pos();
+  auto instr_before_loop = code_obj_pos();
   walk(loop.cond());
   auto instr_after_cond = mark_jump(OP_BNZ, TBD);
   walk(loop.body());
@@ -1209,10 +1221,13 @@ void compiler::until_loop(ir::loop_stmt &loop) {
   patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
-    auto itr = _continue_map.find(loop.name());
-    if (itr != _continue_map.end()) {
+    kv_pair *kvp = _continue_map.get(to_var(loop.name()));
 
-      for (auto pp : itr->second.patch_points()) {
+    if (kvp) {
+      auto info =
+        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+      for (auto pp : info->patch_points()) {
         patch_jump(pp, instr_before_loop);
       }
     }
@@ -1349,7 +1364,7 @@ void compiler::visit(ir::function_decl &decl) {
   if (decl.get_scope()->is_global()) {
     globals::table().set_r(find_global(name), OBJ_AS_VAR(fun_obj));
   } else {
-    fun_obj->set_patchpoint(bytecode_pos());
+    fun_obj->set_patchpoint(code_obj_pos());
     declare_variable(decl);
     emit_const(fun_obj);
   }
@@ -1399,7 +1414,7 @@ void compiler::visit(ir::object_decl &decl) {
   if (decl.get_scope()->is_global()) {
     globals::table().set_r(find_global(name), OBJ_AS_VAR(klass));
   } else {
-    klass->set_patchpoint(bytecode_pos());
+    klass->set_patchpoint(code_obj_pos());
     declare_variable(decl);
     emit_const(klass);
   }
@@ -1561,9 +1576,11 @@ void compiler::visit(ir::object &obj) {
  */
 void compiler::visit(ir::loop_stmt &loop) {
   if (loop.is_tagged()) {
-    auto entry = std::make_pair(loop.name(), loop_info(_stack_pos));
-    _continue_map.insert(entry);
-    _break_map.insert(entry);
+    kv_pair kvp(to_var(loop.name()),
+                to_var(std::make_unique<loop_info>(_stack_pos)));
+
+    _continue_map.add(kvp);
+    _break_map.add(kvp);
   }
 
   _continue_stack.push(loop_info(_stack_pos));
@@ -1590,12 +1607,14 @@ void compiler::visit(ir::loop_stmt &loop) {
   }
 
   if (loop.is_tagged()) {
-    auto itr = _break_map.find(loop.name());
-    if (itr != _break_map.end()) {
-      for (auto pp : itr->second.patch_points()) {
+    _break_map.for_all([this](auto kvp) {
+      auto info =
+        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+      for (auto pp : info->patch_points()) {
         patch_jump(pp);
       }
-    }
+    });
   }
 
   for (auto bp : _break_stack.top().patch_points()) {
@@ -1688,15 +1707,18 @@ void compiler::visit(ir::lambda &lambda) {
  * @param stmt The statement AST.
  */
 void compiler::visit(ir::break_stmt &stmt) {
-  auto itr = _break_map.find(stmt.name());
-  if (itr != _break_map.end()) {
-    auto nr_pops = _stack_pos - itr->second.base_pos();
+  kv_pair *kvp = _break_map.get(to_var(stmt.name()));
+
+  if (kvp) {
+    auto info = std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+    auto nr_pops = _stack_pos - info->base_pos();
 
     while (nr_pops--) {
       emit_op(OP_POP);
     }
 
-    itr->second.add_patch_point(mark_jump(OP_BRA, TBD));
+    info->add_patch_point(mark_jump(OP_BRA, TBD));
   } else {
     auto nr_pops = _stack_pos - _break_stack.top().base_pos();
 
@@ -1715,15 +1737,18 @@ void compiler::visit(ir::break_stmt &stmt) {
  * @param stmt The statement AST.
  */
 void compiler::visit(ir::continue_stmt &stmt) {
-  auto itr = _continue_map.find(stmt.name());
-  if (itr != _continue_map.end()) {
-    auto nr_pops = _stack_pos - itr->second.base_pos();
+  kv_pair *kvp = _continue_map.get(to_var(stmt.name()));
+
+  if (kvp) {
+    auto info = std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+
+    auto nr_pops = _stack_pos - info->base_pos();
 
     while (nr_pops--) {
       emit_op(OP_POP);
     }
 
-    itr->second.add_patch_point(mark_jump(OP_LOOP, TBD));
+    info->add_patch_point(mark_jump(OP_LOOP, TBD));
   } else {
     auto nr_pops = _stack_pos - _continue_stack.top().base_pos();
 
@@ -1746,7 +1771,7 @@ void compiler::visit(ir::map_expr &expr) {
 
   mapfn_obj *map_obj = new mapfn_obj(string_mgr::get().add_r(name));
 
-  map_obj->set_patchpoint(bytecode_pos());
+  map_obj->set_patchpoint(code_obj_pos());
   declare_variable(expr);
   emit_const(map_obj);
   subcompile(map_obj, expr.child_at(0));

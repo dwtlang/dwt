@@ -9,7 +9,7 @@
 #ifndef GUARD_DWT_FUNCTION_OBJ_HPP
 #define GUARD_DWT_FUNCTION_OBJ_HPP
 
-#include <dwt/bytecode.hpp>
+#include <dwt/code_obj.hpp>
 #include <dwt/function_type.hpp>
 #include <dwt/local_var.hpp>
 #include <dwt/obj.hpp>
@@ -34,8 +34,8 @@ public:
     return _arity;
   }
 
-  inline class bytecode &bytecode() {
-    return _bytecode;
+  inline code_obj &code() {
+    return *_code;
   }
 
   std::string name() {
@@ -99,7 +99,7 @@ private:
   size_t _arity;
   std::vector<local_var> _locals;
   std::vector<upvar> _upvars;
-  class bytecode _bytecode;
+  code_obj *_code;
 
 protected:
   string_obj *_short_name;

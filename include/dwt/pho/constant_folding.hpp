@@ -17,7 +17,7 @@ namespace pho {
 
 class constant_folding : public peephole {
 public:
-  constant_folding(bytecode &);
+  constant_folding(code_obj &);
   virtual ~constant_folding();
 
 private:

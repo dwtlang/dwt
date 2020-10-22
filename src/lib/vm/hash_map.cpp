@@ -17,6 +17,30 @@ hash_map::hash_map(size_t capacity)
   , _entries(0) {
 }
 
+hash_map::hash_map(const hash_map &other) {
+  for (size_t i = 0; i < other._capacity; ++i) {
+    auto &entry = other._buckets[i];
+
+    if (entry.key != nil) {
+      var key, value;
+
+      if (VAR_IS_OBJ(entry.key)) {
+        key = OBJ_AS_VAR(VAR_AS_OBJ(entry.key)->clone());
+      } else {
+        key = entry.key;
+      }
+
+      if (VAR_IS_OBJ(entry.value)) {
+        value = OBJ_AS_VAR(VAR_AS_OBJ(entry.value)->clone());
+      } else {
+        value = entry.value;
+      }
+
+      add(kv_pair(key, value));
+    }
+  }
+}
+
 hash_map::~hash_map() {
 }
 
@@ -74,7 +98,7 @@ bool hash_map::del(var key) {
   return deleted;
 }
 
-kv_pair *hash_map::get(var key) {
+kv_pair *hash_map::get(var key) const {
   hash_t hash = 0;
 
   if (VAR_IS_OBJ(key)) {

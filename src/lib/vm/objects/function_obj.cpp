@@ -6,6 +6,7 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
+#include <dwt/code_obj.hpp>
 #include <dwt/decompiler.hpp>
 #include <dwt/function_obj.hpp>
 #include <dwt/interpreter.hpp>
@@ -19,6 +20,7 @@ function_obj::function_obj(function_type type,
                            string_obj *name_str)
   : _type(type)
   , _arity(arity)
+  , _code(new code_obj)
   , _name(name_str) {
 
   _short_name =
@@ -30,7 +32,7 @@ function_obj::function_obj(const function_obj &other)
   , _arity(other._arity)
   , _locals(other._locals)
   , _upvars(other._upvars)
-  , _bytecode(other._bytecode)
+  , _code(other._code)
   , _name(static_cast<string_obj *>(other._name->clone()))
   , _patchpoint(other._patchpoint)
   , _optimised(other._optimised) {
@@ -76,6 +78,8 @@ void function_obj::call(interpreter &interpreter, int nr_args) {
 void function_obj::blacken() {
   _name->mark_as(MARK_GREY);
   _short_name->mark_as(MARK_GREY);
+  _code->mark_as(MARK_GREY);
+  _code->blacken();
 }
 
 std::string function_obj::to_string() {

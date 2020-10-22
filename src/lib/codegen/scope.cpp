@@ -7,6 +7,7 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/feedback.hpp>
+#include <dwt/ffi.hpp>
 #include <dwt/globals.hpp>
 #include <dwt/reporting.hpp>
 #include <dwt/scope.hpp>
@@ -107,21 +108,23 @@ std::shared_ptr<scope> scope::add(token_ref name_ref, int flags) {
   std::string name = name_ref.text();
 
   s = std::make_shared<scope>(scope::current, name_ref, flags);
-  auto p = std::make_pair(name, s);
+  var key = to_var(name);
+  var value = to_var(s);
+  kv_pair *kvp = scope::current->_identifiers.get(key);
 
-  if (!scope::current->_token_types.insert(p).second) {
+  if (kvp) {
     if (flags & SCOPE_EXCLUSIVE) {
-      auto prev_scope = scope::current->_token_types.find(name);
-      if (prev_scope != scope::current->_token_types.end()) {
-        oops(
-          "e@1 redefinition of '$1'"
-          "n@2 first defined here...",
-          name_ref,
-          prev_scope->second->_name_ref);
-      } else {
-        BUG();
-      }
+      auto prev_scope =
+        std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
+
+      oops(
+        "e@1 redefinition of '$1'"
+        "n@2 first defined here...",
+        name_ref,
+        prev_scope->_name_ref);
     }
+  } else {
+    scope::current->_identifiers.add(kv_pair(key, value));
   }
 
   return s;
@@ -151,24 +154,26 @@ std::shared_ptr<scope> scope::open(token_ref name_ref, int flags) {
       }
     } else if (flags & SCOPE_CREATE) {
       s = std::make_shared<scope>(scope::current, name_ref, flags);
-      auto p = std::make_pair(name, s);
+      var key = to_var(name);
+      var value = to_var(s);
+      kv_pair *kvp = scope::current->_identifiers.get(key);
 
-      if (!scope::current->_token_types.insert(p).second) {
+      if (kvp) {
         if (flags & SCOPE_EXCLUSIVE) {
-          auto prev_scope = scope::current->_token_types.find(name);
-          if (prev_scope != scope::current->_token_types.end()) {
-            oops(
-              "e@1 redefinition of '$1'"
-              "n@2 first defined here...",
-              name_ref,
-              prev_scope->second->_name_ref);
-          } else {
-            BUG();
-          }
+          auto prev_scope =
+            std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
+
+          oops(
+            "e@1 redefinition of '$1'"
+            "n@2 first defined here...",
+            name_ref,
+            prev_scope->_name_ref);
         }
+      } else {
+        scope::current->_identifiers.add(kv_pair(key, value));
       }
 
-      scope::current->_visible_subscopes.insert(p);
+      scope::current->_visible_subscopes.add(kv_pair(key, value));
     }
   }
 
@@ -192,22 +197,22 @@ std::shared_ptr<scope> scope::close() {
 }
 
 std::shared_ptr<scope> scope::find_scope(std::string name) const {
-  auto itr = _visible_subscopes.find(name);
+  kv_pair *kvp = _visible_subscopes.get(to_var(name));
   std::shared_ptr<scope> s;
 
-  if (itr != _visible_subscopes.end()) {
-    s = itr->second;
+  if (kvp) {
+    s = std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
   }
 
   return s;
 }
 
 std::shared_ptr<scope> scope::find_ident(std::string name) const {
-  auto itr = _token_types.find(name);
+  kv_pair *kvp = _identifiers.get(to_var(name));
   std::shared_ptr<scope> s;
 
-  if (itr != _token_types.end()) {
-    s = itr->second;
+  if (kvp) {
+    s = std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
   }
 
   return s;

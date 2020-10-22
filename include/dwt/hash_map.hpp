@@ -25,11 +25,26 @@ class hash_map {
 
 public:
   hash_map(size_t capacity = 16);
+  hash_map(const hash_map &);
   virtual ~hash_map();
 
   kv_pair *add(kv_pair);
   bool del(var key);
-  kv_pair *get(var key);
+  kv_pair *get(var key) const;
+
+  template <typename Fn> void for_all(Fn f) {
+    for (size_t i = 0; i < _capacity; ++i) {
+      auto entry = &_buckets[i];
+
+      if (!VAR_IS_NIL(entry->key)) {
+        f(entry);
+      }
+    }
+  }
+
+  size_t size() const {
+    return _entries;
+  }
 
 protected:
   // destructive assignment operator for internal use only

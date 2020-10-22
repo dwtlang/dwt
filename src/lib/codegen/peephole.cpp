@@ -31,7 +31,7 @@ peephole::peephole(std::vector<ph_pattern> patterns)
 peephole::~peephole() {
 }
 
-bool peephole::jumps_into_range(bytecode &code, size_t off, size_t extent) {
+bool peephole::jumps_into_range(code_obj &code, size_t off, size_t extent) {
   uint8_t *ops = code.entry();
   size_t pos = 0;
   uint16_t jmpoff;
@@ -75,7 +75,7 @@ bool peephole::jumps_into_range(bytecode &code, size_t off, size_t extent) {
   return false;
 }
 
-void peephole::operator()(bytecode &code) {
+void peephole::operator()(code_obj &code) {
   std::vector<uint8_t> &ops = code.byte_vec();
 
   for (size_t i = 0; i < _patterns.size(); ++i) {

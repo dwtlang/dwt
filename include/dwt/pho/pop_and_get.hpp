@@ -16,7 +16,7 @@ namespace pho {
 
 class pop_and_get : public peephole {
 public:
-  pop_and_get(bytecode &);
+  pop_and_get(code_obj &);
   virtual ~pop_and_get();
 
 private:

@@ -9,9 +9,9 @@
 #ifndef GUARD_DWT_INTERPRETER_HPP
 #define GUARD_DWT_INTERPRETER_HPP
 
-#include <dwt/bytecode.hpp>
 #include <dwt/call_frame.hpp>
 #include <dwt/closure_obj.hpp>
+#include <dwt/code_obj.hpp>
 #include <dwt/debug.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/function_obj.hpp>

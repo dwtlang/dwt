@@ -13,7 +13,6 @@
 #include <dwt/function_obj.hpp>
 
 #include <memory>
-#include <unordered_map>
 
 #ifndef JENKINS
 #define TERM_BOLD "\x1b[1m"
@@ -41,16 +40,17 @@ private:
   }
 
   uint8_t peek() const {
-    return _fun_obj->bytecode().base()[_ip];
+    return _fun_obj->code().base()[_ip];
   }
 
   uint8_t accept() {
     uint8_t op = peek();
     if (_pass == 2) {
-      auto it = _labels.find(_ip);
+      kv_pair *kvp = _labels.get(NUM_AS_VAR(_ip));
 
-      if (it != _labels.end()) {
-        err(TERM_BOLD + it->second + ":\n" + TERM_RESET);
+      if (kvp) {
+        auto label = static_cast<string_obj *>(VAR_AS_OBJ(kvp->value));
+        err(TERM_BOLD + label->text() + ":\n" + TERM_RESET);
       }
     }
     advance();
@@ -93,8 +93,7 @@ private:
   void op_popn();
   void op_tailcall();
 
-  std::unordered_map<uint32_t, std::string> _labels;
-  std::unordered_map<std::string, function_obj *> _calls;
+  hash_map _labels;
 
   function_obj *_fun_obj;
   size_t _ip;

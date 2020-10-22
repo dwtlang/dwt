@@ -25,7 +25,7 @@ static const int offsets[] = {
 
 } // namespace
 
-unreachable_code::unreachable_code(bytecode &code)
+unreachable_code::unreachable_code(code_obj &code)
   : peephole({ { { OP_RET }, 1 } })
   , _code(code) {
 

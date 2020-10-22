@@ -6,26 +6,32 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_CLASS_OBJ_HPP
-#define GUARD_DWT_CLASS_OBJ_HPP
+#ifndef GUARD_DWT_BOX_OBJ_HPP
+#define GUARD_DWT_BOX_OBJ_HPP
 
-#include <dwt/function_obj.hpp>
-#include <dwt/string_obj.hpp>
+#include <dwt/obj.hpp>
+#include <dwt/var.hpp>
+
+#include <memory>
 
 namespace dwt {
 
-class class_obj : public function_obj {
+class box_obj : public obj {
 public:
-  class_obj(size_t arity, string_obj *name);
-  class_obj(const class_obj &);
-  virtual ~class_obj();
+  box_obj(std::shared_ptr<void> boxed_obj);
+  box_obj(const box_obj &);
+  virtual ~box_obj();
 
-  virtual void call(interpreter &, int) override;
+  std::shared_ptr<void> contents();
+
   virtual obj_type type() override;
   virtual obj *clone() override;
   virtual void mark_immutable() override;
   virtual void blacken() override;
   virtual std::string to_string() override;
+
+private:
+  std::shared_ptr<void> _boxed_obj;
 };
 
 } // namespace dwt

@@ -6,10 +6,22 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
+#include <dwt/box_obj.hpp>
 #include <dwt/obj.hpp>
+#include <dwt/string_mgr.hpp>
 #include <dwt/var.hpp>
 
 namespace dwt {
+
+var to_var(std::shared_ptr<void> opaque_obj) {
+  auto box = new box_obj(opaque_obj);
+  return OBJ_AS_VAR(box);
+}
+
+var to_var(std::string cxx_str) {
+  auto str_obj = string_mgr::get().add_r(cxx_str);
+  return OBJ_AS_VAR(str_obj);
+}
 
 #undef RHS
 #define RHS true

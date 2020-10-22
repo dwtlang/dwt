@@ -11,7 +11,7 @@
 namespace dwt {
 namespace pho {
 
-zero_branching::zero_branching(bytecode &code)
+zero_branching::zero_branching(code_obj &code)
   : peephole({ { { OP_ZERO, OP_EQ, OP_BRZ }, 5 },
                { { OP_ZERO, OP_EQ, OP_BNZ }, 5 } }) {
 

@@ -37,6 +37,7 @@ void mapfn_obj::mark_immutable() {
 }
 
 void mapfn_obj::blacken() {
+  function_obj::blacken();
 }
 
 void mapfn_obj::call(interpreter &interpreter, int nr_args) {

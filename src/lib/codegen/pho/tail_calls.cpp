@@ -15,7 +15,7 @@
 namespace dwt {
 namespace pho {
 
-tail_calls::tail_calls(bytecode &code)
+tail_calls::tail_calls(code_obj &code)
   : peephole({ { { OP_CALL, OP_RET }, 3 } })
   , _code(code) {
 
@@ -71,7 +71,7 @@ void tail_calls::peep(uint8_t *op, size_t extent) {
   var v = globals::table().get(OPERAND(ip + 1));
   BUG_UNLESS(VAR_IS_OBJ(v));
   auto fun_obj = static_cast<function_obj *>(VAR_AS_OBJ(v));
-  if (&fun_obj->bytecode() == &_code) {
+  if (&fun_obj->code() == &_code) {
     op[0] = OP_TAILCALL;
   }
 }

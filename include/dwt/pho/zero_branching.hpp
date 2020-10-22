@@ -16,7 +16,7 @@ namespace pho {
 
 class zero_branching : public peephole {
 public:
-  zero_branching(bytecode &);
+  zero_branching(code_obj &);
   virtual ~zero_branching();
 
 private:

@@ -22,6 +22,12 @@ var ffi_find(std::string identifier);
 var ffi_call(std::string identifier, var *args, size_t nr_args);
 var ffi_call(var callable, var *args, size_t nr_args);
 
+inline var ffi_box(std::shared_ptr<void> opaque_obj) {
+  return to_var(opaque_obj);
+}
+
+std::shared_ptr<void> ffi_unbox(var box);
+
 } // namespace dwt
 
 #endif

@@ -49,6 +49,9 @@ class obj;
 
 std::string var_to_string(var v);
 
+var to_var(std::shared_ptr<void> opaque_obj);
+var to_var(std::string cxx_str);
+
 #if USE_DOUBLE_PRECISION_FP
 inline var num_as_var(double n) {
   static_assert(sizeof(uint64_t) == sizeof(double));

@@ -16,13 +16,13 @@ namespace pho {
 
 class merge_pops : public peephole {
 public:
-  merge_pops(bytecode &);
+  merge_pops(code_obj &);
   virtual ~merge_pops();
 
 private:
   virtual void peep(uint8_t *op, size_t extent) override;
 
-  bytecode &_code;
+  code_obj &_code;
 };
 
 } // namespace pho

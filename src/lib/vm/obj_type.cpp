@@ -11,10 +11,10 @@
 namespace dwt {
 
 const char *decode(obj_type obj_type) {
-  static const char *type_str[] = {
-    "future", "string",   "function", "closure", "upvar",   "syscall",
-    "class",  "instance", "map",      "vector",  "condvar", "semaphore"
-  };
+  static const char *type_str[] = { "string", "function", "closure",
+                                    "upvar",  "syscall",  "code",
+                                    "class",  "instance", "map",
+                                    "mapfn",  "box" };
 
   return type_str[obj_type];
 }

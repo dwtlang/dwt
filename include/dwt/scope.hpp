@@ -9,12 +9,12 @@
 #ifndef GUARD_DWT_SCOPE_HPP
 #define GUARD_DWT_SCOPE_HPP
 
+#include <dwt/hash_map.hpp>
 #include <dwt/token_ref.hpp>
 
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 #include <vector>
 
 namespace dwt {
@@ -60,10 +60,9 @@ private:
   static std::shared_ptr<scope>
     resolve(std::vector<std::string>, std::shared_ptr<scope> = scope::current);
 
-  typedef std::unordered_map<std::string, std::shared_ptr<scope>> subscopes;
   std::vector<std::shared_ptr<scope>> _anonymous_subscopes;
-  subscopes _visible_subscopes;
-  subscopes _token_types;
+  hash_map _visible_subscopes;
+  hash_map _identifiers;
   std::weak_ptr<scope> _parent_scope;
   token_ref _name_ref;
   int32_t _index;

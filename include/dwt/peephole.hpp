@@ -9,7 +9,7 @@
 #ifndef GUARD_DWT_PEEPHOLE_HPP
 #define GUARD_DWT_PEEPHOLE_HPP
 
-#include <dwt/bytecode.hpp>
+#include <dwt/code_obj.hpp>
 #include <dwt/opcode.hpp>
 
 namespace dwt {
@@ -25,8 +25,8 @@ public:
 
 protected:
   peephole(std::vector<ph_pattern> patterns);
-  void operator()(bytecode &code);
-  bool jumps_into_range(bytecode &code, size_t off, size_t extent);
+  void operator()(code_obj &code);
+  bool jumps_into_range(code_obj &code, size_t off, size_t extent);
 
 private:
   virtual void peep(uint8_t *op, size_t extent) = 0;

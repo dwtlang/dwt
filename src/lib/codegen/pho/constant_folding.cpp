@@ -16,7 +16,7 @@
 namespace dwt {
 namespace pho {
 
-constant_folding::constant_folding(bytecode &code)
+constant_folding::constant_folding(code_obj &code)
   : peephole({ { { OP_CONST }, 3 },
                { { OP_ZERO }, 1 },
                { { OP_ONE }, 1 },

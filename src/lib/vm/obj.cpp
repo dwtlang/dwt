@@ -200,7 +200,7 @@ std::string decode(obj *obj) {
     s += "nil @ ";
   }
 
-  sprintf(addrbuf, "0x%p", obj);
+  sprintf(addrbuf, "0x%p", static_cast<void*>(obj));
 
   s += addrbuf;
 

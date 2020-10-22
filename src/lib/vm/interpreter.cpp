@@ -205,9 +205,9 @@ void interpreter::dump_state(frame *frame, uint8_t *&op)
 #endif
 
 token_ref interpreter::get_op_token(function_obj *fun_obj, uint8_t *op_ptr) {
-  uintptr_t op_idx = op_ptr - fun_obj->bytecode().entry();
+  uintptr_t op_idx = op_ptr - fun_obj->code().entry();
 
-  return fun_obj->bytecode().token_at(op_idx);
+  return fun_obj->code().token_at(op_idx);
 }
 
 var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
@@ -364,7 +364,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         if (VAR_IS_OBJ(v0)) {
           if (VAR_AS_OBJ(v0) == call_stack.top_ref().fn) {
             exec_stack.squash(fp, o0);
-            op = call_stack.top_ref().fn->bytecode().entry();
+            op = call_stack.top_ref().fn->code().entry();
           } else {
             call_stack.top_ref().ip = op;
             VAR_AS_OBJ(v0)->call(*this, o0);

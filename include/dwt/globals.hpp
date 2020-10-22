@@ -14,7 +14,6 @@
 
 #include <cassert>
 #include <mutex>
-#include <unordered_map>
 #include <vector>
 
 namespace dwt {
@@ -34,8 +33,6 @@ public:
     int idx = vars.size();
     var v = nil;
     vars.push(v);
-    auto entry = std::make_pair(name, idx);
-    index_map.insert(entry);
     _names.push_back(name);
 
     return idx;
@@ -58,9 +55,12 @@ public:
   int index_of(std::string name) {
     std::scoped_lock hold(_mutex);
     int index = -1;
-    auto it = index_map.find(name);
-    if (it != index_map.end()) {
-      index = it->second;
+
+    for (size_t i = 0; i < _names.size(); ++i) {
+      if (_names[i] == name) {
+        index = i;
+        break;
+      }
     }
 
     return index;
@@ -87,7 +87,6 @@ private:
   std::mutex _mutex;
   stack<var> vars;
   std::vector<std::string> _names;
-  std::unordered_map<std::string, int> index_map;
 };
 
 } // namespace dwt

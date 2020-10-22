@@ -9,7 +9,7 @@ V               := $(VERBOSE)
 
 MAKEFLAGS       += --no-print-directory #--keep-going
 
-profile ?= compact
+profile ?= performance
 include profiles/$(profile)/profile.mk
 
 BUILD_PROF := $(profile)

@@ -37,11 +37,7 @@ void decompiler::mark_jmp(int32_t addr) {
   label += std::to_string(num);
   label += TERM_RESET;
 
-  if (addr < 0) {
-    _labels.insert({ _ip + (addr - 2), label });
-  } else {
-    _labels.insert({ _ip + (addr - 2), label });
-  }
+  _labels.add(kv_pair(NUM_AS_VAR(_ip + (addr - 2)), to_var(label)));
 }
 
 std::string decompiler::to_label(int32_t addr) {
@@ -53,9 +49,9 @@ std::string decompiler::to_label(int32_t addr) {
     addr = _ip + (addr - 2);
   }
 
-  auto it = _labels.find(addr);
-  if (it != _labels.end()) {
-    l = it->second;
+  kv_pair *kvp = _labels.get(NUM_AS_VAR(addr));
+  if (kvp) {
+    l = static_cast<string_obj *>(VAR_AS_OBJ(kvp->value))->text();
   } else {
     l = std::to_string(addr);
   }
@@ -64,7 +60,7 @@ std::string decompiler::to_label(int32_t addr) {
 }
 
 void decompiler::read(int32_t &v) {
-  uint8_t *ptr = _fun_obj->bytecode().addr_at(_ip);
+  uint8_t *ptr = _fun_obj->code().addr_at(_ip);
 
   v = *ptr++;
   v = v | (*ptr << 8);
@@ -72,7 +68,7 @@ void decompiler::read(int32_t &v) {
 }
 
 void decompiler::read(uint8_t &v) {
-  uint8_t *ptr = _fun_obj->bytecode().addr_at(_ip);
+  uint8_t *ptr = _fun_obj->code().addr_at(_ip);
   v = *ptr;
   _ip++;
 }
@@ -366,7 +362,7 @@ void decompiler::pass() {
       emit(decode(op));
       break;
     }
-  } while (_ip < _fun_obj->bytecode().size());
+  } while (_ip < _fun_obj->code().size());
 }
 
 } // namespace dwt

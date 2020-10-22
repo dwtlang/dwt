@@ -10,6 +10,7 @@
 #define GUARD_DWT_COMPILER_HPP
 
 #include <dwt/function_obj.hpp>
+#include <dwt/hash_map.hpp>
 #include <dwt/ir/visitor.hpp>
 #include <dwt/local_var.hpp>
 #include <dwt/opcode.hpp>
@@ -22,11 +23,10 @@
 #include <mutex>
 #include <stack>
 #include <string>
-#include <unordered_map>
 
 namespace dwt {
 
-class bytecode;
+class code_obj;
 class function_obj;
 
 class loop_info {
@@ -63,7 +63,7 @@ public:
   function_obj *operator()(ir::ast *);
 
 #if USE_BYTECODE_OPTIMISER
-  void optimise(bytecode &);
+  void optimise(code_obj &);
 #endif
 
   static std::atomic<unsigned int> peak_concurrency;
@@ -175,10 +175,10 @@ private:
   void patch_upvar(uint32_t);
   void patch_closure(function_obj *);
   opcode op_at(size_t off);
-  bytecode &current_bytecode();
+  code_obj &current_code_obj();
 
-  size_t bytecode_pos() {
-    return current_bytecode().size();
+  size_t code_obj_pos() {
+    return current_code_obj().size();
   }
 
   void push(int sp = 1) {
@@ -219,8 +219,8 @@ private:
 
   static std::atomic<unsigned int> concurrency;
 
-  std::unordered_map<std::string, loop_info> _continue_map;
-  std::unordered_map<std::string, loop_info> _break_map;
+  hash_map _continue_map;
+  hash_map _break_map;
   std::stack<loop_info> _continue_stack;
   std::stack<loop_info> _break_stack;
 #if USE_THREADED_COMPILER

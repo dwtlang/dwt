@@ -11,7 +11,7 @@
 namespace dwt {
 namespace pho {
 
-merge_pops::merge_pops(bytecode &code)
+merge_pops::merge_pops(code_obj &code)
   : peephole({ { { OP_POP }, 1 } })
   , _code(code) {
 
