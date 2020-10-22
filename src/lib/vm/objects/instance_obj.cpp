@@ -43,14 +43,6 @@ obj *instance_obj::clone() {
   return new instance_obj(*this);
 }
 
-void instance_obj::mark_immutable() {
-  _immutable = true;
-  if (_super) {
-    _super->mark_immutable();
-  }
-  _klass->mark_immutable();
-}
-
 void instance_obj::super(instance_obj *s) {
   _super = s;
 }

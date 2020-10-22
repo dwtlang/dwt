@@ -46,8 +46,6 @@ public:
 
   virtual obj *clone() = 0;
 
-  virtual void mark_immutable() = 0;
-
   virtual hash_t hash();
 
   uint64_t oid() const {
@@ -105,9 +103,6 @@ public:
   virtual void op_mbrset(var name, var v);
   virtual var op_keyget(var key);
   virtual void op_keyset(var key, var v);
-
-protected:
-  bool _immutable = false;
 
 private:
   uint64_t ob_oid;

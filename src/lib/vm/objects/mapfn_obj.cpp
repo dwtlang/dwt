@@ -32,10 +32,6 @@ obj *mapfn_obj::clone() {
   return new mapfn_obj(*this);
 }
 
-void mapfn_obj::mark_immutable() {
-  _immutable = true;
-}
-
 void mapfn_obj::blacken() {
   function_obj::blacken();
 }

@@ -34,10 +34,6 @@ obj *syscall_obj::clone() {
   return new syscall_obj(*this);
 }
 
-void syscall_obj::mark_immutable() {
-  _immutable = true;
-}
-
 void syscall_obj::blacken() {
   _name->mark_as(MARK_GREY);
 }

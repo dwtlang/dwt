@@ -32,10 +32,6 @@ obj *box_obj::clone() {
   return new box_obj(*this);
 }
 
-void box_obj::mark_immutable() {
-  _immutable = true;
-}
-
 void box_obj::blacken() {
 }
 

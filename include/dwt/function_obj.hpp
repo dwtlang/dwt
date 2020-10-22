@@ -28,7 +28,6 @@ public:
 
   virtual obj_type type() override;
   virtual obj *clone() override;
-  virtual void mark_immutable() override;
 
   size_t arity() {
     return _arity;

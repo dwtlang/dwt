@@ -22,7 +22,6 @@ public:
   virtual ~map_obj();
   virtual obj_type type() override;
   virtual obj *clone() override;
-  virtual void mark_immutable() override;
   virtual void blacken() override;
   virtual std::string to_string() override;
 

@@ -36,10 +36,6 @@ obj *closure_obj::clone() {
   return new closure_obj(*this);
 }
 
-void closure_obj::mark_immutable() {
-  _immutable = true;
-}
-
 std::string closure_obj::to_string() {
   return _fun_obj->to_string();
 }

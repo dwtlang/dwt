@@ -49,24 +49,6 @@ obj *map_obj::clone() {
   return new map_obj(*this);
 }
 
-void map_obj::mark_immutable() {
-  _immutable = true;
-
-  for (size_t i = 0; i < _map._capacity; ++i) {
-    auto &entry = _map._buckets[i];
-
-    if (entry.key != nil) {
-      if (VAR_IS_OBJ(entry.key)) {
-        VAR_AS_OBJ(entry.key)->mark_immutable();
-      }
-
-      if (VAR_IS_OBJ(entry.value)) {
-        VAR_AS_OBJ(entry.value)->mark_immutable();
-      }
-    }
-  }
-}
-
 std::string map_obj::to_string() {
   return "<map>";
 }

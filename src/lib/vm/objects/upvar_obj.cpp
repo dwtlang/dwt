@@ -37,14 +37,6 @@ obj *upvar_obj::clone() {
   return new upvar_obj(*this);
 }
 
-void upvar_obj::mark_immutable() {
-  _immutable = true;
-
-  if (VAR_IS_OBJ(_closed)) {
-    VAR_AS_OBJ(_closed)->mark_immutable();
-  }
-}
-
 void upvar_obj::blacken() {
   mark_as(MARK_GREY);
 

@@ -52,10 +52,6 @@ obj *function_obj::clone() {
   return new function_obj(*this);
 }
 
-void function_obj::mark_immutable() {
-  _immutable = true;
-}
-
 int function_obj::add_upvar(size_t slot, bool is_local) {
   int idx = _upvars.size();
 

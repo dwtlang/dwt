@@ -32,10 +32,6 @@ obj *class_obj::clone() {
   return new class_obj(*this);
 }
 
-void class_obj::mark_immutable() {
-  _immutable = true;
-}
-
 void class_obj::blacken() {
   function_obj::blacken();
 }

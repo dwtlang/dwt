@@ -24,7 +24,6 @@ public:
 
   virtual obj_type type() override;
   virtual obj *clone() override;
-  virtual void mark_immutable() override;
   virtual hash_t hash() override;
 
   virtual var op_add(var v, bool rhs = false) override;

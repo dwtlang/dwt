@@ -32,10 +32,6 @@ obj *string_obj::clone() {
   return new string_obj(*this);
 }
 
-void string_obj::mark_immutable() {
-  _immutable = true;
-}
-
 hash_t string_obj::hash() {
   return fnv1a(_text.c_str(), _text.size());
 }

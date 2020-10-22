@@ -31,9 +31,6 @@ obj *code_obj::clone() {
   return new code_obj(*this);
 }
 
-void code_obj::mark_immutable() {
-}
-
 void code_obj::blacken() {
   _token_map->mark_as(MARK_GREY);
   _token_map->blacken();
