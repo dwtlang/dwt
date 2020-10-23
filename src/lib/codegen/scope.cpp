@@ -115,7 +115,7 @@ std::shared_ptr<scope> scope::add(token_ref name_ref, int flags) {
   if (kvp) {
     if (flags & SCOPE_EXCLUSIVE) {
       auto prev_scope =
-        std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
 
       oops(
         "e@1 redefinition of '$1'"
@@ -161,7 +161,7 @@ std::shared_ptr<scope> scope::open(token_ref name_ref, int flags) {
       if (kvp) {
         if (flags & SCOPE_EXCLUSIVE) {
           auto prev_scope =
-            std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
+            std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
 
           oops(
             "e@1 redefinition of '$1'"
@@ -201,7 +201,7 @@ std::shared_ptr<scope> scope::find_scope(std::string name) const {
   std::shared_ptr<scope> s;
 
   if (kvp) {
-    s = std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
+    s = std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
   }
 
   return s;
@@ -212,7 +212,7 @@ std::shared_ptr<scope> scope::find_ident(std::string name) const {
   std::shared_ptr<scope> s;
 
   if (kvp) {
-    s = std::reinterpret_pointer_cast<scope>(ffi_unbox(kvp->value));
+    s = std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
   }
 
   return s;

@@ -13,7 +13,7 @@
 
 namespace dwt {
 
-syscall_obj::syscall_obj(syscall impl, string_obj *name)
+syscall_obj::syscall_obj(ffi::syscall impl, string_obj *name)
   : _impl(impl)
   , _name(name) {
 }

@@ -46,15 +46,13 @@ void code_obj::emit(uint8_t octet) {
 
 void code_obj::emit(uint8_t octet, token_ref t) {
   if (t.type() != TOK_INV) {
-    _token_map->op_keyset(NUM_AS_VAR(_bytes.size()),
-                          ffi_box(std::make_shared<token_ref>(t)));
+    _token_map->op_keyset(NUM_AS_VAR(_bytes.size()), ffi::any(t));
   }
   emit(octet);
 }
 
 void code_obj::token_at(size_t idx, token_ref t) {
-  _token_map->op_keyset(NUM_AS_VAR(idx),
-                        ffi_box(std::make_shared<token_ref>(t)));
+  _token_map->op_keyset(NUM_AS_VAR(idx), ffi::any(t));
 }
 
 token_ref code_obj::token_at(size_t idx) {
@@ -63,7 +61,7 @@ token_ref code_obj::token_at(size_t idx) {
   var value = _token_map->op_keyget(NUM_AS_VAR(idx));
 
   if (!VAR_IS_NIL(value)) {
-    t = *std::reinterpret_pointer_cast<token_ref>(ffi_unbox(value));
+    t = *std::reinterpret_pointer_cast<token_ref>(ffi::unbox(value));
   }
 
   return t;

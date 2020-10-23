@@ -18,8 +18,9 @@
 #include <stdexcept>
 
 namespace dwt {
+namespace ffi {
 
-var ffi_bind(std::string scope_str, syscall call) {
+var bind(std::string scope_str, syscall call) {
   var call_obj =
     OBJ_AS_VAR(new syscall_obj(call, string_mgr::get().add_r(scope_str)));
 
@@ -33,7 +34,7 @@ var ffi_bind(std::string scope_str, syscall call) {
   return call_obj;
 }
 
-var ffi_find(std::string identifier) {
+var find(std::string identifier) {
   int idx = globals::table().index_of(identifier);
   var val = nil;
 
@@ -44,11 +45,11 @@ var ffi_find(std::string identifier) {
   return val;
 }
 
-var ffi_call(std::string fn_identifier, var *args, size_t nr_args) {
-  return ffi_call(ffi_find(fn_identifier), args, nr_args);
+var call(std::string fn_identifier, var *args, size_t nr_args) {
+  return call(find(fn_identifier), args, nr_args);
 }
 
-var ffi_call(var fn, var *args, size_t nr_args) {
+var call(var fn, var *args, size_t nr_args) {
   interpreter interpreter;
 
   if (VAR_IS_OBJ(fn)) {
@@ -70,7 +71,7 @@ var ffi_call(var fn, var *args, size_t nr_args) {
   return interpreter.interpret(VAR_AS_OBJ(fn), args, nr_args);
 }
 
-std::shared_ptr<void> ffi_unbox(var box) {
+std::shared_ptr<void> unbox(var box) {
   std::shared_ptr<void> opaque_obj;
 
   if (VAR_IS_OBJ(box)) {
@@ -87,4 +88,5 @@ std::shared_ptr<void> ffi_unbox(var box) {
   return opaque_obj;
 }
 
+} // namespace ffi
 } // namespace dwt

@@ -24,11 +24,11 @@ class string_obj;
 
 class syscall_obj : public obj {
 public:
-  syscall_obj(syscall, string_obj *name);
+  syscall_obj(ffi::syscall, string_obj *name);
   syscall_obj(const syscall_obj &);
   virtual ~syscall_obj();
 
-  syscall &impl() {
+  ffi::syscall &impl() {
     return _impl;
   }
 
@@ -40,7 +40,7 @@ public:
   virtual std::string to_string() override;
 
 private:
-  syscall _impl;
+  ffi::syscall _impl;
   string_obj *_name;
 };
 

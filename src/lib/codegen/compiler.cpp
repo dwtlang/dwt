@@ -80,6 +80,8 @@
 #include <dwt/pho/zero_branching.hpp>
 #endif
 
+#include <memory>
+
 #define TBD 0
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
@@ -754,7 +756,7 @@ void compiler::loop_until(ir::loop_stmt &loop) {
 
     if (kvp) {
       auto info =
-        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
       for (auto pp : info->patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
@@ -791,7 +793,7 @@ void compiler::loop_while(ir::loop_stmt &loop) {
 
     if (kvp) {
       auto info =
-        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
       for (auto pp : info->patch_points()) {
         // because continue is a jump forward, cannot use OP_LOOP
@@ -823,7 +825,7 @@ void compiler::basic_loop(ir::loop_stmt &loop) {
 
     if (kvp) {
       auto info =
-        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
       for (auto pp : info->patch_points()) {
         patch_jump(pp, instr_before_loop_body);
@@ -1190,7 +1192,7 @@ void compiler::while_loop(ir::loop_stmt &loop) {
 
     if (kvp) {
       auto info =
-        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
       for (auto pp : info->patch_points()) {
         patch_jump(pp, instr_before_loop);
@@ -1225,7 +1227,7 @@ void compiler::until_loop(ir::loop_stmt &loop) {
 
     if (kvp) {
       auto info =
-        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
       for (auto pp : info->patch_points()) {
         patch_jump(pp, instr_before_loop);
@@ -1576,8 +1578,7 @@ void compiler::visit(ir::object &obj) {
  */
 void compiler::visit(ir::loop_stmt &loop) {
   if (loop.is_tagged()) {
-    kv_pair kvp(to_var(loop.name()),
-                to_var(std::make_unique<loop_info>(_stack_pos)));
+    kv_pair kvp(to_var(loop.name()), ffi::any(loop_info(_stack_pos)));
 
     _continue_map.add(kvp);
     _break_map.add(kvp);
@@ -1609,7 +1610,7 @@ void compiler::visit(ir::loop_stmt &loop) {
   if (loop.is_tagged()) {
     _break_map.for_all([this](auto kvp) {
       auto info =
-        std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+        std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
       for (auto pp : info->patch_points()) {
         patch_jump(pp);
@@ -1710,7 +1711,8 @@ void compiler::visit(ir::break_stmt &stmt) {
   kv_pair *kvp = _break_map.get(to_var(stmt.name()));
 
   if (kvp) {
-    auto info = std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+    auto info =
+      std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
     auto nr_pops = _stack_pos - info->base_pos();
 
@@ -1740,7 +1742,8 @@ void compiler::visit(ir::continue_stmt &stmt) {
   kv_pair *kvp = _continue_map.get(to_var(stmt.name()));
 
   if (kvp) {
-    auto info = std::reinterpret_pointer_cast<loop_info>(ffi_unbox(kvp->value));
+    auto info =
+      std::reinterpret_pointer_cast<loop_info>(ffi::unbox(kvp->value));
 
     auto nr_pops = _stack_pos - info->base_pos();
 

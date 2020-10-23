@@ -30,7 +30,7 @@ var ping(size_t nr_args, var *args) {
 
   if (VAR_IS_NUM(n)) {
     n = var_dec(n);
-    ffi_call("::pong", &n, 1);
+    ffi::call("::pong", &n, 1);
   }
 
   return n;
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   }
 
   try {
-    ffi_bind("::ping", ping);
+    ffi::bind("::ping", ping);
 
     utf8_source src(filename);
     parser p(std::move(src));

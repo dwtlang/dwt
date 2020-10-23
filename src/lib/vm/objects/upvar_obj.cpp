@@ -44,6 +44,7 @@ void upvar_obj::blacken() {
     obj *o = VAR_AS_OBJ(_closed);
     if (o) {
       o->mark_as(MARK_GREY);
+      o->blacken();
     }
   }
 }

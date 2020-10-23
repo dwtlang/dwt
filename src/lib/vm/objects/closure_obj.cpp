@@ -44,9 +44,11 @@ void closure_obj::blacken() {
   for (auto upv : _upvars) {
     if (upv) {
       upv->mark_as(MARK_GREY);
+      upv->blacken();
     }
   }
   _fun_obj->mark_as(MARK_GREY);
+  _fun_obj->blacken();
 }
 
 void closure_obj::call(interpreter &interpreter, int nr_args) {
