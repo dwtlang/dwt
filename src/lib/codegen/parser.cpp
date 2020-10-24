@@ -78,7 +78,9 @@ void parser::accept() {
  * @param tok The token to expect.
  */
 void parser::expect(token_type tok) {
+#ifndef NDEBUG
   dbg("expect " + symtext(tok) + "\n");
+#endif
 
   if (!accept(tok)) {
     debug {
@@ -90,7 +92,7 @@ void parser::expect(token_type tok) {
       dbg(l + "\n");
     }
 
-    oops("e@1 expected '" + symtext(tok) + "'", _this_token);
+    oops("e@1 unexpected symbol '$1'", _this_token);
   }
 }
 

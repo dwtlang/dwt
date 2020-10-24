@@ -97,7 +97,10 @@ typedef enum {
   KW_XOR
 } token_type;
 
+#ifndef NDEBUG
 std::string symtext(token_type s);
+#endif
+
 bool is_keyword(std::string s, token_type &sym);
 
 } // namespace dwt

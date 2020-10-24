@@ -8,44 +8,14 @@
 
 #include <dwt/token_type.hpp>
 
-#include <unordered_map>
+#include <vector>
 
 namespace dwt {
 
-std::unordered_map<std::string, token_type> keyword_map = {
-  { "use", KW_USE },
-  { "api", KW_API },
-  { "is", KW_IS },
-  { "mod", KW_MOD },
-  { "fun", KW_FUN },
-  { "ffi", KW_FFI },
-  { "var", KW_VAR },
-  { "true", KW_TRUE },
-  { "false", KW_FALSE },
-  { "nil", KW_NIL },
-  { "obj", KW_OBJ },
-  { "self", KW_SELF },
-  { "for", KW_FOR },
-  { "in", KW_IN },
-  { "if", KW_IF },
-  { "else", KW_ELSE },
-  { "loop", KW_LOOP },
-  { "while", KW_WHILE },
-  { "print", KW_PRINT },
-  { "until", KW_UNTIL },
-  { "return", KW_RET },
-  { "break", KW_BREAK },
-  { "continue", KW_CONTINUE },
+#ifndef NDEBUG
+namespace {
 
-  { u8"λ", KW_LAMBDA },
-  { "as", KW_AS },
-  { "enum", KW_ENUM },
-  { "and", KW_AND },
-  { "or", KW_OR },
-  { "xor", KW_XOR }
-};
-
-const std::unordered_map<token_type, std::string> token_type_map = {
+const std::vector<std::pair<token_type, std::string>> token_info = {
 
   { TOK_EOF, "end-of-file" },
   { TOK_INV, "unexpected" },
@@ -128,28 +98,67 @@ const std::unordered_map<token_type, std::string> token_type_map = {
   { KW_XOR, "xor" }
 };
 
+} // namespace
+
 std::string symtext(token_type sym) {
-  std::string text;
-
-  auto it = token_type_map.find(sym);
-
-  if (it != token_type_map.end()) {
-    text = it->second;
+  std::string s;
+  for (auto &i : token_info) {
+    if (i.first == sym) {
+      s = i.second;
+      break;
+    }
   }
 
-  return text;
+  return s;
+}
+
+#endif
+
+namespace {
+
+const std::vector<std::pair<token_type, std::string>> keywords = {
+  { KW_USE, "use" },
+  { KW_API, "api" },
+  { KW_IS, "is" },
+  { KW_MOD, "mod" },
+  { KW_FUN, "fun" },
+  { KW_FFI, "ffi" },
+  { KW_VAR, "var" },
+  { KW_TRUE, "true" },
+  { KW_FALSE, "false" },
+  { KW_NIL, "nil" },
+  { KW_OBJ, "obj" },
+  { KW_SELF, "self" },
+  { KW_FOR, "for" },
+  { KW_IN, "in" },
+  { KW_IF, "if" },
+  { KW_ELSE, "else" },
+  { KW_LOOP, "loop" },
+  { KW_WHILE, "while" },
+  { KW_PRINT, "print" },
+  { KW_UNTIL, "until" },
+  { KW_RET, "return" },
+  { KW_BREAK, "break" },
+  { KW_CONTINUE, "continue" },
+  { KW_LAMBDA, u8"λ" },
+  { KW_AS, "as" },
+  { KW_ENUM, "enum" },
+  { KW_AND, "and" },
+  { KW_OR, "or" },
+  { KW_XOR, "xor" }
+};
+
 }
 
 bool is_keyword(std::string text, token_type &sym) {
-  auto it = keyword_map.find(text);
-  bool kw = false;
-
-  if (it != keyword_map.end()) {
-    kw = true;
-    sym = it->second;
+  for (auto &p : keywords) {
+    if (p.second == text) {
+      sym = p.first;
+      return true;
+    }
   }
 
-  return kw;
+  return false;
 }
 
 } // namespace dwt
