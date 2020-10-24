@@ -71,21 +71,30 @@ var call(var fn, var *args, size_t nr_args) {
   return interpreter.interpret(VAR_AS_OBJ(fn), args, nr_args);
 }
 
-std::shared_ptr<void> unbox(var box) {
-  std::shared_ptr<void> opaque_obj;
-
+void unbox(std::shared_ptr<void> &sp, var box) {
   if (VAR_IS_OBJ(box)) {
     if (VAR_AS_OBJ(box)->type() == OBJ_BOX) {
       box_obj *boxobj = static_cast<box_obj *>(VAR_AS_OBJ(box));
-      opaque_obj = boxobj->contents();
+      boxobj->get_contents(sp);
     } else {
       throw std::invalid_argument("object is not a box");
     }
   } else {
     throw std::invalid_argument("value is not a box");
   }
+}
 
-  return opaque_obj;
+void unbox(void *&rp, var box) {
+  if (VAR_IS_OBJ(box)) {
+    if (VAR_AS_OBJ(box)->type() == OBJ_BOX) {
+      box_obj *boxobj = static_cast<box_obj *>(VAR_AS_OBJ(box));
+      boxobj->get_contents(rp);
+    } else {
+      throw std::invalid_argument("object is not a box");
+    }
+  } else {
+    throw std::invalid_argument("value is not a box");
+  }
 }
 
 } // namespace ffi

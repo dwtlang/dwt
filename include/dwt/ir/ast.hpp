@@ -9,11 +9,10 @@
 #ifndef GUARD_DWT_IR_AST_HPP
 #define GUARD_DWT_IR_AST_HPP
 
+#include <atomic>
 #include <dwt/scope.hpp>
 #include <dwt/token_range.hpp>
 #include <dwt/token_ref.hpp>
-
-#include <atomic>
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -26,7 +25,6 @@ class token_range;
 namespace ir {
 
 class visitor;
-class scope;
 
 class ast {
 public:
@@ -69,12 +67,12 @@ public:
   virtual std::string name();
   virtual token_ref name_tok();
 
-  virtual void set_scope(std::shared_ptr<dwt::scope> s) {
-    _scope = s;
+  virtual void set_scope(scope *scope_ptr) {
+    _scope = scope_ptr;
   }
 
-  virtual std::shared_ptr<dwt::scope> get_scope() {
-    return _scope.lock();
+  virtual dwt::scope *get_scope() {
+    return _scope;
   }
 
   token_range get_token_range() const {
@@ -89,7 +87,7 @@ private:
   std::string _qualified_name;
   token_ref _name_token;
   token_range _token_range;
-  std::weak_ptr<dwt::scope> _scope;
+  scope *_scope = nullptr;
   ir::ast *_parent;
   std::vector<std::unique_ptr<ast>> _children;
   uint64_t _node_number;

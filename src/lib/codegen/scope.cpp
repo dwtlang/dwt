@@ -14,12 +14,12 @@
 
 namespace dwt {
 
-std::shared_ptr<scope> scope::global = std::make_shared<scope>();
-std::shared_ptr<scope> scope::current = scope::global;
+std::unique_ptr<scope> scope::global = std::make_unique<scope>();
+scope *scope::current = scope::global.get();
 std::atomic<uint64_t> scope::next_id = 0;
 std::mutex scope::lock;
 
-scope::scope(std::shared_ptr<scope> parent_scope, token_ref name_ref, int flags)
+scope::scope(scope *parent_scope, token_ref name_ref, int flags)
   : _parent_scope(parent_scope)
   , _name_ref(name_ref)
   , _index(-1)
@@ -45,8 +45,8 @@ std::string scope::to_string() {
   return s->qualified_name();
 }
 
-std::shared_ptr<scope> scope::up() const {
-  return _parent_scope.lock();
+scope *scope::up() const {
+  return _parent_scope;
 }
 
 bool scope::is_anonymous() const {
@@ -63,7 +63,7 @@ bool scope::is_global() const {
       isglob = false;
       break;
     }
-    s = s->up().get();
+    s = s->up();
   }
 
   return isglob;
@@ -73,13 +73,11 @@ int32_t scope::lookup() const {
   return _index;
 }
 
-/*
- * Get the name associated with the given scope. Anonymous scope names are
- * automatically generated based on a unique id. This ensures that calls
- * to qualified_name() will always return a unique string. The compiler
- * relies on this property because it uses these strings to resolve local
- * and global variables.
- */
+// Get the name associated with the given scope. Anonymous scope names are
+// automatically generated based on a unique id. This ensures that calls
+// to qualified_name() will always return a unique string. The compiler
+// relies on this property because it uses these strings to resolve local
+// and global variables.
 std::string scope::name() const {
   if (is_anonymous() && up()) {
     return "<anon" + std::to_string(_id) + ">";
@@ -88,154 +86,114 @@ std::string scope::name() const {
 }
 
 std::string scope::qualified_name() const {
-  std::shared_ptr<scope> s = _parent_scope.lock();
   std::string qualified = name();
+  scope *scope_ptr = up();
 
-  if (!s) {
+  if (!scope_ptr) {
     qualified = "::";
   }
 
-  while (s) {
-    qualified = s->name() + "::" + qualified;
-    s = s->up();
+  while (scope_ptr) {
+    qualified = scope_ptr->name() + "::" + qualified;
+    scope_ptr = scope_ptr->up();
   }
 
   return qualified;
 }
 
-std::shared_ptr<scope> scope::add(token_ref name_ref, int flags) {
-  std::shared_ptr<scope> s;
-  std::string name = name_ref.text();
+scope *scope::add(token_ref name_ref, int flags) {
+  scope *scope_ptr = current->find_ident(name_ref.text());
 
-  s = std::make_shared<scope>(scope::current, name_ref, flags);
-  var key = to_var(name);
-  var value = to_var(s);
-  kv_pair *kvp = scope::current->_identifiers.get(key);
+  if (!scope_ptr) {
+    scope_ptr = new scope(current, name_ref, flags);
+    current->_identifiers.emplace_back(std::unique_ptr<scope>(scope_ptr));
+  } else if (flags & SCOPE_EXCLUSIVE) {
+    oops("e@1 redefinition of '$1' n@2 first defined here...",
+         name_ref,
+         scope_ptr->_name_ref);
+  }
 
-  if (kvp) {
-    if (flags & SCOPE_EXCLUSIVE) {
-      auto prev_scope =
-        std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
+  return scope_ptr;
+}
 
+scope *scope::open(token_ref name_ref, int flags) {
+  scope *scope_ptr = nullptr;
+
+  if (flags & SCOPE_ANONYMOUS) {
+    scope_ptr = new scope(current, name_ref, flags);
+    current->_private_subscopes.emplace_back(std::unique_ptr<scope>(scope_ptr));
+  } else {
+    scope_ptr = current->find_scope(name_ref.text());
+
+    if (!scope_ptr && flags & SCOPE_CREATE) {
+      scope_ptr = new scope(current, name_ref, flags);
+      current->_visible_subscopes.emplace_back(
+        std::unique_ptr<scope>(scope_ptr));
+    } else if (flags & SCOPE_EXCLUSIVE) {
       oops(
         "e@1 redefinition of '$1'"
         "n@2 first defined here...",
         name_ref,
-        prev_scope->_name_ref);
+        scope_ptr->_name_ref);
     }
-  } else {
-    scope::current->_identifiers.add(kv_pair(key, value));
   }
 
-  return s;
+  if (scope_ptr) {
+    current = scope_ptr;
+  }
+
+  return scope_ptr;
 }
 
-std::shared_ptr<scope> scope::open(int flags) {
+scope *scope::open(int flags) {
   return open(token_ref(), flags);
 }
 
-std::shared_ptr<scope> scope::open(token_ref name_ref, int flags) {
-  std::shared_ptr<scope> s;
-  std::string name = name_ref.text();
+scope *scope::close() {
+  scope *scope_ptr = current->up();
 
-  if (flags & SCOPE_ANONYMOUS) {
-    s = std::make_shared<scope>(scope::current, name_ref, flags);
-    scope::current->_anonymous_subscopes.push_back(s);
-  } else {
-    s = scope::current->find_scope(name);
+  if (scope_ptr) {
+    current = scope_ptr;
+  }
 
-    if (s) {
-      if (flags & SCOPE_EXCLUSIVE) {
-        oops(
-          "e@1 redefinition of '$1'"
-          "n@2 first defined here...",
-          name_ref,
-          s->_name_ref);
-      }
-    } else if (flags & SCOPE_CREATE) {
-      s = std::make_shared<scope>(scope::current, name_ref, flags);
-      var key = to_var(name);
-      var value = to_var(s);
-      kv_pair *kvp = scope::current->_identifiers.get(key);
+  return current;
+}
 
-      if (kvp) {
-        if (flags & SCOPE_EXCLUSIVE) {
-          auto prev_scope =
-            std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
-
-          oops(
-            "e@1 redefinition of '$1'"
-            "n@2 first defined here...",
-            name_ref,
-            prev_scope->_name_ref);
-        }
-      } else {
-        scope::current->_identifiers.add(kv_pair(key, value));
-      }
-
-      scope::current->_visible_subscopes.add(kv_pair(key, value));
+scope *scope::find_scope(std::string name) const {
+  for (auto &scope_ptr : _visible_subscopes) {
+    if (scope_ptr->name() == name) {
+      return scope_ptr.get();
     }
   }
-
-  if (s) {
-    scope::current = s;
-  } else {
-    BUG();
-  }
-
-  return s;
+  return nullptr;
 }
 
-std::shared_ptr<scope> scope::close() {
-  std::shared_ptr<scope> s = scope::current->up();
-
-  if (s) {
-    scope::current = s;
+scope *scope::find_ident(std::string name) const {
+  for (auto &scope_ptr : _identifiers) {
+    if (scope_ptr->name() == name) {
+      return scope_ptr.get();
+    }
   }
-
-  return scope::current;
+  return find_scope(name);
 }
 
-std::shared_ptr<scope> scope::find_scope(std::string name) const {
-  kv_pair *kvp = _visible_subscopes.get(to_var(name));
-  std::shared_ptr<scope> s;
-
-  if (kvp) {
-    s = std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
-  }
-
-  return s;
-}
-
-std::shared_ptr<scope> scope::find_ident(std::string name) const {
-  kv_pair *kvp = _identifiers.get(to_var(name));
-  std::shared_ptr<scope> s;
-
-  if (kvp) {
-    s = std::reinterpret_pointer_cast<scope>(ffi::unbox(kvp->value));
-  }
-
-  return s;
-}
-
-std::shared_ptr<scope> scope::resolve(std::vector<std::string> scope_names,
-                                      std::shared_ptr<scope> s) {
+scope *scope::resolve(std::vector<std::string> scope_names, scope *scope_ptr) {
   size_t nr_scopes = scope_names.size();
 
   for (size_t i = 0, j = nr_scopes; i < nr_scopes; ++i, --j) {
     auto name = scope_names[i];
     if (j > 1) {
-      s = s->find_scope(name);
+      scope_ptr = scope_ptr->find_scope(name);
     } else {
-      s = s->find_ident(name);
+      scope_ptr = scope_ptr->find_ident(name);
     }
 
-    if (!s) {
+    if (!scope_ptr) {
       break;
     }
   }
 
-  return s;
+  return scope_ptr;
 }
 
 std::vector<std::string> scope::split(std::string str) {
@@ -261,27 +219,26 @@ std::vector<std::string> scope::split(std::string str) {
   return substrs;
 }
 
-std::shared_ptr<scope> scope::resolve(std::string ident,
-                                      std::shared_ptr<scope> s) {
+scope *scope::resolve(std::string ident, scope *scope_ptr) {
   if (ident.size() > 1) {
     if (ident[0] == ':' && ident[1] == ':') {
-      s = scope::global;
+      scope_ptr = global.get();
       ident = ident.substr(2, ident.size());
     }
   }
 
   auto scope_names = split(ident);
-  auto current_scope = s;
+  auto scope_itr = scope_ptr;
 
-  while (current_scope) {
-    if ((s = resolve(scope_names, current_scope))) {
+  while (scope_itr) {
+    if ((scope_ptr = resolve(scope_names, scope_itr))) {
       break;
     }
 
-    current_scope = current_scope->up();
+    scope_itr = scope_itr->up();
   }
 
-  return s;
+  return scope_ptr;
 }
 
 } // namespace dwt

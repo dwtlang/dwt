@@ -61,7 +61,9 @@ token_ref code_obj::token_at(size_t idx) {
   var value = _token_map->op_keyget(NUM_AS_VAR(idx));
 
   if (!VAR_IS_NIL(value)) {
-    t = *std::reinterpret_pointer_cast<token_ref>(ffi::unbox(value));
+    std::shared_ptr<void> sp;
+    ffi::unbox(sp, value);
+    t = *reinterpret_cast<token_ref *>(sp.get());
   }
 
   return t;

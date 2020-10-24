@@ -31,7 +31,8 @@ inline var box(std::shared_ptr<void> opaque_obj) {
   return to_var(opaque_obj);
 }
 
-std::shared_ptr<void> unbox(var box);
+void unbox(std::shared_ptr<void> &, var box);
+void unbox(void *&, var box);
 
 } // namespace ffi
 } // namespace dwt

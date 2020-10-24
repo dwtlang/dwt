@@ -228,19 +228,19 @@ private:
   ir::expr *super_expr();
   ir::scoped_name *scoped_name();
 
-  void push_self(std::shared_ptr<scope> ptr) {
-    _self_stack.push_back(ptr);
+  void push_self(scope *scope_ptr) {
+    _self_stack.push_back(scope_ptr);
   }
 
   void pop_self() {
     _self_stack.pop_back();
   }
 
-  std::shared_ptr<scope> self() {
+  scope *self() {
     return _self_stack.back();
   }
 
-  std::vector<std::shared_ptr<scope>> _self_stack;
+  std::vector<scope *> _self_stack;
   token_ref _this_token;
   token_ref _prev_token;
   std::shared_ptr<token_seq> _token_seq;

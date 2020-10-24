@@ -10,7 +10,6 @@
 #define GUARD_DWT_COMPILER_HPP
 
 #include <dwt/function_obj.hpp>
-#include <dwt/hash_map.hpp>
 #include <dwt/ir/visitor.hpp>
 #include <dwt/local_var.hpp>
 #include <dwt/opcode.hpp>
@@ -21,8 +20,8 @@
 #endif
 
 #include <mutex>
-#include <stack>
 #include <string>
+#include <vector>
 
 namespace dwt {
 
@@ -31,8 +30,9 @@ class function_obj;
 
 class loop_info {
 public:
-  loop_info(size_t base_pos)
-    : _base_pos(base_pos) {
+  loop_info(std::string identifier, size_t base_pos)
+    : _identifier(identifier)
+    , _base_pos(base_pos) {
   }
 
   void add_patch_point(size_t patch_point) {
@@ -47,7 +47,12 @@ public:
     return _base_pos;
   }
 
+  std::string name() const {
+    return _identifier;
+  }
+
 private:
+  std::string _identifier;
   size_t _base_pos;
   std::vector<size_t> _patch_points;
 };
@@ -219,10 +224,8 @@ private:
 
   static std::atomic<unsigned int> concurrency;
 
-  hash_map _continue_map;
-  hash_map _break_map;
-  std::stack<loop_info> _continue_stack;
-  std::stack<loop_info> _break_stack;
+  std::vector<loop_info> _continue_stack;
+  std::vector<loop_info> _break_stack;
 #if USE_THREADED_COMPILER
   std::vector<std::shared_future<function_obj *>> _fun_objs;
 #endif

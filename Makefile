@@ -121,6 +121,7 @@ clean:
 	$(V)rm -f $(FFI_TEST_BIN)
 	$(V)rm -f $(CLI_BIN)
 	$(V)rm -rf $(LIB_DIR)/libdwt.*
+	$(V)rm -f dwt_junit.xml
 
 .PHONY: purge
 purge: clean

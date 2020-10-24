@@ -9,7 +9,6 @@
 #ifndef GUARD_DWT_SCOPE_HPP
 #define GUARD_DWT_SCOPE_HPP
 
-#include <dwt/hash_map.hpp>
 #include <dwt/token_ref.hpp>
 
 #include <atomic>
@@ -28,42 +27,39 @@ enum scope_flags {
 
 class scope {
 public:
-  static std::shared_ptr<scope> global;
-  static std::shared_ptr<scope> current;
+  static std::unique_ptr<scope> global;
+  static scope *current;
   static std::atomic<uint64_t> next_id;
   static std::mutex lock;
-  static std::shared_ptr<scope>
-  resolve(std::string, std::shared_ptr<scope> from = scope::current);
 
+  static scope *resolve(std::string, scope * = scope::current);
   static std::vector<std::string> split(std::string);
+  static scope *open(token_ref, int = SCOPE_APPEND);
+  static scope *open(int = SCOPE_APPEND);
+  static scope *add(token_ref, int = SCOPE_EXCLUSIVE);
+  static scope *close();
+  static std::string to_string();
 
-  scope(std::shared_ptr<scope>, token_ref, int);
+  scope(scope *, token_ref, int);
   scope();
   virtual ~scope();
 
-  std::shared_ptr<scope> up() const;
+  scope *up() const;
   bool is_anonymous() const;
   bool is_global() const;
   int32_t lookup() const;
+
   std::string name() const;
   std::string qualified_name() const;
-  std::shared_ptr<scope> find_scope(std::string) const;
-  std::shared_ptr<scope> find_ident(std::string) const;
-
-  static std::shared_ptr<scope> open(token_ref, int = SCOPE_APPEND);
-  static std::shared_ptr<scope> open(int = SCOPE_APPEND);
-  static std::shared_ptr<scope> add(token_ref, int = SCOPE_EXCLUSIVE);
-  static std::shared_ptr<scope> close();
-  static std::string to_string();
+  scope *find_scope(std::string) const;
+  scope *find_ident(std::string) const;
 
 private:
-  static std::shared_ptr<scope>
-    resolve(std::vector<std::string>, std::shared_ptr<scope> = scope::current);
-
-  std::vector<std::shared_ptr<scope>> _anonymous_subscopes;
-  hash_map _visible_subscopes;
-  hash_map _identifiers;
-  std::weak_ptr<scope> _parent_scope;
+  static scope *resolve(std::vector<std::string>, scope * = scope::current);
+  std::vector<std::unique_ptr<scope>> _visible_subscopes;
+  std::vector<std::unique_ptr<scope>> _private_subscopes;
+  std::vector<std::unique_ptr<scope>> _identifiers;
+  scope *_parent_scope;
   token_ref _name_ref;
   int32_t _index;
   uint64_t _id;

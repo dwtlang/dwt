@@ -56,16 +56,16 @@ public:
     return _identstr;
   }
 
-  void set_referenced_scope(std::shared_ptr<dwt::scope> s) {
+  void set_referenced_scope(dwt::scope *scope_ptr) {
     std::scoped_lock<std::mutex> hold(_namelock);
-    _referenced_scope = s;
+    _referenced_scope = scope_ptr;
   }
 
-  virtual std::shared_ptr<dwt::scope> get_scope() override;
-  std::shared_ptr<dwt::scope> ref_scope();
+  virtual dwt::scope *get_scope() override;
+  dwt::scope *ref_scope();
 
 private:
-  std::weak_ptr<dwt::scope> _referenced_scope;
+  scope *_referenced_scope = nullptr;
   std::mutex _namelock;
   bool _is_setter = false;
   bool abs;

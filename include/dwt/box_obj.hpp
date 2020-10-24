@@ -16,13 +16,24 @@
 
 namespace dwt {
 
+enum box_type { BOX_EMPTY, BOX_SHARED, BOX_RAW };
+
 class box_obj : public obj {
 public:
   box_obj(std::shared_ptr<void> boxed_obj);
+  box_obj(void *boxed_obj);
+  box_obj();
   box_obj(const box_obj &);
   virtual ~box_obj();
 
-  std::shared_ptr<void> contents();
+  void get_contents(std::shared_ptr<void> &);
+  void get_contents(void *&);
+  void set_contents(std::shared_ptr<void> &);
+  void set_contents(void *&);
+
+  box_type peek() const {
+    return _type;
+  }
 
   virtual obj_type type() override;
   virtual obj *clone() override;
@@ -30,7 +41,9 @@ public:
   virtual std::string to_string() override;
 
 private:
-  std::shared_ptr<void> _boxed_obj;
+  std::shared_ptr<void> _sp;
+  void *_rp;
+  box_type _type;
 };
 
 } // namespace dwt

@@ -33,19 +33,19 @@ void ir::scoped_name::accept(ir::visitor &visitor) {
   visitor.visit(*this);
 }
 
-std::shared_ptr<dwt::scope> ir::scoped_name::get_scope() {
+dwt::scope *ir::scoped_name::get_scope() {
   std::scoped_lock hold(_namelock);
-  std::shared_ptr<dwt::scope> s = _referenced_scope.lock();
+  dwt::scope *scope_ptr = _referenced_scope;
 
-  if (!s) {
-    s = dwt::scope::resolve(_identstr, ref_scope());
-    _referenced_scope = s;
+  if (!scope_ptr) {
+    scope_ptr = dwt::scope::resolve(_identstr, ref_scope());
+    _referenced_scope = scope_ptr;
   }
 
-  return s;
+  return scope_ptr;
 }
 
-std::shared_ptr<dwt::scope> ir::scoped_name::ref_scope() {
+dwt::scope *ir::scoped_name::ref_scope() {
   return ast::get_scope();
 }
 
