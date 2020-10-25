@@ -8,6 +8,7 @@
 
 #include <dwt/compiler.hpp>
 #include <dwt/debug.hpp>
+#include <dwt/exception.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/function_obj.hpp>
 #include <dwt/garbage_collector.hpp>
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
     interpreter interpreter;
     interpreter.interpret(fn, nullptr, 0);
 
-  } catch (std::exception &e) {
+  } catch (exception &e) {
     err(e.what());
     ret = 1;
   } catch (...) {

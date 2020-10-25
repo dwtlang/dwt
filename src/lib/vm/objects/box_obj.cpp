@@ -7,11 +7,10 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/box_obj.hpp>
+#include <dwt/exception.hpp>
 #include <dwt/interpreter.hpp>
 #include <dwt/string_obj.hpp>
 #include <dwt/var.hpp>
-
-#include <stdexcept>
 
 namespace dwt {
 
@@ -43,7 +42,7 @@ void box_obj::get_contents(std::shared_ptr<void> &sp) {
   if (_type == BOX_SHARED) {
     sp = _sp;
   } else {
-    throw std::invalid_argument("box does not contain a shared_ptr");
+    throw exception("box does not contain a shared_ptr");
   }
 }
 
@@ -51,7 +50,7 @@ void box_obj::get_contents(void *&rp) {
   if (_type == BOX_RAW) {
     rp = _rp;
   } else {
-    throw std::invalid_argument("box does not contain a raw pointer");
+    throw exception("box does not contain a raw pointer");
   }
 }
 

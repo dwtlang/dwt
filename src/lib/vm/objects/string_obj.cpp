@@ -6,6 +6,7 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
+#include <dwt/interpret_exception.hpp>
 #include <dwt/string_obj.hpp>
 
 namespace dwt {
@@ -47,9 +48,9 @@ std::string string_obj::to_string() {
 var string_obj::op_mul(var v, bool rhs) {
   if (VAR_IS_NUM(v)) {
     if (rhs) {
-      throw std::logic_error("e@1 cannot multiply something by a string");
+      throw interpret_exception("e@1 cannot multiply something by a string");
     } else if (VAR_AS_INT(v) != VAR_AS_NUM(v)) {
-      throw std::logic_error(
+      throw interpret_exception(
         "e@1 a string can only be multiplied by an integer");
     } else {
       std::string s;
@@ -60,7 +61,8 @@ var string_obj::op_mul(var v, bool rhs) {
       return OBJ_AS_VAR(new string_obj(s));
     }
   } else {
-    throw std::logic_error("e@1 a string can only be multiplied by an integer");
+    throw interpret_exception(
+      "e@1 a string can only be multiplied by an integer");
   }
 
   return nil;
@@ -82,7 +84,7 @@ var string_obj::op_add(var v, bool rhs) {
       s = new string_obj(text() + s->text());
     }
   } else {
-    throw std::logic_error("e@1 invalid operands");
+    throw interpret_exception("e@1 invalid operands");
   }
 
   if (s) {
@@ -125,7 +127,7 @@ var string_obj::op_sub(var v, bool rhs) {
       s = remove_substr(text(), s->text());
     }
   } else {
-    throw std::logic_error("e@1 invalid operands");
+    throw interpret_exception("e@1 invalid operands");
   }
 
   if (s) {

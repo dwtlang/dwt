@@ -7,6 +7,7 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/garbage_collector.hpp>
+#include <dwt/interpret_exception.hpp>
 #include <dwt/obj.hpp>
 
 #include <cstddef>
@@ -96,36 +97,36 @@ std::string obj::to_string() {
 }
 
 void obj::call(interpreter &interpreter, int nr_args) {
-  throw std::logic_error("e@1 value is not callable");
+  throw interpret_exception("e@1 value is not callable");
 }
 
 bool obj::op_eq(var v, bool rhs) {
-  throw std::logic_error("e@1 == operator not supported for object");
+  throw interpret_exception("e@1 == operator not supported for object");
   return false;
 }
 
 bool obj::op_neq(var v, bool rhs) {
-  throw std::logic_error("e@1 != operator not supported for object");
+  throw interpret_exception("e@1 != operator not supported for object");
   return false;
 }
 
 bool obj::op_gt(var v, bool rhs) {
-  throw std::logic_error("e@1 > operator not supported for object");
+  throw interpret_exception("e@1 > operator not supported for object");
   return false;
 }
 
 bool obj::op_gteq(var v, bool rhs) {
-  throw std::logic_error("e@1 >= operator not supported for object");
+  throw interpret_exception("e@1 >= operator not supported for object");
   return false;
 }
 
 bool obj::op_lt(var v, bool rhs) {
-  throw std::logic_error("e@1 < operator not supported for object");
+  throw interpret_exception("e@1 < operator not supported for object");
   return false;
 }
 
 bool obj::op_lteq(var v, bool rhs) {
-  throw std::logic_error("e@1 <= operator not supported for object");
+  throw interpret_exception("e@1 <= operator not supported for object");
   return false;
 }
 
@@ -137,56 +138,56 @@ bool obj::op_is(var v, bool rhs) {
 }
 
 var obj::op_add(var v, bool rhs) {
-  throw std::logic_error("e@1 + operator not supported for object");
+  throw interpret_exception("e@1 + operator not supported for object");
   return v;
 }
 
 var obj::op_inc() {
-  throw std::logic_error("e@1 ++ operator not supported for object");
+  throw interpret_exception("e@1 ++ operator not supported for object");
   return 0;
 }
 
 var obj::op_dec() {
-  throw std::logic_error("e@1 -- operator not supported for object");
+  throw interpret_exception("e@1 -- operator not supported for object");
   return 0;
 }
 
 var obj::op_sub(var v, bool rhs) {
-  throw std::logic_error("e@1 - operator not supported for object");
+  throw interpret_exception("e@1 - operator not supported for object");
   return v;
 }
 
 var obj::op_mul(var v, bool rhs) {
-  throw std::logic_error("e@1 * operator not supported for object");
+  throw interpret_exception("e@1 * operator not supported for object");
   return v;
 }
 
 var obj::op_div(var v, bool rhs) {
-  throw std::logic_error("e@1 / operator not supported for object");
+  throw interpret_exception("e@1 / operator not supported for object");
   return v;
 }
 
 var obj::op_neg() {
-  throw std::logic_error("e@1 cannot negate object");
+  throw interpret_exception("e@1 cannot negate object");
   return 0;
 }
 
 var obj::op_mbrget(var v) {
-  throw std::logic_error("e@1 > operator not supported for object");
+  throw interpret_exception("e@1 > operator not supported for object");
   return 0;
 }
 
 void obj::op_mbrset(var name, var v) {
-  throw std::logic_error("e@1 object does not support member access");
+  throw interpret_exception("e@1 object does not support member access");
 }
 
 var obj::op_keyget(var k) {
-  throw std::logic_error("e@1 object is not a map");
+  throw interpret_exception("e@1 object is not a map");
   return 0;
 }
 
 void obj::op_keyset(var k, var v) {
-  throw std::logic_error("e@1 object is not a map");
+  throw interpret_exception("e@1 object is not a map");
 }
 
 std::string decode(obj *obj) {

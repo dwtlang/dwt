@@ -7,6 +7,7 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/box_obj.hpp>
+#include <dwt/exception.hpp>
 #include <dwt/ffi.hpp>
 #include <dwt/globals.hpp>
 #include <dwt/interpreter.hpp>
@@ -14,8 +15,6 @@
 #include <dwt/string_mgr.hpp>
 #include <dwt/string_obj.hpp>
 #include <dwt/syscall_obj.hpp>
-
-#include <stdexcept>
 
 namespace dwt {
 namespace ffi {
@@ -61,11 +60,11 @@ var call(var fn, var *args, size_t nr_args) {
     case OBJ_INSTANCE:
       break;
     default:
-      throw std::invalid_argument("object is not callable");
+      throw exception("object is not callable");
       break;
     }
   } else {
-    throw std::invalid_argument("value is not callable");
+    throw exception("value is not callable");
   }
 
   return interpreter.interpret(VAR_AS_OBJ(fn), args, nr_args);
@@ -77,10 +76,10 @@ void unbox(std::shared_ptr<void> &sp, var box) {
       box_obj *boxobj = static_cast<box_obj *>(VAR_AS_OBJ(box));
       boxobj->get_contents(sp);
     } else {
-      throw std::invalid_argument("object is not a box");
+      throw exception("object is not a box");
     }
   } else {
-    throw std::invalid_argument("value is not a box");
+    throw exception("value is not a box");
   }
 }
 
@@ -90,10 +89,10 @@ void unbox(void *&rp, var box) {
       box_obj *boxobj = static_cast<box_obj *>(VAR_AS_OBJ(box));
       boxobj->get_contents(rp);
     } else {
-      throw std::invalid_argument("object is not a box");
+      throw exception("object is not a box");
     }
   } else {
-    throw std::invalid_argument("value is not a box");
+    throw exception("value is not a box");
   }
 }
 

@@ -10,13 +10,13 @@
 #define GUARD_DWT_VAR_HPP
 
 #include <dwt/debug.hpp>
+#include <dwt/interpret_exception.hpp>
 
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <memory>
-#include <stdexcept>
 
 #define SIGN_BIT (0x8000000000000000ull)
 #define QNAN (0x7ffc000000000000ull)
@@ -171,7 +171,7 @@ inline bool var_gt(var v0, var v1) {
     return obj_var_gt(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline bool var_gteq(var v0, var v1) {
@@ -183,7 +183,7 @@ inline bool var_gteq(var v0, var v1) {
     return obj_var_gteq(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline bool var_lt(var v0, var v1) {
@@ -195,7 +195,7 @@ inline bool var_lt(var v0, var v1) {
     return obj_var_lt(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline bool var_lteq(var v0, var v1) {
@@ -207,7 +207,7 @@ inline bool var_lteq(var v0, var v1) {
     return obj_var_lteq(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline bool var_is(var v0, var v1) {
@@ -231,7 +231,7 @@ inline var var_add(var v0, var v1) {
     return obj_var_add(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline var var_inc(var v0) {
@@ -243,7 +243,7 @@ inline var var_inc(var v0) {
     return obj_var_inc(v0);
   }
 
-  throw std::logic_error("e@1 invalid operand");
+  throw interpret_exception("e@1 invalid operand");
 }
 
 inline var var_dec(var v0) {
@@ -255,7 +255,7 @@ inline var var_dec(var v0) {
     return obj_var_dec(v0);
   }
 
-  throw std::logic_error("e@1 invalid operand");
+  throw interpret_exception("e@1 invalid operand");
 }
 
 inline var var_sub(var v0, var v1) {
@@ -267,7 +267,7 @@ inline var var_sub(var v0, var v1) {
     return obj_var_sub(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline var var_mul(var v0, var v1) {
@@ -279,7 +279,7 @@ inline var var_mul(var v0, var v1) {
     return obj_var_mul(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline var var_div(var v0, var v1) {
@@ -291,7 +291,7 @@ inline var var_div(var v0, var v1) {
     return obj_var_div(v0, v1);
   }
 
-  throw std::logic_error("e@1 invalid operands");
+  throw interpret_exception("e@1 invalid operands");
 }
 
 inline var var_neg(var v0) {
@@ -303,7 +303,7 @@ inline var var_neg(var v0) {
     return obj_var_neg(v0);
   }
 
-  throw std::logic_error("e@1 invalid operand");
+  throw interpret_exception("e@1 invalid operand");
 }
 
 } // namespace dwt

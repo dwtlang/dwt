@@ -9,6 +9,7 @@
 #include <dwt/constants.hpp>
 #include <dwt/function_obj.hpp>
 #include <dwt/globals.hpp>
+#include <dwt/interpret_exception.hpp>
 #include <dwt/pho/constant_folding.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
@@ -195,7 +196,7 @@ void constant_folding::peep(uint8_t *op, size_t extent) {
     default:
       break;
     }
-  } catch (std::logic_error &e) {
+  } catch (interpret_exception &e) {
   }
 }
 

@@ -9,11 +9,10 @@
 #ifndef GUARD_DWT_REPORTING_HPP
 #define GUARD_DWT_REPORTING_HPP
 
+#include <dwt/exception.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/token_range.hpp>
 #include <dwt/token_ref.hpp>
-
-#include <stdexcept>
 
 namespace dwt {
 
@@ -39,7 +38,7 @@ template <typename... Args> void oops(std::string fmt, Args... toks) {
     tok_line = tok.line();
   }
 
-  throw std::runtime_error(s);
+  throw exception(s.c_str());
 }
 
 } // namespace dwt

@@ -10,10 +10,12 @@
 #include <dwt/closure_obj.hpp>
 #include <dwt/constants.hpp>
 #include <dwt/decompiler.hpp>
+#include <dwt/exception.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/garbage_collector.hpp>
 #include <dwt/globals.hpp>
 #include <dwt/instance_obj.hpp>
+#include <dwt/interpret_exception.hpp>
 #include <dwt/interpreter.hpp>
 #include <dwt/opcode.hpp>
 #include <dwt/reporting.hpp>
@@ -283,7 +285,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
           op = call_stack.top_ref().ip;
           fp = call_stack.top_ref().sp;
         } else {
-          throw std::logic_error("e@1 value is not callable");
+          throw interpret_exception("e@1 value is not callable");
         }
         DISPATCH();
       }
@@ -309,7 +311,8 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
             static_cast<map_obj *>(call_stack.top_ref().map));
           o->super(static_cast<instance_obj *>(VAR_AS_OBJ(v0)));
         } else {
-          throw std::logic_error("e@1 after '$1' expected an object instance");
+          throw interpret_exception(
+            "e@1 after '$1' expected an object instance");
         }
 
         DISPATCH();
@@ -372,7 +375,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
             fp = call_stack.top_ref().sp;
           }
         } else {
-          throw std::logic_error("e@1 value is not callable");
+          throw interpret_exception("e@1 value is not callable");
         }
         DISPATCH();
       }
@@ -605,11 +608,11 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
     }
 
-  } catch (std::runtime_error &e) {
+  } catch (interpret_exception &e) {
+    oops(e.what(), get_op_token(call_stack.top_ref().fn, op - 1));
+  } catch (exception &e) {
     err(e.what());
     oops("n@1 from...", get_op_token(call_stack.top_ref().fn, op - 1));
-  } catch (std::logic_error &e) {
-    oops(e.what(), get_op_token(call_stack.top_ref().fn, op - 1));
   }
 
   return nil;
