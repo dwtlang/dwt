@@ -20,6 +20,7 @@ public:
   static unsigned int patch_no();
   static const char *tag();
   static std::string to_string();
+  static std::string notice();
 
 private:
   version();

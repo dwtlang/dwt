@@ -75,7 +75,7 @@ LIB_DEPS        := $(LIB_OBS:%.o=%.d)
 CLI_DEPS        := $(CLI_OBS:%.o=%.d)
 FFI_TEST_DEPS   := $(FFI_TEST_OBS:%.o=%.d)
 ALL_DEPS        := $(LIB_DEPS) $(CLI_DEPS) $(FFI_TEST_DEPS)
-GCDA_FILES      := $(shell find -name "*.gcda")
+GCDA_FILES      := $(shell find . -name "*.gcda")
 
 optimised: COMPILER_FLAGS += -O2 -flto -DNDEBUG=1
 small: COMPILER_FLAGS += -Os -flto -DNDEBUG=1

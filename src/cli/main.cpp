@@ -33,14 +33,7 @@ int main(int argc, char **argv) {
   if (argc > 1) {
     filename = argv[1];
   } else {
-    std::string year_range = "2020";
-    if (year_range != BUILD_YEAR) {
-      year_range += "-";
-      year_range += BUILD_YEAR;
-    }
-    err("Dwt " + version::to_string());
-    err("\nCopyright (c) ");
-    err(year_range + " Andrew Scott and Contributors\n");
+    err(version::notice());
     return ret = 1;
   }
 
