@@ -14,7 +14,7 @@ const char *decode(obj_type obj_type) {
   static const char *type_str[] = { "string", "function", "closure",
                                     "upvar",  "syscall",  "code",
                                     "class",  "instance", "map",
-                                    "mapfn",  "box" };
+                                    "mapfn",  "box",      "iterator" };
 
   return type_str[obj_type];
 }

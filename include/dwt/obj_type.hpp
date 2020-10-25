@@ -22,7 +22,8 @@ enum obj_type {
   OBJ_INSTANCE,
   OBJ_MAP,
   OBJ_MAPINI,
-  OBJ_BOX
+  OBJ_BOX,
+  OBJ_ITERATOR
 };
 
 const char *decode(obj_type);

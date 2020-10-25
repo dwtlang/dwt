@@ -6,8 +6,8 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_BYTECODE_HPP
-#define GUARD_DWT_BYTECODE_HPP
+#ifndef GUARD_DWT_CODE_OBJ_HPP
+#define GUARD_DWT_CODE_OBJ_HPP
 
 #include <dwt/hash_map.hpp>
 #include <dwt/map_obj.hpp>
