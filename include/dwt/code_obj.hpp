@@ -72,7 +72,7 @@ public:
 
 private:
   std::vector<uint8_t> _bytes;
-  map_obj *_token_map;
+  hash_map _token_map;
 };
 
 } // namespace dwt

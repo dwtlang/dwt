@@ -11,8 +11,7 @@
 
 namespace dwt {
 
-code_obj::code_obj()
-  : _token_map(new map_obj) {
+code_obj::code_obj() {
 }
 
 code_obj::~code_obj() {
@@ -32,8 +31,6 @@ obj *code_obj::clone() {
 }
 
 void code_obj::blacken() {
-  _token_map->mark_as(MARK_GREY);
-  _token_map->blacken();
 }
 
 std::string code_obj::to_string() {
@@ -46,31 +43,32 @@ void code_obj::emit(uint8_t octet) {
 
 void code_obj::emit(uint8_t octet, token_ref t) {
   if (t.type() != TOK_INV) {
-    _token_map->op_keyset(NUM_AS_VAR(_bytes.size()), ffi::any(t));
+    _token_map.add(kv_pair(NUM_AS_VAR(_bytes.size()), ffi::any(t)));
   }
   emit(octet);
 }
 
 void code_obj::token_at(size_t idx, token_ref t) {
-  _token_map->op_keyset(NUM_AS_VAR(idx), ffi::any(t));
+  _token_map.add(kv_pair(NUM_AS_VAR(idx), ffi::any(t)));
 }
 
 token_ref code_obj::token_at(size_t idx) {
+  kv_pair *kvp = _token_map.get(NUM_AS_VAR(idx));
   token_ref t;
 
-  var value = _token_map->op_keyget(NUM_AS_VAR(idx));
-
-  if (!VAR_IS_NIL(value)) {
-    std::shared_ptr<void> sp;
-    ffi::unbox(sp, value);
-    t = *reinterpret_cast<token_ref *>(sp.get());
+  if (kvp) {
+    if (!(VAR_IS_NIL(kvp->value))) {
+      std::shared_ptr<void> sp;
+      ffi::unbox(sp, kvp->value);
+      t = *reinterpret_cast<token_ref *>(sp.get());
+    }
   }
 
   return t;
 }
 
 void code_obj::unmap_token_at(size_t idx) {
-  _token_map->op_keyset(NUM_AS_VAR(idx), nil);
+  _token_map.add(kv_pair(NUM_AS_VAR(idx), nil));
 }
 
 } // namespace dwt
