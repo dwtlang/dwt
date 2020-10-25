@@ -15,16 +15,6 @@
 namespace dwt {
 namespace pho {
 
-namespace {
-
-static const int offsets[] = {
-#define OP(_, __, off) off,
-#include <dwt/opcodes.inc>
-#undef OP
-};
-
-} // namespace
-
 unreachable_code::unreachable_code(code_obj &code)
   : peephole({ { { OP_RET }, 1 } })
   , _code(code) {
@@ -68,8 +58,8 @@ size_t unreachable_code::first_jump_after(size_t pos) {
       }
     }
 
-    off += 1 + offsets[*op];
-    op += 1 + offsets[*op];
+    off += 1 + opcode_operand_bytes(*op);
+    op += 1 + opcode_operand_bytes(*op);
   }
 
   return jmp_off;

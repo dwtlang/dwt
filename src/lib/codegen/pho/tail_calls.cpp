@@ -26,17 +26,12 @@ tail_calls::~tail_calls() {
 }
 
 uint8_t *tail_calls::prev_op(uint8_t *this_op) {
-  static int offsets[] = {
-#define OP(_, __, off) off,
-#include <dwt/opcodes.inc>
-#undef OP
-  };
   uint8_t *op = _code.entry();
   uint8_t *prev_op = nullptr;
 
   while (op < this_op) {
     prev_op = op;
-    op += 1 + offsets[*op];
+    op += 1 + opcode_operand_bytes(*op);
   }
 
   return prev_op;

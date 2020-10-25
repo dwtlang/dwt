@@ -90,11 +90,6 @@ namespace dwt {
 namespace {
 
 #if USE_BYTECODE_OPTIMISER
-static const int offsets[] = {
-#define OP(_, __, off) off,
-#include <dwt/opcodes.inc>
-#undef OP
-};
 
 int count_nops(uint8_t *op, size_t extent) {
   size_t off = 0;
@@ -105,8 +100,8 @@ int count_nops(uint8_t *op, size_t extent) {
       ++nops;
     }
 
-    off += 1 + offsets[*op];
-    op += 1 + offsets[*op];
+    off += 1 + opcode_operand_bytes(*op);
+    op += 1 + opcode_operand_bytes(*op);
   }
 
   return nops;
@@ -147,8 +142,8 @@ void patch_jumps(code_obj &code) {
       op[2] = (operand >> 8) & 0xFF;
     }
 
-    off += 1 + offsets[*op];
-    op += 1 + offsets[*op];
+    off += 1 + opcode_operand_bytes(*op);
+    op += 1 + opcode_operand_bytes(*op);
   }
 }
 
@@ -161,7 +156,7 @@ void remove_skips(code_obj &code) {
   while (off < code.size()) {
     if (*op != OP_SKIP) {
       new_code.push_back(*op);
-      for (int i = 0; i < offsets[*op]; ++i) {
+      for (int i = 0; i < opcode_operand_bytes(*op); ++i) {
         new_code.push_back(op[1 + i]);
       }
       auto tok_ref = code.token_at(off);
@@ -170,8 +165,8 @@ void remove_skips(code_obj &code) {
     } else {
       ++skips_removed;
     }
-    off += 1 + offsets[*op];
-    op += 1 + offsets[*op];
+    off += 1 + opcode_operand_bytes(*op);
+    op += 1 + opcode_operand_bytes(*op);
   }
 
   code.byte_vec().swap(new_code);
@@ -304,13 +299,8 @@ void compiler::emit_const(double d) {
  * @param tok The input token to map against this opcode.
  */
 void compiler::emit_op(opcode opcode, token_ref tok) {
-  static const int op_effect[] = {
-#define OP(_, sp, __) sp,
-#include <dwt/opcodes.inc>
-#undef OP
-  };
 
-  _stack_pos += op_effect[opcode];
+  _stack_pos += opcode_stack_effect(opcode);
   _prev_op = opcode;
 
   emit_byte(opcode, tok);
@@ -322,13 +312,7 @@ void compiler::emit_op(opcode opcode, token_ref tok) {
  * @param opcode The opcode to emit.
  */
 void compiler::emit_op(opcode opcode) {
-  static const int op_effect[] = {
-#define OP(_, sp, __) sp,
-#include <dwt/opcodes.inc>
-#undef OP
-  };
-
-  _stack_pos += op_effect[opcode];
+  _stack_pos += opcode_stack_effect(opcode);
   _prev_op = opcode;
 
   emit_byte(opcode);

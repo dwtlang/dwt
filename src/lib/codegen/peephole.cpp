@@ -13,16 +13,6 @@
 
 namespace dwt {
 
-namespace {
-
-static const int offsets[] = {
-#define OP(_, __, off) off,
-#include <dwt/opcodes.inc>
-#undef OP
-};
-
-} // namespace
-
 peephole::peephole(std::vector<ph_pattern> patterns)
   : _patterns(patterns)
   , _off(0) {
@@ -69,7 +59,7 @@ bool peephole::jumps_into_range(code_obj &code, size_t off, size_t extent) {
     default:
       break;
     }
-    pos += 1 + offsets[ops[pos]];
+    pos += 1 + opcode_operand_bytes(ops[pos]);
   }
 
   return false;
@@ -96,12 +86,12 @@ bool peephole::scan(std::vector<uint8_t> &code, int idx) {
   while (seqoff < _patterns[idx].ops.size() && _off < code.size()) {
     if (code[_off] == _patterns[idx].ops[seqoff]) {
       uint8_t *op = &code[_off];
-      _off += 1 + offsets[*op];
+      _off += 1 + opcode_operand_bytes(*op);
       ++seqoff;
     } else if (code[_off] == OP_SKIP) {
       ++_off;
     } else {
-      _off += 1 + offsets[code[_off]];
+      _off += 1 + opcode_operand_bytes(code[_off]);
       seqoff = 0;
     }
   }
