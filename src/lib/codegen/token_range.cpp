@@ -24,7 +24,7 @@ std::string token_range::in_context(int ctx_lines) {
 
   int start_line = from_line() < ctx_lines + 1 ? 0 : from_line() - ctx_lines;
   int ln_digits = digits(_seq->size());
-  int margin = ln_digits + 6;
+  int margin = ln_digits + 7;
 
   _seq->for_all([&](auto tok) {
     if (tok.line() >= start_line && tok.line() <= to_line()) {
@@ -37,7 +37,7 @@ std::string token_range::in_context(int ctx_lines) {
         }
         s += TERM_RESET;
         s += format_decimal(tok.line(), ln_digits);
-        s += "  ";
+        s += u8"│  ";
       }
       s += tok.text();
     }
