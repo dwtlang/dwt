@@ -66,7 +66,7 @@ public:
 
 private:
   stack<var> *_stack;
-  var _closed;
+  var _closed = nil;
   size_t _offset;
   size_t _slot;
   std::atomic<upvar_obj *> _next_upvar = nullptr;
