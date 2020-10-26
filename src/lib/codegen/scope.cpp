@@ -14,10 +14,9 @@
 
 namespace dwt {
 
-std::unique_ptr<scope> scope::global = std::make_unique<scope>();
+std::shared_ptr<scope> scope::global = std::make_shared<scope>();
 scope *scope::current = scope::global.get();
 std::atomic<uint64_t> scope::next_id = 0;
-std::mutex scope::lock;
 
 scope::scope(scope *parent_scope, token_ref name_ref, int flags)
   : _parent_scope(parent_scope)

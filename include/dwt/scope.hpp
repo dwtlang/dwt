@@ -27,10 +27,8 @@ enum scope_flags {
 
 class scope {
 public:
-  static std::unique_ptr<scope> global;
+  static std::shared_ptr<scope> global;
   static scope *current;
-  static std::atomic<uint64_t> next_id;
-  static std::mutex lock;
 
   static scope *resolve(std::string, scope * = scope::current);
   static std::vector<std::string> split(std::string);
@@ -56,6 +54,8 @@ public:
 
 private:
   static scope *resolve(std::vector<std::string>, scope * = scope::current);
+  static std::atomic<uint64_t> next_id;
+
   std::vector<std::unique_ptr<scope>> _visible_subscopes;
   std::vector<std::unique_ptr<scope>> _private_subscopes;
   std::vector<std::unique_ptr<scope>> _identifiers;

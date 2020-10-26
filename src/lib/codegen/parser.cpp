@@ -518,7 +518,7 @@ ir::parameters *parser::parameters() {
     auto param = new ir::parameter(gettok());
     params->splice(param);
     skip_any(TOK_BREAK);
-    scope::current->add(identifier, SCOPE_EXCLUSIVE | SCOPE_CREATE);
+    scope::add(identifier, SCOPE_EXCLUSIVE | SCOPE_CREATE);
   } while (accept(TOK_COMMA));
 
   skip_any(TOK_BREAK);
@@ -622,7 +622,7 @@ ir::var_decl *parser::var_decl() {
   expect(TOK_IDENT);
 
   auto decl = new ir::var_decl(gettok());
-  scope::current->add(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
+  scope::add(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
 
   if (accept(TOK_ASSIGN)) {
     skip_any(TOK_BREAK);
