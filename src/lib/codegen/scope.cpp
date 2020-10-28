@@ -176,11 +176,11 @@ scope *scope::find_ident(std::string name) const {
   return find_scope(name);
 }
 
-scope *scope::resolve(std::vector<std::string> scope_names, scope *scope_ptr) {
-  size_t nr_scopes = scope_names.size();
+scope *scope::resolve(std::vector<std::string> namespaces, scope *scope_ptr) {
+  size_t nr_namespaces = namespaces.size();
 
-  for (size_t i = 0, j = nr_scopes; i < nr_scopes; ++i, --j) {
-    auto name = scope_names[i];
+  for (size_t i = 0, j = nr_namespaces; i < nr_namespaces; ++i, --j) {
+    auto name = namespaces[i];
     if (j > 1) {
       scope_ptr = scope_ptr->find_scope(name);
     } else {
@@ -195,42 +195,47 @@ scope *scope::resolve(std::vector<std::string> scope_names, scope *scope_ptr) {
   return scope_ptr;
 }
 
-std::vector<std::string> scope::split(std::string str) {
-  std::vector<std::string> substrs;
-  std::string sep = "::";
-  size_t pos = 0;
+std::vector<std::string> scope::divide_namespaces(std::string ident) {
+  // break up a scope string containing something like "A::B::C"
+  // into a string vector containing "A", "B", and "C".
+  std::vector<std::string> namespaces;
+  std::string separator = "::";
+  size_t strpos = 0;
 
-  while (str.size()) {
-    if ((pos = str.find(sep)) != std::string::npos) {
-      if (pos > 1) {
-        substrs.push_back(str.substr(0, pos));
+  while (ident.size() > 0) {
+    strpos = ident.find(separator);
+
+    if (strpos != std::string::npos) {
+      if (strpos > 0) {
+        namespaces.push_back(ident.substr(0, strpos));
       }
-      str = str.substr(pos + sep.size());
-      if (!str.size()) {
-        substrs.push_back(str);
-      }
+      ident = ident.substr(strpos + 2);
     } else {
-      substrs.push_back(str);
+      namespaces.push_back(ident);
       break;
     }
   }
 
-  return substrs;
+  return namespaces;
 }
 
 scope *scope::resolve(std::string ident, scope *scope_ptr) {
+  // if the identifier leads with "::" then we need to search for the
+  // identifier from global scope, not the scope where the reference
+  // was made so we override scope_ptr before performing the search.
   if (ident.size() > 1) {
     if (ident[0] == ':' && ident[1] == ':') {
       scope_ptr = global.get();
-      ident = ident.substr(2, ident.size());
     }
   }
 
-  auto scope_names = split(ident);
+  auto namespaces = divide_namespaces(ident);
   auto scope_itr = scope_ptr;
 
   while (scope_itr) {
-    if ((scope_ptr = resolve(scope_names, scope_itr))) {
+    scope_ptr = resolve(namespaces, scope_itr);
+
+    if (scope_ptr) {
       break;
     }
 

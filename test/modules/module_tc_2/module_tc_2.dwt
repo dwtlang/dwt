@@ -1,0 +1,15 @@
+mod A {
+  mod B {
+    mod C {
+      fun foo(n) {
+        print n
+      }
+      B::C::foo(1)
+    }
+    ::A::B::C::foo(2)
+  }
+  ::A::B::C::foo(3)
+}
+
+A::B::C::foo(4)
+::A::B::C::foo(5)

@@ -31,7 +31,7 @@ public:
   static scope *current;
 
   static scope *resolve(std::string, scope * = scope::current);
-  static std::vector<std::string> split(std::string);
+  static std::vector<std::string> divide_namespaces(std::string);
   static scope *open(token_ref, int = SCOPE_APPEND);
   static scope *open(int = SCOPE_APPEND);
   static scope *add(token_ref, int = SCOPE_EXCLUSIVE);
