@@ -124,10 +124,12 @@ scope *scope::open(token_ref name_ref, int flags) {
   } else {
     scope_ptr = current->find_scope(name_ref.text());
 
-    if (!scope_ptr && flags & SCOPE_CREATE) {
-      scope_ptr = new scope(current, name_ref, flags);
-      current->_visible_subscopes.emplace_back(
-        std::unique_ptr<scope>(scope_ptr));
+    if (!scope_ptr) {
+      if (flags & SCOPE_CREATE) {
+        scope_ptr = new scope(current, name_ref, flags);
+        current->_visible_subscopes.emplace_back(
+          std::unique_ptr<scope>(scope_ptr));
+      }
     } else if (flags & SCOPE_EXCLUSIVE) {
       oops(
         "e@1 redefinition of '$1'"
