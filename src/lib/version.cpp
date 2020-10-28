@@ -42,7 +42,7 @@ std::string version::to_string() {
     s += tag();
   }
 
-  s += " [profile=" BUILD_PROF "]";
+  s += " (profile=" BUILD_PROF ")";
 
   return s;
 }
