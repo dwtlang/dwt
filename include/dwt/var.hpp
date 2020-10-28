@@ -52,47 +52,23 @@ std::string var_to_string(var v);
 var to_var(std::shared_ptr<void> opaque_obj);
 var to_var(std::string cxx_str);
 
-#if USE_DOUBLE_PRECISION_FP
 inline var num_as_var(double n) {
   static_assert(sizeof(uint64_t) == sizeof(double));
   uint64_t bits;
   memcpy(&bits, &n, 8);
   return bits;
 }
-#else
-inline var num_as_var(float n) {
-  static_assert(sizeof(uint32_t) == sizeof(float));
-  uint32_t bits;
-  memcpy(&bits, &n, 4);
-  return bits;
-}
-#endif
 
-#if USE_DOUBLE_PRECISION_FP
 inline double var_as_num(var v) {
   static_assert(sizeof(uint64_t) == sizeof(double));
   double d;
   memcpy(&d, &v, 8);
   return d;
 }
-#else
-inline float var_as_num(var v) {
-  static_assert(sizeof(uint32_t) == sizeof(float));
-  float f;
-  memcpy(&f, &v, 4);
-  return f;
-}
-#endif
 
-#if USE_DOUBLE_PRECISION_FP
 inline double var_as_int(var v) {
   return trunc(var_as_num(v));
 }
-#else
-inline float var_as_int(var v) {
-  return trunc(var_as_num(v));
-}
-#endif
 
 inline bool var_eqz(var v0) {
   if (VAR_IS_NUM(v0)) {
