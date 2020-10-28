@@ -74,6 +74,7 @@ void scanner::decimal(std::string &lexeme, token_type &sym, bool dp) {
 
     if (ch == '.') {
       if (dp) {
+        next_char();
         oops("e@1 more than 1 decimal point", bad_token(lexeme));
       } else {
         sym = TOK_DEC;
@@ -83,6 +84,7 @@ void scanner::decimal(std::string &lexeme, token_type &sym, bool dp) {
       next_char();
 
       if (peek_char() == '_') {
+        next_char();
         oops("e@1 expected decimal literal", bad_token(lexeme));
       }
     } else if (ch == '_') {
@@ -91,6 +93,7 @@ void scanner::decimal(std::string &lexeme, token_type &sym, bool dp) {
       switch (peek_char()) {
       case '.':
       case '_':
+        next_char();
         oops("e@1 expected decimal literal", bad_token(lexeme));
         break;
       default:
@@ -105,6 +108,7 @@ void scanner::decimal(std::string &lexeme, token_type &sym, bool dp) {
   }
 
   if (ch == '_') {
+    next_char();
     oops("e@1 expected decimal literal", bad_token(lexeme));
   }
 }
@@ -147,8 +151,10 @@ void scanner::octal(std::string &lexeme, token_type &sym) {
     lexeme += ch;
 
     if (!isoctdigit(ch) && (isalpha(ch) || ch == '_') && sym != TOK_INV) {
+      next_char();
       oops("e@1 expected octal literal", bad_token(lexeme));
     } else if (!isoctdigit(ch) && sym != TOK_INV) {
+      next_char();
       oops("e@1 expected octal literal", bad_token(lexeme));
     }
     next_char();
@@ -249,6 +255,7 @@ void scanner::block_comment(std::string &lexeme) {
         break;
       }
     } else if (ch == EOF) {
+      next_char();
       oops("e@1 expected '/'", bad_token(lexeme));
       break;
     } else {
@@ -319,7 +326,7 @@ size_t scanner::starting_column(std::string &lexeme) {
 }
 
 token_ref scanner::bad_token(std::string &lexeme) {
-  _tokens->add(token(TOK_INV, lexeme, _lineno, starting_column(lexeme) - 1));
+  _tokens->add(token(TOK_INV, lexeme, _lineno, starting_column(lexeme)));
   return token_ref(_tokens, _tokens->size() - 1);
 }
 

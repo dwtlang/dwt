@@ -43,6 +43,10 @@ std::string token_range::in_context(int ctx_lines) {
     }
   });
 
+  if (s.size() > 0 && s.back() != '\n') {
+    s += "\n";
+  }
+
   int i = 0;
   for (; i < leftmost_column() + margin; ++i) {
     s += " ";

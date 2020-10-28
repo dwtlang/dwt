@@ -45,6 +45,10 @@ std::string token_ref::in_context(int ctx_lines) {
     }
   });
 
+  if (s.size() > 0 && s.back() != '\n') {
+    s += "\n";
+  }
+
   int i = 0;
   for (; i < column() + margin; ++i) {
     s += " ";
