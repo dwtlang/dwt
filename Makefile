@@ -77,10 +77,10 @@ FFI_TEST_DEPS   := $(FFI_TEST_OBS:%.o=%.d)
 ALL_DEPS        := $(LIB_DEPS) $(CLI_DEPS) $(FFI_TEST_DEPS)
 GCDA_FILES      := $(shell find . -name "*.gcda")
 
-optimised: COMPILER_FLAGS += -O2 -flto -DNDEBUG=1
+optimised: COMPILER_FLAGS += -O3 -flto -DNDEBUG=1
 small: COMPILER_FLAGS += -Os -flto -DNDEBUG=1
 debug: COMPILER_FLAGS += -O0 -g -DDEBUG=1
-profile: COMPILER_FLAGS += -fprofile-generate -O2 -flto -DNDEBUG=1
+instrumented: COMPILER_FLAGS += -fprofile-generate -O2 -flto -DNDEBUG=1
 pgo: COMPILER_FLAGS += -fprofile-use
 pgo: MAKEFLAGS += --always-make
 
@@ -94,10 +94,10 @@ small: all
 .PHONY: debug
 debug: all
 
-.PHONY: profile
-.profile:
+.PHONY: instrumented
+instrumented:
 ifneq "$(COMPILER)" "g++"
-	$(error use g++ for profile target)
+	$(error use g++ for instrumented target)
 endif
 
 .PHONY: pgo
@@ -106,7 +106,7 @@ ifneq "$(COMPILER)" "g++"
 	$(error use g++ for pgo target)
 endif
 
-profile: optimised
+instrumented: optimised
 
 pgo: clean optimised
 

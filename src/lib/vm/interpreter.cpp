@@ -26,6 +26,28 @@
 #include <cassert>
 #include <map>
 
+#define PUSH(x) exec_stack.push(x)
+#define TOP() exec_stack.top()
+#define TOPN(n) exec_stack.top(n)
+#define TOP_SWAP(x) exec_stack.top_swap(x)
+#define POP() exec_stack.pop()
+#define POPN(n) exec_stack.pop(n)
+#define TOP_AND_POP() exec_stack.top_and_pop()
+#define POP_AND_SWAP(v) exec_stack.pop_and_swap(v)
+#define POPN_AND_SWAP(n, v) exec_stack.pop_and_swap(n, v)
+#define GET(n) exec_stack.get(n)
+#define SET(n, v) exec_stack.set(n, v)
+
+#define GC_MAYBE()                                    \
+  do {                                                \
+    if (garbage_collector::get().is_waiting) {        \
+      garbage_collector::get().collect_garbage(this); \
+    }                                                 \
+  } while (0)
+
+#define TOP_FRAME() call_stack.top_ref()
+#define POP_FRAME() call_stack.pop()
+
 namespace dwt {
 
 interpreter::interpreter()
@@ -37,8 +59,8 @@ interpreter::~interpreter() {
 
 void interpreter::mark_roots(std::vector<obj *> &grey_objs) {
   exec_stack.for_all([&](auto &v) {
-    if (VAR_IS_OBJ(v)) {
-      obj *o = VAR_AS_OBJ(v);
+    if (is_obj(v)) {
+      obj *o = as_obj(v);
       o->mark_as(MARK_GREY);
       grey_objs.push_back(o);
     }
@@ -104,7 +126,7 @@ closure_obj *interpreter::op_closure(uint32_t operand, size_t fp) {
   closure_obj *parent = nullptr;
 
   if (call_stack.size() > 0) {
-    parent = static_cast<closure_obj *>(call_stack.top_ref().closure);
+    parent = static_cast<closure_obj *>(TOP_FRAME().closure);
   }
 
   for (size_t i = 0; i < upvars.size(); ++i) {
@@ -117,10 +139,10 @@ closure_obj *interpreter::op_closure(uint32_t operand, size_t fp) {
     }
   }
 
-  if (call_stack.top_ref().fn->type() == OBJ_CLASS) {
+  if (TOP_FRAME().fn->type() == OBJ_CLASS) {
     if (fun_obj->is_api()) {
-      static_cast<map_obj *>(call_stack.top_ref().map)
-        ->op_keyset(OBJ_AS_VAR(fun_obj->short_name()), OBJ_AS_VAR(closure));
+      static_cast<map_obj *>(TOP_FRAME().map)
+        ->op_keyset(as_var(fun_obj->short_name()), as_var(closure));
     }
   }
 
@@ -213,23 +235,21 @@ token_ref interpreter::get_op_token(function_obj *fun_obj, uint8_t *op_ptr) {
 }
 
 var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
-  exec_stack.push(OBJ_AS_VAR(callable_obj));
+  PUSH(as_var(callable_obj));
   for (size_t i = 0; i < nr_args; ++i) {
-    exec_stack.push(args[i]);
+    PUSH(args[i]);
   }
 
   callable_obj->call(*this, nr_args);
 
   if (callable_obj->type() == OBJ_SYSCALL) {
-    return exec_stack.top_and_pop();
+    return TOP_AND_POP();
   }
 
-  uint8_t *op = call_stack.top_ref().ip;
-  size_t fp = 0;
-
   // "registers"...
+  uint8_t *op = TOP_FRAME().ip;
+  size_t fp = 0;
   int o0;
-  bool b0, b1;
   var v0, v1;
 
 #include <vm/interpreter.inc>
@@ -243,10 +263,8 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(LOOP) {
-        if (unlikely(garbage_collector::get().is_waiting)) {
-          garbage_collector::get().collect_garbage(this);
-        }
         op -= OPERAND(op);
+        GC_MAYBE();
         DISPATCH();
       }
 
@@ -256,7 +274,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(BRZ) {
-        if (var_eqz(exec_stack.top_and_pop())) {
+        if (var_eqz(TOP_AND_POP())) {
           op += OPERAND(op);
         } else {
           op += 2;
@@ -265,7 +283,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(BNZ) {
-        if (var_neqz(exec_stack.top_and_pop())) {
+        if (var_neqz(TOP_AND_POP())) {
           op += OPERAND(op);
         } else {
           op += 2;
@@ -274,41 +292,41 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(CALL) {
-        if (unlikely(garbage_collector::get().is_waiting)) {
-          garbage_collector::get().collect_garbage(this);
-        }
         o0 = *op++;
-        v0 = exec_stack.top(o0);
-        if (VAR_IS_OBJ(v0)) {
-          call_stack.top_ref().ip = op;
+        v0 = TOPN(o0);
+
+        if (is_obj(v0)) {
+          TOP_FRAME().ip = op;
           VAR_AS_OBJ(v0)->call(*this, o0);
-          op = call_stack.top_ref().ip;
-          fp = call_stack.top_ref().sp;
+          op = TOP_FRAME().ip;
+          fp = TOP_FRAME().sp;
         } else {
           throw interpret_exception("e@1 value is not callable");
         }
+
+        GC_MAYBE();
         DISPATCH();
       }
 
       CASE_OP(RET) {
         close_upvars(0);
-        exec_stack.pop_and_swap(exec_stack.size() - (fp + 1), exec_stack.top());
-        call_stack.pop();
+        POPN_AND_SWAP(exec_stack.size() - (fp + 1), TOP());
+        POP_FRAME();
 
         if (call_stack.size() > 0) {
-          op = call_stack.top_ref().ip;
-          fp = call_stack.top_ref().sp;
+          op = TOP_FRAME().ip;
+          fp = TOP_FRAME().sp;
         } else {
-          return exec_stack.top_and_pop();
+          return TOP_AND_POP();
         }
         DISPATCH();
       }
 
       CASE_OP(SUPER) {
-        v0 = exec_stack.top_and_pop();
-        if (VAR_IS_OBJ(v0) && (VAR_AS_OBJ(v0)->type() == OBJ_INSTANCE)) {
+        v0 = TOP_AND_POP();
+        if (is_obj(v0) && (VAR_AS_OBJ(v0)->type() == OBJ_INSTANCE)) {
           auto o = static_cast<instance_obj *>(
-            static_cast<map_obj *>(call_stack.top_ref().map));
+            static_cast<map_obj *>(TOP_FRAME().map));
           o->super(static_cast<instance_obj *>(VAR_AS_OBJ(v0)));
         } else {
           throw interpret_exception(
@@ -319,75 +337,73 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(NIL) {
-        exec_stack.push(nil);
+        PUSH(nil);
         DISPATCH();
       }
 
       CASE_OP(TRUE) {
-        exec_stack.push(BOOL_AS_VAR(true));
+        PUSH(as_var(true));
         DISPATCH();
       }
 
       CASE_OP(FALSE) {
-        exec_stack.push(BOOL_AS_VAR(false));
+        PUSH(as_var(false));
         DISPATCH();
       }
 
       CASE_OP(ZERO) {
-        exec_stack.push(NUM_AS_VAR(0.0));
+        PUSH(as_var(0.0));
         DISPATCH();
       }
 
       CASE_OP(ONE) {
-        exec_stack.push(NUM_AS_VAR(1.0));
+        PUSH(as_var(1.0));
         DISPATCH();
       }
 
       CASE_OP(TWO) {
-        exec_stack.push(NUM_AS_VAR(2.0));
+        PUSH(as_var(2.0));
         DISPATCH();
       }
 
       CASE_OP(POP) {
-        exec_stack.pop();
+        POP();
         DISPATCH();
       }
 
       CASE_OP(POPN) {
-        exec_stack.pop(*op++);
+        POPN(*op++);
         DISPATCH();
       }
 
       CASE_OP(TAILCALL) {
-        if (unlikely(garbage_collector::get().is_waiting)) {
-          garbage_collector::get().collect_garbage(this);
-        }
         o0 = *op++;
-        v0 = exec_stack.top(o0);
-        if (VAR_IS_OBJ(v0)) {
-          if (VAR_AS_OBJ(v0) == call_stack.top_ref().fn) {
+        v0 = TOPN(o0);
+        if (is_obj(v0)) {
+          if (VAR_AS_OBJ(v0) == TOP_FRAME().fn) {
             exec_stack.squash(fp, o0);
-            op = call_stack.top_ref().fn->code().entry();
+            op = TOP_FRAME().fn->code().entry();
           } else {
-            call_stack.top_ref().ip = op;
+            TOP_FRAME().ip = op;
             VAR_AS_OBJ(v0)->call(*this, o0);
-            op = call_stack.top_ref().ip;
-            fp = call_stack.top_ref().sp;
+            op = TOP_FRAME().ip;
+            fp = TOP_FRAME().sp;
           }
         } else {
           throw interpret_exception("e@1 value is not callable");
         }
+        GC_MAYBE();
         DISPATCH();
       }
 
       CASE_OP(GET) {
-        exec_stack.push(exec_stack.get(fp + OPERAND(op)));
+        PUSH(GET(fp + OPERAND(op)));
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(SET) {
-        exec_stack.set(fp + OPERAND(op), exec_stack.top());
+        SET(fp + OPERAND(op), TOP());
         op += 2;
         DISPATCH();
       }
@@ -398,28 +414,26 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(UPVGET) {
-        exec_stack.push(static_cast<closure_obj *>(call_stack.top_ref().closure)
-                          ->upvars()[OPERAND(op)]
-                          ->get());
+        PUSH(static_cast<closure_obj *>(TOP_FRAME().closure)
+               ->upvars()[OPERAND(op)]
+               ->get());
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(UPVSET) {
-        static_cast<closure_obj *>(call_stack.top_ref().closure)
+        static_cast<closure_obj *>(TOP_FRAME().closure)
           ->upvars()[OPERAND(op)]
-          ->set(exec_stack.top());
+          ->set(TOP());
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(MBRGET) {
         v0 = constants::table().get(OPERAND(op));
-        v1 = exec_stack.top();
+        v1 = TOP();
 
-        if (VAR_IS_OBJ(v1)) {
-          exec_stack.push(VAR_AS_OBJ(v1)->op_mbrget(v0));
-        }
+        PUSH(as_obj(v1)->op_mbrget(v0));
 
         op += 2;
         DISPATCH();
@@ -427,192 +441,169 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
 
       CASE_OP(MBRSET) {
         v0 = constants::table().get(OPERAND(op));
-        v1 = exec_stack.top(1);
+        v1 = TOPN(1);
 
-        if (VAR_IS_OBJ(v1)) {
-          VAR_AS_OBJ(v1)->op_mbrset(v0, exec_stack.top());
-        }
+        as_obj(v1)->op_mbrset(v0, TOP());
 
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(KEYGET) {
-        v1 = exec_stack.top(1);
-        v0 = exec_stack.top();
-
-        if (VAR_IS_OBJ(v1)) {
-          exec_stack.push(VAR_AS_OBJ(v1)->op_keyget(v0));
-        }
-
+        v1 = TOPN(1);
+        v0 = TOP();
+        PUSH(as_obj(v1)->op_keyget(v0));
         DISPATCH();
       }
 
       CASE_OP(KEYSET) {
-        v1 = exec_stack.top(2);
-        v0 = exec_stack.top(1);
+        v1 = TOPN(2);
+        v0 = TOPN(1);
 
-        if (VAR_IS_OBJ(v1)) {
-          VAR_AS_OBJ(v1)->op_keyset(v0, exec_stack.top());
-        }
+        as_obj(v1)->op_keyset(v0, TOP());
 
         DISPATCH();
       }
 
       CASE_OP(PAIR) {
-        v0 = exec_stack.top(1);
-        v1 = exec_stack.top();
-        static_cast<map_obj *>(call_stack.top_ref().map)->op_keyset(v0, v1);
+        v0 = TOPN(1);
+        v1 = TOP();
+        static_cast<map_obj *>(TOP_FRAME().map)->op_keyset(v0, v1);
 
         DISPATCH();
       }
 
       CASE_OP(CLOSURE) {
-        exec_stack.push(OBJ_AS_VAR(op_closure(OPERAND(op), fp)));
+        PUSH(as_var(op_closure(OPERAND(op), fp)));
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(GLOBAL) {
-        exec_stack.push(var(globals::table().get(OPERAND(op))));
+        PUSH(var(globals::table().get(OPERAND(op))));
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(CONST) {
-        exec_stack.push(var(constants::table().get(OPERAND(op))));
+        PUSH(var(constants::table().get(OPERAND(op))));
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(STORE) {
-        globals::table().set(OPERAND(op), exec_stack.top());
+        globals::table().set(OPERAND(op), TOP());
         op += 2;
         DISPATCH();
       }
 
       CASE_OP(ADD) {
-        exec_stack.pop_and_swap(var_add(exec_stack.top(1), exec_stack.top()));
+        POP_AND_SWAP(var_add(TOPN(1), TOP()));
         DISPATCH();
       }
 
       CASE_OP(SUB) {
-        exec_stack.pop_and_swap(var_sub(exec_stack.top(1), exec_stack.top()));
+        POP_AND_SWAP(var_sub(TOPN(1), TOP()));
         DISPATCH();
       }
 
       CASE_OP(MUL) {
-        exec_stack.pop_and_swap(var_mul(exec_stack.top(1), exec_stack.top()));
+        POP_AND_SWAP(var_mul(TOPN(1), TOP()));
         DISPATCH();
       }
 
       CASE_OP(DIV) {
-        exec_stack.pop_and_swap(var_div(exec_stack.top(1), exec_stack.top()));
+        POP_AND_SWAP(var_div(TOPN(1), TOP()));
         DISPATCH();
       }
 
       CASE_OP(INC) {
-        exec_stack.top_swap(var_inc(exec_stack.top()));
+        TOP_SWAP(var_inc(TOP()));
         DISPATCH();
       }
 
       CASE_OP(DEC) {
-        exec_stack.top_swap(var_dec(exec_stack.top()));
+        TOP_SWAP(var_dec(TOP()));
         DISPATCH();
       }
 
       CASE_OP(NEG) {
-        exec_stack.top_swap(var_neg(exec_stack.top()));
+        TOP_SWAP(var_neg(TOP()));
         DISPATCH();
       }
 
       CASE_OP(LT) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_lt(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_lt(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(LTEQ) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_lteq(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_lteq(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(GT) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_gt(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_gt(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(GTEQ) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_gteq(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_gteq(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(EQ) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_eq(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_eq(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(NEQ) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_neq(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_neq(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(IS) {
-        exec_stack.pop_and_swap(
-          BOOL_AS_VAR(var_is(exec_stack.top(1), exec_stack.top())));
+        POP_AND_SWAP(as_var(var_is(TOPN(1), TOP())));
         DISPATCH();
       }
 
       CASE_OP(AND) {
-        b0 = var_eqz(exec_stack.top(1));
-        b1 = var_eqz(exec_stack.top());
-        exec_stack.pop_and_swap(BOOL_AS_VAR(!b0 && !b1));
+        POP_AND_SWAP(as_var(!var_eqz(TOPN(1)) && !var_eqz(TOP())));
         DISPATCH();
       }
 
       CASE_OP(OR) {
-        b0 = var_eqz(exec_stack.top(1));
-        b1 = var_eqz(exec_stack.top());
-        exec_stack.pop_and_swap(BOOL_AS_VAR(!b0 || !b1));
+        POP_AND_SWAP(as_var(!var_eqz(TOPN(1)) || !var_eqz(TOP())));
         DISPATCH();
       }
 
       CASE_OP(XOR) {
-        b0 = var_eqz(exec_stack.top(1));
-        b1 = var_eqz(exec_stack.top());
-        exec_stack.pop_and_swap(BOOL_AS_VAR((!b0 && b1) || (b0 && !b1)));
+        POP_AND_SWAP(as_var((!var_eqz(TOPN(1)) && var_eqz(TOP())) ||
+                            (var_eqz(TOPN(1)) && !var_eqz(TOP()))));
         DISPATCH();
       }
 
       CASE_OP(OBJ) {
-        exec_stack.push(
-          OBJ_AS_VAR(static_cast<map_obj *>(call_stack.top_ref().map)));
+        PUSH(as_var(static_cast<map_obj *>(TOP_FRAME().map)));
         DISPATCH();
       }
 
       CASE_OP(MAP) {
-        exec_stack.push(
-          OBJ_AS_VAR(static_cast<map_obj *>(call_stack.top_ref().map)));
+        PUSH(as_var(static_cast<map_obj *>(TOP_FRAME().map)));
         DISPATCH();
       }
 
       CASE_OP(PRINT) {
-        print(exec_stack.top());
-        exec_stack.pop();
+        print(TOP_AND_POP());
         DISPATCH();
       }
     }
 
   } catch (interpret_exception &e) {
-    oops(e.what(), get_op_token(call_stack.top_ref().fn, op - 1));
+    oops(e.what(), get_op_token(TOP_FRAME().fn, op - 1));
   } catch (exception &e) {
     err(e.what());
-    oops("n@1 from...", get_op_token(call_stack.top_ref().fn, op - 1));
+    oops("n@1 from...", get_op_token(TOP_FRAME().fn, op - 1));
   }
 
   return nil;

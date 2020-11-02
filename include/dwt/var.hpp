@@ -70,6 +70,32 @@ inline double var_as_int(var v) {
   return trunc(var_as_num(v));
 }
 
+inline var as_var(bool cond) {
+  return BOOL_AS_VAR(cond);
+}
+
+inline var as_var(double num) {
+  return num_as_var(num);
+}
+
+inline var as_var(obj *obj) {
+  if (obj) {
+    return OBJ_AS_VAR(obj);
+  }
+  return nil;
+}
+
+inline bool is_obj(var v) {
+  return VAR_IS_OBJ(v);
+}
+
+inline obj *as_obj(var v) {
+  if (is_obj(v)) {
+    return VAR_AS_OBJ(v);
+  }
+  throw interpret_exception("not an object");
+}
+
 inline bool var_eqz(var v0) {
   if (VAR_IS_NUM(v0)) {
     return v0 == NUM_AS_VAR(0.0);

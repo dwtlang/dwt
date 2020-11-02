@@ -53,7 +53,7 @@ std::string version::notice() {
     year_range += "-";
     year_range += BUILD_YEAR;
   }
-  std::string notice_str("   >~<\n  (A A)\n");
+  std::string notice_str("   >~<\n  (A|A)\n");
   notice_str += "\"(  V  )\"  Dwt ";
   notice_str += version::to_string();
   notice_str += "\n   \" \"     Copyright (c) ";
