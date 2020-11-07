@@ -10,3 +10,9 @@ jobs:
     - name: Compile
       run: |
         make -j2
+    - name: Test
+      run: |
+        sudo pip install tqdm colorama
+        test/fuzzgen.sh
+        test/runner.py --jenkins
+        test/postprocess.sh
