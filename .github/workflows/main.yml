@@ -13,6 +13,8 @@ jobs:
     - name: Test
       run: |
         sudo pip install tqdm colorama
+        export PATH=$PWD/bin:$PATH
+        dwt
         test/fuzzgen.sh
         test/runner.py --jenkins
         test/postprocess.sh

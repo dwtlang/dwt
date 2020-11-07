@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     filename = argv[1];
   } else {
     err(version::notice());
-    return ret = 1;
+    return ret;
   }
 
   try {
