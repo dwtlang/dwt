@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/dwtlang/dwt/workflows/performance profile/badge.svg)](https://github.com/dwtlang/dwt/actions) [![Actions Status](https://github.com/dwtlang/dwt/workflows/compact profile/badge.svg)](https://github.com/dwtlang/dwt/actions)
+[![Actions Status](https://github.com/dwtlang/dwt/workflows/performance%20profile/badge.svg)](https://github.com/dwtlang/dwt/actions) [![Actions Status](https://github.com/dwtlang/dwt/workflows/compact%20profile/badge.svg)](https://github.com/dwtlang/dwt/actions)
 
 # Dwt
 A simple scripting language called Dwt (rhymes with "put"), which is Welsh for a dinky thing that is cute and small in stature.
