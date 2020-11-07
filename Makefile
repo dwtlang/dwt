@@ -9,6 +9,12 @@ V               := $(VERBOSE)
 
 MAKEFLAGS       += --no-print-directory #--keep-going
 
+ifeq "$(profile)" ""
+$(info Profile: performance (default))
+else
+$(info Profile: $(profile))
+endif
+
 profile ?= performance
 include profiles/$(profile)/profile.mk
 
@@ -77,11 +83,11 @@ FFI_TEST_DEPS   := $(FFI_TEST_OBS:%.o=%.d)
 ALL_DEPS        := $(LIB_DEPS) $(CLI_DEPS) $(FFI_TEST_DEPS)
 GCDA_FILES      := $(shell find . -name "*.gcda")
 
-optimised: COMPILER_FLAGS += -O3 -flto -DNDEBUG=1
-small: COMPILER_FLAGS += -Os -flto -DNDEBUG=1
+optimised: COMPILER_FLAGS += -O3 -fomit-frame-pointer -flto -DNDEBUG=1
+small: COMPILER_FLAGS += -Os -fomit-frame-pointer -flto -DNDEBUG=1
 debug: COMPILER_FLAGS += -O0 -g -DDEBUG=1
-instrumented: COMPILER_FLAGS += -fprofile-generate -O2 -flto -DNDEBUG=1
-pgo: COMPILER_FLAGS += -fprofile-use
+instrumented: COMPILER_FLAGS += -fprofile-generate -O3 -flto -DNDEBUG=1
+pgo: COMPILER_FLAGS += -fprofile-use -O3 -fomit-frame-pointer -flto -DNDEBUG=1
 pgo: MAKEFLAGS += --always-make
 
 # default target

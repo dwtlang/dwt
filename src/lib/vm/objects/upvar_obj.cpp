@@ -11,11 +11,14 @@
 
 namespace dwt {
 
-upvar_obj::upvar_obj(stack<var> *stack, size_t offset, size_t slot)
+upvar_obj::upvar_obj(stack<var> *stack,
+                     size_t offset,
+                     size_t slot,
+                     upvar_obj *next_upv)
   : _stack(stack)
   , _offset(offset)
   , _slot(slot)
-  , _next_upvar(nullptr) {
+  , _next_upvar(next_upv) {
 }
 
 upvar_obj::upvar_obj(const upvar_obj &other)

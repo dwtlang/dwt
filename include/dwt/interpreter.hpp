@@ -24,8 +24,6 @@
 #include <dwt/upvar_obj.hpp>
 #include <dwt/var.hpp>
 
-#include <list>
-#include <random>
 #include <vector>
 
 namespace dwt {
@@ -39,26 +37,26 @@ public:
   interpreter(const interpreter &) = delete;
   virtual ~interpreter();
 
-  inline void invoke(function_obj *fun_obj, int num_args) {
+  inline void invoke(function_obj *fun_obj, unsigned int num_args) {
     call_stack.push(call_frame(fun_obj, exec_stack.size() - (num_args + 1)));
   }
 
-  inline void invoke(closure_obj *closure, int num_args) {
+  inline void invoke(closure_obj *closure, unsigned int num_args) {
     call_stack.push(call_frame(closure, exec_stack.size() - (num_args + 1)));
   }
 
-  inline void invoke(class_obj *klass, int num_args) {
+  inline void invoke(class_obj *klass, unsigned int num_args) {
     call_stack.push(call_frame(klass, exec_stack.size() - (num_args + 1)));
   }
 
-  inline void invoke(instance_obj *inst_obj, int num_args) {
+  inline void invoke(instance_obj *inst_obj, unsigned int num_args) {
   }
 
-  inline void invoke(mapfn_obj *mapfn, int nr_args) {
+  inline void invoke(mapfn_obj *mapfn, unsigned int nr_args) {
     call_stack.push(call_frame(mapfn, exec_stack.size() - (nr_args + 1)));
   }
 
-  inline void invoke(syscall_obj *syscall, int num_args) {
+  inline void invoke(syscall_obj *syscall, unsigned int num_args) {
     var *args = exec_stack.top_ptr(num_args - 1);
     exec_stack.push(syscall->impl()(num_args, args));
   }
@@ -82,7 +80,7 @@ private:
 
   stack<call_frame> call_stack;
   stack<var> exec_stack;
-  std::list<upvar_obj *> open_upvars;
+  upvar_obj *open_upvars = nullptr;
 };
 
 } // namespace dwt

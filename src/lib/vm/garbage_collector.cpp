@@ -44,7 +44,9 @@ void garbage_collector::update_heap_size(int64_t delta) {
 }
 
 void garbage_collector::track(obj *o) {
+#if USE_THREADED_COMPILER
   std::scoped_lock lock(_mutex);
+#endif
   if (_objs) {
     o->next(_objs);
     _objs->prev(o);

@@ -9,8 +9,8 @@
 #ifndef GUARD_DWT_VAR_HPP
 #define GUARD_DWT_VAR_HPP
 
-#include <dwt/debug.hpp>
 #include <dwt/interpret_exception.hpp>
+#include <dwt/macros.hpp>
 
 #include <cassert>
 #include <cmath>
@@ -79,7 +79,7 @@ inline var as_var(double num) {
 }
 
 inline var as_var(obj *obj) {
-  if (obj) {
+  if (likely(obj)) {
     return OBJ_AS_VAR(obj);
   }
   return nil;
@@ -90,7 +90,7 @@ inline bool is_obj(var v) {
 }
 
 inline obj *as_obj(var v) {
-  if (is_obj(v)) {
+  if (likely(is_obj(v))) {
     return VAR_AS_OBJ(v);
   }
   throw interpret_exception("not an object");

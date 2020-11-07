@@ -53,10 +53,10 @@ std::string version::notice() {
     year_range += "-";
     year_range += BUILD_YEAR;
   }
-  std::string notice_str("   >~<\n  (A|A)\n");
-  notice_str += "\"(  V  )\"  Dwt ";
+  std::string notice_str("    >~<\n   (A|A)\n");
+  notice_str += " <(  V  )> Dwt ";
   notice_str += version::to_string();
-  notice_str += "\n   \" \"     Copyright (c) ";
+  notice_str += "\n    ^ ^    Copyright ";
   notice_str += year_range + " Andrew Scott and Contributors\n";
 
   return notice_str;

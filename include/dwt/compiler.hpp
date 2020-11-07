@@ -17,9 +17,9 @@
 
 #if USE_THREADED_COMPILER
 #include <future>
+#include <mutex>
 #endif
 
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -220,15 +220,13 @@ private:
   bool _concurrent;
   size_t _stack_pos;
   uint8_t _prev_op;
-  std::mutex _mutex;
-
-  static std::atomic<unsigned int> concurrency;
-
   std::vector<loop_info> _continue_stack;
   std::vector<loop_info> _break_stack;
 #if USE_THREADED_COMPILER
+  std::mutex _mutex;
   std::vector<std::shared_future<function_obj *>> _fun_objs;
 #endif
+  static std::atomic<unsigned int> concurrency;
 };
 
 } // namespace dwt

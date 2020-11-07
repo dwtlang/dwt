@@ -11,8 +11,6 @@
 
 #include <dwt/ir/visitor.hpp>
 
-#include <mutex>
-
 namespace dwt {
 namespace ir {
 

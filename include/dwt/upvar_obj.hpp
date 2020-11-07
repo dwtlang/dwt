@@ -21,7 +21,7 @@ namespace dwt {
 
 class upvar_obj : public obj {
 public:
-  upvar_obj(stack<var> *, size_t, size_t);
+  upvar_obj(stack<var> *, size_t, size_t, upvar_obj *next_upv = nullptr);
   upvar_obj(const upvar_obj &);
   virtual ~upvar_obj();
 
@@ -40,6 +40,10 @@ public:
       _stack->set(_offset + _slot, val);
     }
     _closed = val;
+  }
+
+  size_t pos() const {
+    return _offset + _slot;
   }
 
   size_t slot() const {

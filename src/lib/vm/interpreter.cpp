@@ -38,20 +38,32 @@
 #define GET(n) exec_stack.get(n)
 #define SET(n, v) exec_stack.set(n, v)
 
-#define GC_MAYBE()                                    \
-  do {                                                \
-    if (garbage_collector::get().is_waiting) {        \
-      garbage_collector::get().collect_garbage(this); \
-    }                                                 \
+#define GC_MAYBE()                                       \
+  do {                                                   \
+    if (unlikely(garbage_collector::get().is_waiting)) { \
+      garbage_collector::get().collect_garbage(this);    \
+    }                                                    \
   } while (0)
 
 #define TOP_FRAME() call_stack.top_ref()
 #define POP_FRAME() call_stack.pop()
 
+#define SAVE_STATE()     \
+  do {                   \
+    TOP_FRAME().ip = op; \
+    TOP_FRAME().sp = fp; \
+  } while (0)
+
+#define LOAD_STATE()     \
+  do {                   \
+    op = TOP_FRAME().ip; \
+    fp = TOP_FRAME().sp; \
+  } while (0)
+
 namespace dwt {
 
 interpreter::interpreter()
-  : exec_stack(64) {
+  : exec_stack(1024) {
 }
 
 interpreter::~interpreter() {
@@ -81,9 +93,11 @@ void interpreter::mark_roots(std::vector<obj *> &grey_objs) {
     }
   });
 
-  for (auto upv : open_upvars) {
+  auto upv = open_upvars;
+  while (upv) {
     upv->mark_as(MARK_GREY);
     grey_objs.push_back(upv);
+    upv = upv->next_upvar();
   }
 }
 
@@ -93,29 +107,40 @@ void interpreter::print(var v) {
 }
 
 upvar_obj *interpreter::capture_upvar(size_t slot, size_t fp) {
-  auto itr = std::find_if(open_upvars.begin(),
-                          open_upvars.end(),
-                          [slot](auto upv) { return upv->slot() == slot; });
+  upvar_obj *curr_upvar = open_upvars;
+  upvar_obj *prev_upvar = open_upvars;
+  size_t pos = fp + slot;
 
-  if (itr != open_upvars.end()) {
-    return *itr;
+  while (curr_upvar) {
+    if (pos < curr_upvar->pos()) {
+      prev_upvar = curr_upvar;
+      curr_upvar = curr_upvar->next_upvar();
+    } else if (pos == curr_upvar->pos()) {
+      return curr_upvar;
+    } else {
+      break;
+    }
   }
 
-  upvar_obj *upvar = new upvar_obj(&exec_stack, fp, slot);
+  curr_upvar = new upvar_obj(&exec_stack, fp, slot, curr_upvar);
+  if (prev_upvar) {
+    prev_upvar->next_upvar(curr_upvar);
+  } else {
+    open_upvars = curr_upvar;
+  }
 
-  open_upvars.push_front(upvar);
-
-  return upvar;
+  return curr_upvar;
 }
 
-inline void interpreter::close_upvars(size_t slot) {
-  open_upvars.remove_if([slot](auto upv) {
-    if (upv->slot() >= slot) {
-      upv->close();
-      return true;
+inline void interpreter::close_upvars(size_t pos) {
+  while (open_upvars) {
+    if (open_upvars->pos() >= pos) {
+      open_upvars->close();
+      open_upvars = open_upvars->next_upvar();
+    } else {
+      break;
     }
-    return false;
-  });
+  }
 }
 
 closure_obj *interpreter::op_closure(uint32_t operand, size_t fp) {
@@ -236,6 +261,7 @@ token_ref interpreter::get_op_token(function_obj *fun_obj, uint8_t *op_ptr) {
 
 var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
   PUSH(as_var(callable_obj));
+
   for (size_t i = 0; i < nr_args; ++i) {
     PUSH(args[i]);
   }
@@ -246,11 +272,17 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
     return TOP_AND_POP();
   }
 
-  // "registers"...
   uint8_t *op = TOP_FRAME().ip;
-  size_t fp = 0;
-  int o0;
+  unsigned int fp = 0;
+  unsigned int o0;
   var v0, v1;
+  var one = as_var(1.0);
+  var two = as_var(2.0);
+  var zero = as_var(0.0);
+  var yes = as_var(true);
+  var no = as_var(false);
+  auto &consts = constants::table().get_all();
+  auto &global_vars = globals::table().get_all();
 
 #include <vm/interpreter.inc>
 
@@ -264,12 +296,14 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
 
       CASE_OP(LOOP) {
         op -= OPERAND(op);
+
         GC_MAYBE();
         DISPATCH();
       }
 
       CASE_OP(BRA) {
         op += OPERAND(op);
+
         DISPATCH();
       }
 
@@ -279,6 +313,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         } else {
           op += 2;
         }
+
         DISPATCH();
       }
 
@@ -288,37 +323,35 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         } else {
           op += 2;
         }
+
         DISPATCH();
       }
 
       CASE_OP(CALL) {
         o0 = *op++;
         v0 = TOPN(o0);
-
-        if (is_obj(v0)) {
-          TOP_FRAME().ip = op;
-          VAR_AS_OBJ(v0)->call(*this, o0);
-          op = TOP_FRAME().ip;
-          fp = TOP_FRAME().sp;
-        } else {
-          throw interpret_exception("e@1 value is not callable");
-        }
+        SAVE_STATE();
+        as_obj(v0)->call(*this, o0);
+        LOAD_STATE();
 
         GC_MAYBE();
         DISPATCH();
       }
 
       CASE_OP(RET) {
-        close_upvars(0);
-        POPN_AND_SWAP(exec_stack.size() - (fp + 1), TOP());
+        o0 = exec_stack.size() - (fp + 1);
+        if (open_upvars) {
+          close_upvars(fp);
+        }
+        POPN_AND_SWAP(o0, TOP());
         POP_FRAME();
 
-        if (call_stack.size() > 0) {
-          op = TOP_FRAME().ip;
-          fp = TOP_FRAME().sp;
+        if (likely(call_stack.size() > 0)) {
+          LOAD_STATE();
         } else {
           return TOP_AND_POP();
         }
+
         DISPATCH();
       }
 
@@ -338,60 +371,65 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
 
       CASE_OP(NIL) {
         PUSH(nil);
+
         DISPATCH();
       }
 
       CASE_OP(TRUE) {
-        PUSH(as_var(true));
+        PUSH(yes);
+
         DISPATCH();
       }
 
       CASE_OP(FALSE) {
-        PUSH(as_var(false));
+        PUSH(no);
+
         DISPATCH();
       }
 
       CASE_OP(ZERO) {
-        PUSH(as_var(0.0));
+        PUSH(zero);
+
         DISPATCH();
       }
 
       CASE_OP(ONE) {
-        PUSH(as_var(1.0));
+        PUSH(one);
+
         DISPATCH();
       }
 
       CASE_OP(TWO) {
-        PUSH(as_var(2.0));
+        PUSH(two);
+
         DISPATCH();
       }
 
       CASE_OP(POP) {
         POP();
+
         DISPATCH();
       }
 
       CASE_OP(POPN) {
         POPN(*op++);
+
         DISPATCH();
       }
 
       CASE_OP(TAILCALL) {
         o0 = *op++;
         v0 = TOPN(o0);
-        if (is_obj(v0)) {
-          if (VAR_AS_OBJ(v0) == TOP_FRAME().fn) {
-            exec_stack.squash(fp, o0);
-            op = TOP_FRAME().fn->code().entry();
-          } else {
-            TOP_FRAME().ip = op;
-            VAR_AS_OBJ(v0)->call(*this, o0);
-            op = TOP_FRAME().ip;
-            fp = TOP_FRAME().sp;
-          }
+        if (as_obj(v0) == TOP_FRAME().fn) {
+          exec_stack.squash(fp, o0);
+          op = TOP_FRAME().fn->code().entry();
         } else {
-          throw interpret_exception("e@1 value is not callable");
+          SAVE_STATE();
+          // definitely an object otherwise previous as_obj call would throw
+          VAR_AS_OBJ(v0)->call(*this, o0);
+          LOAD_STATE();
         }
+
         GC_MAYBE();
         DISPATCH();
       }
@@ -399,17 +437,20 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       CASE_OP(GET) {
         PUSH(GET(fp + OPERAND(op)));
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(SET) {
         SET(fp + OPERAND(op), TOP());
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(CLOSE) {
         close_upvars(exec_stack.size() - 1);
+
         DISPATCH();
       }
 
@@ -418,6 +459,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
                ->upvars()[OPERAND(op)]
                ->get());
         op += 2;
+
         DISPATCH();
       }
 
@@ -426,26 +468,25 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
           ->upvars()[OPERAND(op)]
           ->set(TOP());
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(MBRGET) {
-        v0 = constants::table().get(OPERAND(op));
+        v0 = consts.get(OPERAND(op));
         v1 = TOP();
-
         PUSH(as_obj(v1)->op_mbrget(v0));
-
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(MBRSET) {
-        v0 = constants::table().get(OPERAND(op));
+        v0 = consts.get(OPERAND(op));
         v1 = TOPN(1);
-
         as_obj(v1)->op_mbrset(v0, TOP());
-
         op += 2;
+
         DISPATCH();
       }
 
@@ -453,13 +494,13 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         v1 = TOPN(1);
         v0 = TOP();
         PUSH(as_obj(v1)->op_keyget(v0));
+
         DISPATCH();
       }
 
       CASE_OP(KEYSET) {
         v1 = TOPN(2);
         v0 = TOPN(1);
-
         as_obj(v1)->op_keyset(v0, TOP());
 
         DISPATCH();
@@ -476,125 +517,143 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       CASE_OP(CLOSURE) {
         PUSH(as_var(op_closure(OPERAND(op), fp)));
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(GLOBAL) {
-        PUSH(var(globals::table().get(OPERAND(op))));
+        PUSH(var(global_vars.get(OPERAND(op))));
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(CONST) {
-        PUSH(var(constants::table().get(OPERAND(op))));
+        PUSH(var(consts.get(OPERAND(op))));
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(STORE) {
-        globals::table().set(OPERAND(op), TOP());
+        global_vars.set(OPERAND(op), TOP());
         op += 2;
+
         DISPATCH();
       }
 
       CASE_OP(ADD) {
         POP_AND_SWAP(var_add(TOPN(1), TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(SUB) {
         POP_AND_SWAP(var_sub(TOPN(1), TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(MUL) {
         POP_AND_SWAP(var_mul(TOPN(1), TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(DIV) {
         POP_AND_SWAP(var_div(TOPN(1), TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(INC) {
         TOP_SWAP(var_inc(TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(DEC) {
         TOP_SWAP(var_dec(TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(NEG) {
         TOP_SWAP(var_neg(TOP()));
+
         DISPATCH();
       }
 
       CASE_OP(LT) {
         POP_AND_SWAP(as_var(var_lt(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(LTEQ) {
         POP_AND_SWAP(as_var(var_lteq(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(GT) {
         POP_AND_SWAP(as_var(var_gt(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(GTEQ) {
         POP_AND_SWAP(as_var(var_gteq(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(EQ) {
         POP_AND_SWAP(as_var(var_eq(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(NEQ) {
         POP_AND_SWAP(as_var(var_neq(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(IS) {
         POP_AND_SWAP(as_var(var_is(TOPN(1), TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(AND) {
         POP_AND_SWAP(as_var(!var_eqz(TOPN(1)) && !var_eqz(TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(OR) {
         POP_AND_SWAP(as_var(!var_eqz(TOPN(1)) || !var_eqz(TOP())));
+
         DISPATCH();
       }
 
       CASE_OP(XOR) {
         POP_AND_SWAP(as_var((!var_eqz(TOPN(1)) && var_eqz(TOP())) ||
                             (var_eqz(TOPN(1)) && !var_eqz(TOP()))));
-        DISPATCH();
-      }
 
-      CASE_OP(OBJ) {
-        PUSH(as_var(static_cast<map_obj *>(TOP_FRAME().map)));
         DISPATCH();
       }
 
       CASE_OP(MAP) {
         PUSH(as_var(static_cast<map_obj *>(TOP_FRAME().map)));
+
         DISPATCH();
       }
 
       CASE_OP(PRINT) {
         print(TOP_AND_POP());
+
         DISPATCH();
       }
     }

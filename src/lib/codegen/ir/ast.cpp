@@ -16,7 +16,6 @@ namespace dwt {
 namespace ir {
 
 std::atomic<uint64_t> ast::node_number = 0;
-std::mutex ast::lock;
 
 ast::ast()
   : _parent(nullptr)

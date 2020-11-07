@@ -29,7 +29,9 @@ public:
   }
 
   int add_r(std::string name) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     int idx = vars.size();
     var v = nil;
     vars.push(v);
@@ -39,7 +41,9 @@ public:
   }
 
   inline var get_r(int idx) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     return vars.get(idx);
   }
 
@@ -48,12 +52,16 @@ public:
   }
 
   std::string name_at(int idx) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     return _names.at(idx);
   }
 
   int index_of(std::string name) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     int index = -1;
 
     for (size_t i = 0; i < _names.size(); ++i) {
@@ -67,7 +75,9 @@ public:
   }
 
   inline void set_r(int idx, var v) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     vars.set(idx, v);
   }
 
@@ -84,7 +94,9 @@ public:
   }
 
 private:
+#if USE_THREADED_COMPILER
   std::mutex _mutex;
+#endif
   stack<var> vars;
   std::vector<std::string> _names;
 };

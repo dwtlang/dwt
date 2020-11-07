@@ -12,6 +12,9 @@
 #include <dwt/obj.hpp>
 #include <dwt/uncopyable.hpp>
 
+#if USE_THREADED_COMPILER
+#include <mutex>
+#endif
 #include <vector>
 
 namespace dwt {
@@ -36,7 +39,9 @@ private:
   void mark(obj *);
   void blacken();
 
+#if USE_THREADED_COMPILER
   std::mutex _mutex;
+#endif
   uint64_t _threshold;
   uint64_t _heap_size;
   obj *_objs;

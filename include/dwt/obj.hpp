@@ -17,7 +17,6 @@
 
 #include <atomic>
 #include <cassert>
-#include <mutex>
 #include <string>
 #include <vector>
 

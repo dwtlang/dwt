@@ -20,7 +20,7 @@ namespace dwt {
 
 class call_frame {
 public:
-  inline call_frame(function_obj *fn, size_t sp)
+  inline call_frame(function_obj *fn, unsigned int sp)
     : fn(fn)
     , ip(fn->code().entry())
     , sp(sp)
@@ -28,7 +28,7 @@ public:
     , map(nullptr) {
   }
 
-  inline call_frame(closure_obj *closure, size_t sp)
+  inline call_frame(closure_obj *closure, unsigned int sp)
     : fn(closure->fun_obj())
     , ip(fn->code().entry())
     , sp(sp)
@@ -38,7 +38,7 @@ public:
             : nullptr) {
   }
 
-  inline call_frame(class_obj *klass, size_t sp)
+  inline call_frame(class_obj *klass, unsigned int sp)
     : fn(klass)
     , ip(fn->code().entry())
     , sp(sp)
@@ -46,7 +46,7 @@ public:
     , map(new instance_obj(klass)) {
   }
 
-  inline call_frame(mapfn_obj *mapfn, size_t sp)
+  inline call_frame(mapfn_obj *mapfn, unsigned int sp)
     : fn(mapfn)
     , ip(fn->code().entry())
     , sp(sp)
@@ -59,7 +59,7 @@ public:
 
   function_obj *fn;
   uint8_t *ip;
-  size_t sp;
+  unsigned int sp;
   closure_obj *closure;
   map_obj *map;
 };

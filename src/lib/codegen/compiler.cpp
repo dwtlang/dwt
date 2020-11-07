@@ -495,9 +495,7 @@ void compiler::patch_closure(function_obj *fun_obj) {
 function_obj *compiler::operator()(ir::ast *tree) {
   walk(tree);
 
-  if (_fun_obj->type() == OBJ_CLASS) {
-    emit_op(OP_OBJ);
-  } else if (_fun_obj->type() == OBJ_MAPINI) {
+  if (_fun_obj->type() == OBJ_CLASS || _fun_obj->type() == OBJ_MAPINI) {
     emit_op(OP_MAP);
   } else {
 #if USE_BYTECODE_OPTIMISER
@@ -633,7 +631,9 @@ void compiler::visit(ir::stmt &stmt) {
  * @param id_str The fully scoped identifier string.
  */
 void compiler::add_local(std::string id_str) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
+#endif
   _fun_obj->add_local(local_var(id_str, _stack_pos));
 }
 
@@ -1033,7 +1033,9 @@ size_t compiler::find_global(std::string id_str) {
  */
 int compiler::find_local(std::string id_str) {
   BUG_UNLESS(id_str.size() > 0);
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
+#endif
   int slot = -1;
 
   for (auto &local : _fun_obj->locals()) {
@@ -1053,7 +1055,9 @@ int compiler::find_local(std::string id_str) {
  * @return The local_var* descriptor, or nullptr.
  */
 local_var *compiler::find_local(size_t idx) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
+#endif
   local_var *var = nullptr;
 
   for (auto &local : _fun_obj->locals()) {
@@ -1072,8 +1076,9 @@ local_var *compiler::find_local(size_t idx) {
  * @param slot The stack position to capture.
  */
 void compiler::capture_local(size_t slot) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
-
+#endif
   for (auto &l : _fun_obj->locals()) {
     if (l.slot() == slot) {
       l.is_captured(true);
@@ -1089,8 +1094,9 @@ void compiler::capture_local(size_t slot) {
  * @return The stack index if found, or -1 otherwise.
  */
 int compiler::find_upvar(std::string id_str) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
-
+#endif
   BUG_UNLESS(id_str.size() > 0);
   int slot = -1;
 

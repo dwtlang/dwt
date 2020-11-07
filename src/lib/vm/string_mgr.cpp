@@ -22,7 +22,9 @@ string_mgr &string_mgr::get() {
 }
 
 string_obj *string_mgr::get_r(std::string str) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
+#endif
   return get(str);
 }
 
@@ -33,7 +35,9 @@ string_obj *string_mgr::get(std::string str) {
 }
 
 string_obj *string_mgr::add_r(std::string str) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
+#endif
   return add(str);
 }
 
@@ -51,7 +55,9 @@ string_obj *string_mgr::add(std::string str) {
 }
 
 string_obj *string_mgr::get_r(std::string &str, hash_t hash) {
+#if USE_THREADED_COMPILER
   std::scoped_lock hold(_mutex);
+#endif
   return get(str, hash);
 }
 

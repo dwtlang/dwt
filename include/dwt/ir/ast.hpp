@@ -13,8 +13,8 @@
 #include <dwt/scope.hpp>
 #include <dwt/token_range.hpp>
 #include <dwt/token_ref.hpp>
+
 #include <memory>
-#include <mutex>
 #include <vector>
 
 namespace dwt {
@@ -27,9 +27,6 @@ namespace ir {
 class visitor;
 
 class ast {
-public:
-  static std::mutex lock;
-
 protected:
   ast();
 

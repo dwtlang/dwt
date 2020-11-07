@@ -13,7 +13,9 @@
 #include <dwt/uncopyable.hpp>
 #include <dwt/var.hpp>
 
+#if USE_THREADED_COMPILER
 #include <mutex>
+#endif
 
 namespace dwt {
 
@@ -28,14 +30,18 @@ public:
   }
 
   size_t add_r(var v) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     size_t idx = vars.size();
     vars.push(v);
     return idx;
   }
 
   inline var get_r(size_t idx) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     return vars.get(idx);
   }
 
@@ -44,7 +50,9 @@ public:
   }
 
   inline void set_r(size_t idx, var v) {
+#if USE_THREADED_COMPILER
     std::scoped_lock hold(_mutex);
+#endif
     vars.set(idx, v);
   }
 
@@ -61,7 +69,9 @@ public:
   }
 
 private:
+#if USE_THREADED_COMPILER
   std::mutex _mutex;
+#endif
   stack<var> vars;
 };
 

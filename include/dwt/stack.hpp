@@ -9,21 +9,18 @@
 #ifndef GUARD_DWT_STACK_HPP
 #define GUARD_DWT_STACK_HPP
 
+#include <dwt/macros.hpp>
 #include <dwt/var.hpp>
 
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
 
-#ifndef unlikely
-#define unlikely(cond) __builtin_expect(!!(cond), 0)
-#endif
-
 namespace dwt {
 
 template <typename T> class stack {
 public:
-  stack(size_t space)
+  stack(unsigned int space)
     : space(space)
     , sp(-1)
     , bp(space > 0 ? new T[space] : nullptr) {
@@ -66,7 +63,7 @@ public:
     }
   }
 
-  void push(T v) {
+  inline void push(T v) {
     if (unlikely(++sp == space)) {
       resize();
     }
@@ -98,15 +95,15 @@ public:
     sp = -1;
   }
 
-  inline T top(size_t off) const {
+  inline T top(unsigned int off) const {
     return bp[sp - off];
   }
 
-  inline T &top_ref(size_t off) {
+  inline T &top_ref(unsigned int off) {
     return bp[sp - off];
   }
 
-  inline T *top_ptr(size_t off) {
+  inline T *top_ptr(unsigned int off) {
     return &bp[sp - off];
   }
 
@@ -126,16 +123,16 @@ public:
     bp[sp] = v;
   }
 
-  inline T get(size_t off) const {
+  inline T get(unsigned int off) const {
     return bp[off];
   }
 
-  inline void set(size_t off, T v) {
+  inline void set(unsigned int off, T v) {
     bp[off] = v;
   }
 
-  inline void squash(size_t pos, size_t n) {
-    size_t shift = (sp - n) - pos;
+  inline void squash(unsigned int pos, unsigned int n) {
+    unsigned int shift = (sp - n) - pos;
 
     while (n) {
       bp[sp - shift] = bp[sp];
@@ -150,7 +147,7 @@ public:
     }
   }
 
-  inline size_t size() const {
+  inline unsigned int size() const {
     return sp + 1;
   }
 

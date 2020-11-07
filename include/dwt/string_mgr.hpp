@@ -12,7 +12,9 @@
 #include <dwt/hash_map.hpp>
 #include <dwt/string_obj.hpp>
 
+#if USE_THREADED_COMPILER
 #include <mutex>
+#endif
 
 namespace dwt {
 
@@ -21,7 +23,9 @@ private:
   string_mgr();
   virtual ~string_mgr();
 
+#if USE_THREADED_COMPILER
   std::mutex _mutex;
+#endif
 
 public:
   static string_mgr &get();
