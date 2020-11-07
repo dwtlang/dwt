@@ -14,10 +14,9 @@ jobs:
         make profile=performance -j2
     - name: Test
       run: |
-        sudo apt install python3-pip
         pip3 install tqdm colorama
         export PATH=$PWD/bin:$PATH
         dwt
-        test/fuzzgen.sh
+        test/fuzzgen.sh > /dev/null
         test/runner.py --jenkins
         test/postprocess.sh
