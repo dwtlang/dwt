@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/dwtlang/dwt/workflows/CI/badge.svg)](https://github.com/dwtlang/dwt/actions)
+
 # Dwt
 A simple scripting language called Dwt (rhymes with "put"), which is Welsh for a dinky thing that is cute and small in stature.
 
