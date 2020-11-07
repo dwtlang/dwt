@@ -1,4 +1,4 @@
-name: compact
+name: compact profile
 
 on: [push]
 
