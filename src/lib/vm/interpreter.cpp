@@ -38,11 +38,11 @@
 #define GET(n) exec_stack.get(n)
 #define SET(n, v) exec_stack.set(n, v)
 
-#define GC_MAYBE()                                       \
-  do {                                                   \
-    if (unlikely(garbage_collector::get().is_waiting)) { \
-      garbage_collector::get().collect_garbage(this);    \
-    }                                                    \
+#define GC_MAYBE()                                    \
+  do {                                                \
+    if (unlikely(garbage_collector::is_waiting)) {    \
+      garbage_collector::get().collect_garbage(this); \
+    }                                                 \
   } while (0)
 
 #define TOP_FRAME() call_stack.top_ref()
