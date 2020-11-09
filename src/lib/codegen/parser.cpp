@@ -785,7 +785,7 @@ ir::if_stmt *parser::if_stmt() {
   if (peek_any(KW_LOOP, KW_WHILE, KW_UNTIL)) {
     statement->if_body(loop_stmt());
   } else {
-    statement->if_body(block());
+    statement->if_body(stmt());
   }
 
   if (accept(KW_ELSE)) {
@@ -793,7 +793,7 @@ ir::if_stmt *parser::if_stmt() {
     if (peek_any(KW_LOOP, KW_WHILE, KW_UNTIL)) {
       statement->else_body(loop_stmt());
     } else {
-      statement->else_body(block());
+      statement->else_body(stmt());
     }
   }
 
@@ -918,15 +918,15 @@ ir::loop_stmt *parser::loop_stmt() {
     skip_any(TOK_BREAK);
     cond = expr();
     skip_any(TOK_BREAK);
-    body = block();
+    body = stmt();
   } else if (accept(KW_UNTIL)) {
     loop_type = ir::UNTIL_LOOP;
     skip_any(TOK_BREAK);
     cond = expr();
     skip_any(TOK_BREAK);
-    body = block();
+    body = stmt();
   } else {
-    body = block();
+    body = stmt();
     skip_any(TOK_BREAK);
 
     if (accept(KW_WHILE)) {
@@ -1362,6 +1362,7 @@ ir::expr *parser::primary_expr() {
   case TOK_LSQUARE:
     e = type2();
     break;
+  case KW_DUP:
   default:
     e = scoped_name();
     break;
@@ -1428,7 +1429,7 @@ ir::scoped_name *parser::scoped_name() {
         skip_any(TOK_BREAK);
       }
 
-      expect(TOK_IDENT);
+      expect_any(TOK_IDENT, KW_DUP);
       s += gettok().text();
 
       if (begintok.type() == TOK_INV) {

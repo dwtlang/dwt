@@ -64,6 +64,7 @@ namespace dwt {
 
 interpreter::interpreter()
   : exec_stack(1024) {
+
 }
 
 interpreter::~interpreter() {
@@ -328,8 +329,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(CALL) {
-        o0 = *op++;
-        v0 = TOPN(o0);
+        v0 = TOPN(o0 = *op++);
         SAVE_STATE();
         as_obj(v0)->call(*this, o0);
         LOAD_STATE();

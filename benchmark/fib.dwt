@@ -1,4 +1,4 @@
-api fun fib(var n) {
+fun fib(var n) {
     if n <= 1 {
         return 1
     }

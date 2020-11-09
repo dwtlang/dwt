@@ -22,6 +22,7 @@ namespace dwt {
 
 class hash_map {
   friend class map_obj;
+  friend class code_obj;
 
 public:
   hash_map(size_t capacity = 16);

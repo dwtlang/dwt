@@ -31,6 +31,17 @@ obj *code_obj::clone() {
 }
 
 void code_obj::blacken() {
+  for (size_t i = 0; i < _token_map._capacity; ++i) {
+    auto &entry = _token_map._buckets[i];
+    if (entry.key != nil) {
+      if (VAR_IS_OBJ(entry.key)) {
+        VAR_AS_OBJ(entry.key)->mark_as(MARK_GREY);
+      }
+      if (VAR_IS_OBJ(entry.value)) {
+        VAR_AS_OBJ(entry.value)->mark_as(MARK_GREY);
+      }
+    }
+  }
 }
 
 std::string code_obj::to_string() {

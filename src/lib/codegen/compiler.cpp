@@ -6,6 +6,7 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
+#include <dwt/built_in.hpp>
 #include <dwt/class_obj.hpp>
 #include <dwt/closure_obj.hpp>
 #include <dwt/compiler.hpp>
@@ -452,6 +453,7 @@ code_obj &compiler::current_code_obj() {
  * @return The executable function object.
  */
 function_obj *compiler::compile(std::unique_ptr<ir::ast> &&tree) {
+  built_in::get(); // registers built-in functions
   return (*this)(tree.get());
 }
 

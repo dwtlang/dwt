@@ -66,6 +66,7 @@ typedef enum {
   TOK_COMMENT,
 
   KW_USE,
+  KW_DUP,
   KW_API,
   KW_IS,
   KW_MOD,

@@ -1,0 +1,7 @@
+fun f() {
+  print "f()"
+}
+
+var g := dup(f)
+f := nil
+g()
