@@ -17,7 +17,10 @@ hash_map::hash_map(size_t capacity)
   , _entries(0) {
 }
 
-hash_map::hash_map(const hash_map &other) {
+hash_map::hash_map(const hash_map &other)
+  : _buckets(std::make_unique<kv_pair[]>(other._capacity))
+  , _capacity(other._capacity)
+  , _entries(0) {
   for (size_t i = 0; i < other._capacity; ++i) {
     auto &entry = other._buckets[i];
 
