@@ -57,8 +57,11 @@ public:
   }
 
   inline void invoke(syscall_obj *syscall, unsigned int num_args) {
+    size_t fp = exec_stack.size() - (num_args + 1);
     var *args = exec_stack.top_ptr(num_args - 1);
-    exec_stack.push(syscall->impl()(num_args, args));
+    var r = syscall->impl()(num_args, args);
+    exec_stack.pop(exec_stack.size() - fp);
+    exec_stack.push(r);
   }
 
   void mark_roots(std::vector<obj *> &grey_objs);

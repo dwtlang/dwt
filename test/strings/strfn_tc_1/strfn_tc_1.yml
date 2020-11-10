@@ -1,0 +1,9 @@
+---
+description:      "test built-in str() casting function"
+name:             strfn_tc_1
+src:              strfn_tc_1.dwt
+out:              strfn_tc_1.out
+err:              strfn_tc_1.err
+exitcode:         0
+loop:             1
+skip:             false

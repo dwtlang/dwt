@@ -79,8 +79,10 @@ void interpreter::mark_roots(std::vector<obj *> &grey_objs) {
   });
 
   call_stack.for_all([&](auto &f) {
-    f.fn->mark_as(MARK_GREY);
-    grey_objs.push_back(f.fn);
+    if (f.fn) {
+      f.fn->mark_as(MARK_GREY);
+      grey_objs.push_back(f.fn);
+    }
 
     if (f.closure) {
       f.closure->mark_as(MARK_GREY);

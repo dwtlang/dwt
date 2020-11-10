@@ -11,6 +11,7 @@
 #include <dwt/interpret_exception.hpp>
 #include <dwt/obj.hpp>
 #include <dwt/scope.hpp>
+#include <dwt/string_mgr.hpp>
 #include <dwt/token_ref.hpp>
 
 namespace dwt {
@@ -33,11 +34,22 @@ var dup(size_t nr_args, var *args) {
   return v;
 }
 
+var str(size_t nr_args, var *args) {
+  if (nr_args != 1) {
+    throw interpret_exception("e@1 expected a single argument");
+  }
+
+  return as_var(string_mgr::get().add(var_to_string(args[0])));
+}
+
 } // namespace
 
 built_in::built_in() {
   scope::global->add(token_ref("dup"), SCOPE_CREATE | SCOPE_EXCLUSIVE);
   ffi::bind("::dup", dup);
+
+  scope::global->add(token_ref("str"), SCOPE_CREATE | SCOPE_EXCLUSIVE);
+  ffi::bind("::str", str);
 }
 
 built_in::~built_in() {

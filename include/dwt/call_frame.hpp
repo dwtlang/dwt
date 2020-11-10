@@ -54,6 +54,14 @@ public:
     , map(new map_obj) {
   }
 
+  inline call_frame(unsigned int sp)
+    : fn(nullptr)
+    , ip(nullptr)
+    , sp(sp)
+    , closure(nullptr)
+    , map(nullptr) {
+  }
+
   inline call_frame() {
   }
 

@@ -1,0 +1,13 @@
+fun foo() {
+}
+
+print str(foo)
+print str(true)
+print str(false)
+print str(nil)
+
+var i := 123.456
+var j := 654.321
+
+print str(i) + str(j)
+
