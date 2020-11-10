@@ -64,7 +64,6 @@ namespace dwt {
 
 interpreter::interpreter()
   : exec_stack(1024) {
-
 }
 
 interpreter::~interpreter() {

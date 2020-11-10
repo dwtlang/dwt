@@ -513,20 +513,15 @@ function_obj *compiler::operator()(ir::ast *tree) {
   await();
 #endif
 
-  debug {
-    decompiler decompiler(_fun_obj);
-    decompiler.decompile();
-  }
-
-#if USE_BYTECODE_COMPILER
+#if USE_BYTECODE_OPTIMISER
   optimise(_fun_obj->code());
   _fun_obj->optimised(true);
+#endif
 
   debug {
     decompiler decompiler(_fun_obj);
     decompiler.decompile();
   }
-#endif
 
   if (_concurrent) {
     --concurrency;
