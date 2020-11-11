@@ -34,8 +34,7 @@ function_obj::function_obj(const function_obj &other)
   , _upvars(other._upvars)
   , _code(static_cast<code_obj *>(other._code->clone()))
   , _name(static_cast<string_obj *>(other._name->clone()))
-  , _patchpoint(other._patchpoint)
-  , _optimised(other._optimised) {
+  , _patchpoint(other._patchpoint) {
 
   _short_name =
     string_mgr::get().add_r(name().substr(name().find_last_of(":") + 1));

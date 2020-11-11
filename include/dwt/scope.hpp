@@ -34,6 +34,7 @@ public:
   static scope *open(token_ref, int = SCOPE_APPEND);
   static scope *open(int = SCOPE_APPEND);
   static scope *add(token_ref, int = SCOPE_EXCLUSIVE);
+  static scope *add(std::string, int = SCOPE_EXCLUSIVE);
   static scope *close();
   static std::string to_string();
 

@@ -1,0 +1,9 @@
+---
+description:      "ensure str does not break string interning"
+name:             strfn_tc_2
+src:              strfn_tc_2.dwt
+out:              strfn_tc_2.out
+err:              strfn_tc_2.err
+exitcode:         0
+loop:             1
+skip:             false

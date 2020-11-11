@@ -70,15 +70,14 @@ string_obj *string_mgr::get(std::string &str, hash_t hash) {
 
     if (VAR_IS_NIL(entry->key) && VAR_IS_NIL(entry->value)) {
       return nullptr;
-    } else {
+    } else if (!VAR_IS_NIL(entry->key)) {
       key = static_cast<string_obj *>(VAR_AS_OBJ(entry->key));
+      if (key && key->text() == str) {
+        return key;
+      }
     }
 
-    if (key->text() == str) {
-      return key;
-    } else {
-      pos = (pos + 1) & (_capacity - 1);
-    }
+    pos = (pos + 1) & (_capacity - 1);
   }
 
   return nullptr;

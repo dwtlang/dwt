@@ -42,6 +42,8 @@
   do {                                                \
     if (unlikely(garbage_collector::is_waiting)) {    \
       garbage_collector::get().collect_garbage(this); \
+      exec_stack.compact();                           \
+      call_stack.compact();                           \
     }                                                 \
   } while (0)
 
@@ -341,13 +343,15 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
 
       CASE_OP(RET) {
         o0 = exec_stack.size() - (fp + 1);
+
         if (open_upvars) {
           close_upvars(fp);
         }
+
         POPN_AND_SWAP(o0, TOP());
         POP_FRAME();
 
-        if (likely(call_stack.size() > 0)) {
+        if (likely(call_stack.size() != 0)) {
           LOAD_STATE();
         } else {
           return TOP_AND_POP();
@@ -419,8 +423,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       }
 
       CASE_OP(TAILCALL) {
-        o0 = *op++;
-        v0 = TOPN(o0);
+        v0 = TOPN(o0 = *op++);
         if (as_obj(v0) == TOP_FRAME().fn) {
           exec_stack.squash(fp, o0);
           op = TOP_FRAME().fn->code().entry();

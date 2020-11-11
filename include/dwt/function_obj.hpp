@@ -77,14 +77,6 @@ public:
 
   virtual std::string to_string() override;
 
-  void optimised(bool tog) {
-    _optimised = tog;
-  }
-
-  bool optimised() const {
-    return _optimised;
-  }
-
   void is_api(bool toggle) {
     _is_api = toggle;
   }
@@ -106,7 +98,6 @@ protected:
 
 private:
   size_t _patchpoint = 0;
-  bool _optimised = false;
   bool _is_api = false;
 };
 

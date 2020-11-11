@@ -299,7 +299,6 @@ void decompiler::pass() {
     s += TERM_BOLD "<fun ";
     s += _fun_obj->name();
     s += ">";
-    s += (_fun_obj->optimised() ? " (optimised)" : " (unoptimised)");
     s += TERM_RESET "\n";
 
     err(s);

@@ -16,15 +16,15 @@
 namespace dwt {
 
 class string_obj : public obj {
+  friend class string_mgr;
+
 public:
-  string_obj(std::string);
-  string_obj();
-  string_obj(const string_obj &);
   virtual ~string_obj();
 
   virtual obj_type type() override;
   virtual obj *clone() override;
   virtual hash_t hash() override;
+  virtual size_t length() override;
 
   virtual var op_add(var v, bool rhs = false) override;
   virtual var op_sub(var v, bool rhs = false) override;
@@ -42,6 +42,9 @@ public:
   virtual std::string to_string() override;
 
 private:
+  string_obj(std::string);
+  string_obj();
+  string_obj(const string_obj &) = delete;
   std::string _text;
 };
 

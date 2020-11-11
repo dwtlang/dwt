@@ -51,6 +51,10 @@ public:
     return ob_oid;
   }
 
+  virtual size_t length() {
+    throw interpret_exception("e@1 object has no concept of length");
+  }
+
   virtual std::string to_string();
 
   virtual void blacken() {

@@ -7,7 +7,9 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/interpret_exception.hpp>
+#include <dwt/string_mgr.hpp>
 #include <dwt/string_obj.hpp>
+#include <dwt/utf8.hpp>
 
 namespace dwt {
 
@@ -18,10 +20,6 @@ string_obj::string_obj(std::string text)
 string_obj::string_obj() {
 }
 
-string_obj::string_obj(const string_obj &other)
-  : _text(other._text) {
-}
-
 string_obj::~string_obj() {
 }
 
@@ -30,7 +28,7 @@ obj_type string_obj::type() {
 }
 
 obj *string_obj::clone() {
-  return new string_obj(*this);
+  return string_mgr::get().add(to_string());
 }
 
 hash_t string_obj::hash() {
@@ -43,6 +41,10 @@ std::string string_obj::printable_string() {
 
 std::string string_obj::to_string() {
   return _text;
+}
+
+size_t string_obj::length() {
+  return utf8_strlen(text());
 }
 
 var string_obj::op_mul(var v, bool rhs) {
@@ -58,7 +60,7 @@ var string_obj::op_mul(var v, bool rhs) {
       while (n--) {
         s += text();
       }
-      return OBJ_AS_VAR(new string_obj(s));
+      return OBJ_AS_VAR(string_mgr::get().add(s));
     }
   } else {
     throw interpret_exception(
@@ -79,9 +81,9 @@ var string_obj::op_add(var v, bool rhs) {
 
   if (s) {
     if (rhs) {
-      s = new string_obj(s->text() + text());
+      s = string_mgr::get().add(s->text() + text());
     } else {
-      s = new string_obj(text() + s->text());
+      s = string_mgr::get().add(text() + s->text());
     }
   } else {
     throw interpret_exception("e@1 invalid operands");
@@ -104,7 +106,7 @@ dwt::string_obj *remove_substr(std::string original, std::string pattern) {
     s.erase(pos, pattern.length());
   }
 
-  dwt::string_obj *obj = new dwt::string_obj(s);
+  dwt::string_obj *obj = string_mgr::get().add(s);
 
   return obj;
 }

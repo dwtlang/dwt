@@ -33,7 +33,8 @@ scope::scope(scope *parent_scope, token_ref name_ref, int flags)
 }
 
 scope::scope()
-  : _index(globals::table().add_r("::")) {
+  : _parent_scope(nullptr)
+  , _index(globals::table().add_r("::")) {
 }
 
 scope::~scope() {
@@ -54,7 +55,6 @@ bool scope::is_anonymous() const {
 
 bool scope::is_global() const {
   bool isglob = true;
-
   auto s = this;
 
   while (s) {
@@ -98,6 +98,10 @@ std::string scope::qualified_name() const {
   }
 
   return qualified;
+}
+
+scope *scope::add(std::string name, int flags) {
+  return add(token_ref(name), flags);
 }
 
 scope *scope::add(token_ref name_ref, int flags) {

@@ -585,6 +585,8 @@ token_ref scanner::next_token(bool skip_whitespace) {
       sym = TOK_EQUALS;
       ch = next_char();
       lexeme += ch;
+    } else {
+      oops("e@1 use ':=' for assignment instead of '$1'", bad_token(lexeme));
     }
     break;
 

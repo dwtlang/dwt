@@ -1,0 +1,7 @@
+
+var s0 := "Hello, world!"
+var s1 := dup(s0)
+
+// strings are interned, ensure dup does not break this assumption
+print s0 is s1
+

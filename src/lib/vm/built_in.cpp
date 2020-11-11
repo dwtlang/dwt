@@ -13,6 +13,7 @@
 #include <dwt/scope.hpp>
 #include <dwt/string_mgr.hpp>
 #include <dwt/token_ref.hpp>
+#include <dwt/utf8.hpp>
 
 namespace dwt {
 
@@ -42,14 +43,29 @@ var str(size_t nr_args, var *args) {
   return as_var(string_mgr::get().add(var_to_string(args[0])));
 }
 
+var len(size_t nr_args, var *args) {
+  if (nr_args != 1) {
+    throw interpret_exception("e@1 expected a single argument");
+  }
+
+  if (is_obj(args[0])) {
+    return as_var(static_cast<double>(as_obj(args[0])->length()));
+  }
+
+  throw interpret_exception("e@1 value has no concept of length");
+}
+
+void add_built_in_function(std::string name, ffi::syscall impl) {
+  scope::global->add(name, SCOPE_CREATE | SCOPE_EXCLUSIVE);
+  ffi::bind("::" + name, impl);
+}
+
 } // namespace
 
 built_in::built_in() {
-  scope::global->add(token_ref("dup"), SCOPE_CREATE | SCOPE_EXCLUSIVE);
-  ffi::bind("::dup", dup);
-
-  scope::global->add(token_ref("str"), SCOPE_CREATE | SCOPE_EXCLUSIVE);
-  ffi::bind("::str", str);
+  add_built_in_function("dup", dup);
+  add_built_in_function("str", str);
+  add_built_in_function("len", len);
 }
 
 built_in::~built_in() {

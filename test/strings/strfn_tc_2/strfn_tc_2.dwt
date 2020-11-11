@@ -1,0 +1,7 @@
+
+var s0 := "Hello, world!"
+var s1 := str(s0)
+
+// strings are interned, ensure str does not break this assumption
+print s0 is s1
+

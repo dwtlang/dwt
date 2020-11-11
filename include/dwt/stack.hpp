@@ -9,12 +9,16 @@
 #ifndef GUARD_DWT_STACK_HPP
 #define GUARD_DWT_STACK_HPP
 
+#include <dwt/debug.hpp>
 #include <dwt/macros.hpp>
 #include <dwt/var.hpp>
 
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+
+#define COMPACT_THRESHOLD 128
+#define COMPACT_HEADROOM 16
 
 namespace dwt {
 
@@ -47,6 +51,18 @@ public:
     if (space > 0) {
       BUG_UNLESS(bp);
       delete[] bp;
+    }
+  }
+
+  void compact() {
+    if (sp > COMPACT_THRESHOLD) {
+      if (sp + COMPACT_HEADROOM > space) {
+        T *b = new T[sp + COMPACT_HEADROOM];
+        std::copy(bp, bp + sp, b);
+        delete[] bp;
+        bp = b;
+        space = sp + COMPACT_HEADROOM;
+      }
     }
   }
 

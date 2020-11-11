@@ -68,6 +68,7 @@ typedef enum {
   KW_USE,
   KW_DUP,
   KW_STR,
+  KW_LEN,
   KW_API,
   KW_IS,
   KW_MOD,

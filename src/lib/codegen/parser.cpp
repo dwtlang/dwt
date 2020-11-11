@@ -1364,6 +1364,7 @@ ir::expr *parser::primary_expr() {
     break;
   case KW_DUP:
   case KW_STR:
+  case KW_LEN:
   default:
     e = scoped_name();
     break;
@@ -1430,7 +1431,7 @@ ir::scoped_name *parser::scoped_name() {
         skip_any(TOK_BREAK);
       }
 
-      expect_any(TOK_IDENT, KW_DUP, KW_STR);
+      expect_any(TOK_IDENT, KW_DUP, KW_STR, KW_LEN);
       s += gettok().text();
 
       if (begintok.type() == TOK_INV) {

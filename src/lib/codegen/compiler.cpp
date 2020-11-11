@@ -515,7 +515,6 @@ function_obj *compiler::operator()(ir::ast *tree) {
 
 #if USE_BYTECODE_OPTIMISER
   optimise(_fun_obj->code());
-  _fun_obj->optimised(true);
 #endif
 
   debug {
