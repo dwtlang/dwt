@@ -6,6 +6,7 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
+#include <dwt/feedback.hpp>
 #include <dwt/version.hpp>
 
 #include <cstring>
@@ -53,11 +54,16 @@ std::string version::notice() {
     year_range += "-";
     year_range += BUILD_YEAR;
   }
-  std::string notice_str("    >~<\n   (A|A)\n");
-  notice_str += " <(  V  )> Dwt ";
+  std::string notice_str("    " TERM_BLUE TERM_BOLD ">~<" TERM_RESET
+                         "    Dwt ");
   notice_str += version::to_string();
-  notice_str += "\n    ^ ^    Copyright ";
+  notice_str += TERM_BOLD "\n   (A" TERM_RESET "|" TERM_BOLD "A)" TERM_RESET
+                          "   Copyright (C) ";
   notice_str += year_range + " Andrew Scott and Contributors\n";
+  notice_str += TERM_BOLD " <(  " TERM_YELLOW TERM_BOLD "V" TERM_RESET TERM_BOLD
+                          "  )>" TERM_RESET " All rights reserved.\n";
+  notice_str += "    " TERM_YELLOW TERM_BOLD "^ ^" TERM_RESET
+                "    Licensed under the terms of the MPL v2.0\n";
 
   return notice_str;
 }
