@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{10E5F748-5A7B-4A10-9FBB-FFCA5C52A2C5}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../include;../../src/lib</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../include;../../src/lib</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../include;../../src/lib</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../include;../../src/lib</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>MAJOR_VER=0;MINOR_VER=0;PATCH_VER=0;BUILD_TAG="";BUILD_YEAR="2020";BUILD_PROF="performance";USE_THREADED_COMPILER=1;USE_BYTECODE_OPTIMISER=1;USE_COMPUTED_GOTO=0;JENKINS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>MAJOR_VER=0;MINOR_VER=0;PATCH_VER=0;BUILD_TAG="";BUILD_YEAR="2020";BUILD_PROF="performance";USE_THREADED_COMPILER=1;USE_BYTECODE_OPTIMISER=1;USE_COMPUTED_GOTO=0;JENKINS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>MAJOR_VER=0;MINOR_VER=0;PATCH_VER=0;BUILD_TAG="";BUILD_YEAR="2020";BUILD_PROF="performance";USE_THREADED_COMPILER=1;USE_BYTECODE_OPTIMISER=1;USE_COMPUTED_GOTO=0;JENKINS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>MAJOR_VER=0;MINOR_VER=0;PATCH_VER=0;BUILD_TAG="";BUILD_YEAR="2020";BUILD_PROF="performance";USE_THREADED_COMPILER=1;USE_BYTECODE_OPTIMISER=1;USE_COMPUTED_GOTO=0;JENKINS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\cli\main.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\compiler.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\add_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\and_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\arguments.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\assign_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\ast.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\block.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\boolean.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\break_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\call_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\compare_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\continue_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\declaration.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\equality_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\expr_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\ffi_decl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\for_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\function.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\function_body.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\function_decl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\if_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\is_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\kv_pair.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\lambda.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\lambda_decl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\lambda_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\lazy_visitor.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\loop_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\map_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\map_impl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\member_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\module_decl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\mult_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\nil_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\numeric_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\object.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\object_body.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\object_decl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\or_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\parameter.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\parameters.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\primary_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\print_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\return_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\scoped_name.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\script.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\string_spec.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\subscript_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\super_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\type1.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\type2.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\type3.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\type4.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\type5.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\unary_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\use_stmt.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\var_decl.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\visitor.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\ir\xor_expr.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\parser.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\peephole.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\pho\constant_folding.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\pho\merge_pops.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\pho\set_pop_get.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\pho\tail_calls.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\pho\unreachable_code.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\pho\zero_branching.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\scanner.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\scope.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\token.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\token_range.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\token_ref.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\token_seq.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\token_type.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\utf8.cpp" />
+    <ClCompile Include="..\..\src\lib\codegen\utf8_source.cpp" />
+    <ClCompile Include="..\..\src\lib\decompiler.cpp" />
+    <ClCompile Include="..\..\src\lib\feedback.cpp" />
+    <ClCompile Include="..\..\src\lib\fnv1a.cpp" />
+    <ClCompile Include="..\..\src\lib\reporting.cpp" />
+    <ClCompile Include="..\..\src\lib\sha3_algo.cpp" />
+    <ClCompile Include="..\..\src\lib\version.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\built_in.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\constants.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\ffi.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\garbage_collector.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\globals.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\hash_map.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\interpreter.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\box_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\class_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\closure_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\code_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\function_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\instance_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\iterator_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\mapfn_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\map_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\string_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\syscall_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\objects\upvar_obj.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\obj_type.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\opcode.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\string_mgr.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\var.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\include\dwt\opcodes.inc" />
+    <None Include="..\..\src\lib\vm\interpreter.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\dwt\box_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\built_in.hpp" />
+    <ClInclude Include="..\..\include\dwt\call_frame.hpp" />
+    <ClInclude Include="..\..\include\dwt\class_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\closure_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\code_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\compiler.hpp" />
+    <ClInclude Include="..\..\include\dwt\constants.hpp" />
+    <ClInclude Include="..\..\include\dwt\debug.hpp" />
+    <ClInclude Include="..\..\include\dwt\decompiler.hpp" />
+    <ClInclude Include="..\..\include\dwt\exception.hpp" />
+    <ClInclude Include="..\..\include\dwt\feedback.hpp" />
+    <ClInclude Include="..\..\include\dwt\ffi.hpp" />
+    <ClInclude Include="..\..\include\dwt\fnv1a.hpp" />
+    <ClInclude Include="..\..\include\dwt\function_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\function_type.hpp" />
+    <ClInclude Include="..\..\include\dwt\garbage_collector.hpp" />
+    <ClInclude Include="..\..\include\dwt\globals.hpp" />
+    <ClInclude Include="..\..\include\dwt\hash_map.hpp" />
+    <ClInclude Include="..\..\include\dwt\instance_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\interpreter.hpp" />
+    <ClInclude Include="..\..\include\dwt\interpret_exception.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\add_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\and_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\arguments.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\assign_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\ast.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\block.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\boolean.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\break_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\call_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\compare_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\continue_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\declaration.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\equality_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\expr_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\ffi_decl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\for_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\function.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\function_body.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\function_decl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\if_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\is_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\kv_pair.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\lambda.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\lambda_decl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\lambda_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\lazy_visitor.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\loop_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\map_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\map_impl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\member_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\module_decl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\mult_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\nil_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\numeric_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\object.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\object_body.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\object_decl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\or_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\parameter.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\parameters.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\primary_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\printer.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\print_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\return_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\scoped_name.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\script.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\string_spec.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\subscript_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\super_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\type1.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\type2.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\type3.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\type4.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\type5.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\unary_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\use_stmt.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\var_decl.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\visitor.hpp" />
+    <ClInclude Include="..\..\include\dwt\ir\xor_expr.hpp" />
+    <ClInclude Include="..\..\include\dwt\iterator_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\kv_pair.hpp" />
+    <ClInclude Include="..\..\include\dwt\local_var.hpp" />
+    <ClInclude Include="..\..\include\dwt\macros.hpp" />
+    <ClInclude Include="..\..\include\dwt\mapfn_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\map_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\obj_type.hpp" />
+    <ClInclude Include="..\..\include\dwt\opcode.hpp" />
+    <ClInclude Include="..\..\include\dwt\parser.hpp" />
+    <ClInclude Include="..\..\include\dwt\peephole.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\constant_folding.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\merge_pops.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\pop_and_get.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\set_pop_get.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\tail_calls.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\unreachable_code.hpp" />
+    <ClInclude Include="..\..\include\dwt\pho\zero_branching.hpp" />
+    <ClInclude Include="..\..\include\dwt\reporting.hpp" />
+    <ClInclude Include="..\..\include\dwt\scanner.hpp" />
+    <ClInclude Include="..\..\include\dwt\scope.hpp" />
+    <ClInclude Include="..\..\include\dwt\sha3.hpp" />
+    <ClInclude Include="..\..\include\dwt\sha3_algo.hpp" />
+    <ClInclude Include="..\..\include\dwt\stack.hpp" />
+    <ClInclude Include="..\..\include\dwt\string_mgr.hpp" />
+    <ClInclude Include="..\..\include\dwt\string_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\syscall_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\token.hpp" />
+    <ClInclude Include="..\..\include\dwt\token_range.hpp" />
+    <ClInclude Include="..\..\include\dwt\token_ref.hpp" />
+    <ClInclude Include="..\..\include\dwt\token_seq.hpp" />
+    <ClInclude Include="..\..\include\dwt\token_type.hpp" />
+    <ClInclude Include="..\..\include\dwt\uncopyable.hpp" />
+    <ClInclude Include="..\..\include\dwt\upvar.hpp" />
+    <ClInclude Include="..\..\include\dwt\upvar_obj.hpp" />
+    <ClInclude Include="..\..\include\dwt\utf8.hpp" />
+    <ClInclude Include="..\..\include\dwt\utf8_source.hpp" />
+    <ClInclude Include="..\..\include\dwt\var.hpp" />
+    <ClInclude Include="..\..\include\dwt\var_type.hpp" />
+    <ClInclude Include="..\..\include\dwt\version.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
