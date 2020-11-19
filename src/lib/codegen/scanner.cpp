@@ -371,6 +371,14 @@ token_ref scanner::next_token(bool skip_whitespace) {
     whitespace(lexeme);
     break;
 
+  case '\r':
+    lexeme += ch;
+    if (peek_char() == '\n') {
+      sym = TOK_BREAK;
+      lexeme += next_char();
+    }
+    break;
+
   case '\n':
     sym = TOK_BREAK;
     lexeme += ch;
