@@ -330,6 +330,7 @@ tmp_file.write(f"<testsuite tests=\"{total_tests}\" errors=\"0\" failures=\"{fai
 tmp_file.write(junit_file.read())
 junit_file.close()
 tmp_file.close()
+os.remove(junit_file_path)
 os.rename("junit_tmp.xml", junit_file_path)
 
 if fail_count > 0:
