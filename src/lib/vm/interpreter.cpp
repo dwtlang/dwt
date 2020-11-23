@@ -112,7 +112,7 @@ void interpreter::print(var v) {
 
 upvar_obj *interpreter::capture_upvar(size_t slot, size_t fp) {
   upvar_obj *curr_upvar = open_upvars;
-  upvar_obj *prev_upvar = open_upvars;
+  upvar_obj *prev_upvar = nullptr;
   size_t pos = fp + slot;
 
   while (curr_upvar) {

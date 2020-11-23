@@ -33,7 +33,7 @@ public:
     , ip(fn->code().entry())
     , sp(sp)
     , closure(closure)
-    , map(fn->type() == OBJ_CLASS
+    , map((fn->type() == OBJ_CLASS) || (fn->type() == OBJ_MAPINI)
             ? new instance_obj(static_cast<class_obj *>(fn))
             : nullptr) {
   }
