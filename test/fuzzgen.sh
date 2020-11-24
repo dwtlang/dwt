@@ -1,6 +1,6 @@
 #!/bin/bash
 
-YML_FILES=`find test -name "*.yml"`
+CFG_FILES=`find test -name "*.cfg"`
 TEST_NUMBER=1
 TEST_VARIANT=0
 
@@ -22,13 +22,13 @@ else
     mkdir test/fuzz
 fi
 
-for F in $YML_FILES
+for F in $CFG_FILES
 do
-    DWT_FILE=`echo $F | sed 's/\.yml/.dwt'/g`
-    OUT_FILE=`echo $F | sed 's/\.yml/.out'/g`
-    ERR_FILE=`echo $F | sed 's/\.yml/.err'/g`
+    DWT_FILE=`echo $F | sed 's/\.cfg/.dwt'/g`
+    OUT_FILE=`echo $F | sed 's/\.cfg/.out'/g`
+    ERR_FILE=`echo $F | sed 's/\.cfg/.err'/g`
     TEST_NAME=$(basename $F)
-    TEST_NAME=`echo $TEST_NAME | sed 's/\.yml/'/g`
+    TEST_NAME=`echo $TEST_NAME | sed 's/\.cfg/'/g`
     NAME_STEM=`echo $TEST_NAME | sed 's/_tc.*/'/g`
 
     for ((i=1;i<=100;i++));
@@ -37,10 +37,17 @@ do
         mkdir test/fuzz/$NEW_NAME
         echo -ne "$TEST_NAME ~> $NEW_NAME                                     \r"
 
-        cat $F | sed "s/$TEST_NAME/$NEW_NAME/g" > test/fuzz/${NEW_NAME}/${NEW_NAME}.yml
+        cat $F | sed "s/$TEST_NAME/$NEW_NAME/g" > test/fuzz/${NEW_NAME}/${NEW_NAME}.cfg
         tools/fuzzer $DWT_FILE $SEED > test/fuzz/${NEW_NAME}/${NEW_NAME}.dwt
-		cp $OUT_FILE test/fuzz/${NEW_NAME}/${NEW_NAME}.out
-		cp $ERR_FILE test/fuzz/${NEW_NAME}/${NEW_NAME}.err
+
+        if [ -f $OUT_FILE ]
+        then
+          cp $OUT_FILE test/fuzz/${NEW_NAME}/${NEW_NAME}.out
+        fi
+		    if [ -f $ERR_FILE ]
+        then
+          cp $ERR_FILE test/fuzz/${NEW_NAME}/${NEW_NAME}.err
+        fi
 
         TEST_NUMBER=$((TEST_NUMBER+1))
     done

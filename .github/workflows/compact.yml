@@ -14,9 +14,8 @@ jobs:
         make profile=compact -j2
     - name: Test
       run: |
-        pip3 install tqdm colorama
         export PATH=$PWD/bin:$PATH
         dwt
         test/fuzzgen.sh > /dev/null
-        test/runner.py --jenkins
-        test/postprocess.sh
+        cd test
+        ./tester

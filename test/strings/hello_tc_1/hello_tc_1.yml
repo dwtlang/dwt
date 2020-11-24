@@ -1,9 +1,0 @@
----
-description:        "Hello, world!"
-name:               hello_tc_1
-src:                hello_tc_1.dwt
-out:                hello_tc_1.out
-err:                hello_tc_1.err
-exitcode:           0
-skip:               false
-

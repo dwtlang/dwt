@@ -1,9 +1,0 @@
----
-description:      "expand a string with itself n times"
-name:             strmul_tc_1
-src:              strmul_tc_1.dwt
-out:              strmul_tc_1.out
-err:              strmul_tc_1.err
-exitcode:         0
-loop:             1
-skip:             false

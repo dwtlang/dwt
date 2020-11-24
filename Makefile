@@ -45,6 +45,9 @@ FUZZ_SRC        := $(FUZZ_DIR)/fuzzer.cpp
 FUZZ_OBS        := $(FUZZ_SRC:%.cpp=%.o)
 FUZZ_BIN        := $(FUZZ_DIR)/fuzzer
 TEST_DIR        := test
+TEST_SRC				:= $(TEST_DIR)/tester.cpp
+TEST_OBJ				:= $(TEST_SRC:%.cpp=%.o)
+TEST_BIN				:= $(TEST_DIR)/tester
 FFI_TEST_DIR    := $(TEST_DIR)/ffi
 FFI_TEST_BIN    := $(BIN_DIR)/ffi
 FFI_TEST_SRC    := $(shell find $(FFI_TEST_DIR) -name "*.cpp")
@@ -134,7 +137,7 @@ purge: clean
 	$(V)rm -f dwt_junit.xml
 
 .PHONY: all
-all: $(DWT_LIB) $(DWT_AR) $(DWT_CLI) $(FUZZ_BIN) $(FFI_TEST_BIN)
+all: $(DWT_LIB) $(DWT_AR) $(DWT_CLI) $(FUZZ_BIN) $(TEST_BIN) $(FFI_TEST_BIN)
 
 %.o: %.cpp
 	@echo "   CC      $(patsubst src/%.cpp,%.o,$<)"
@@ -174,5 +177,9 @@ $(FFI_TEST_BIN): $(DWT_LIB) $(FFI_TEST_OBS)
 	@mkdir -p $(BIN_DIR)
 	@echo "   LD      $(FFI_TEST_BIN)"
 	$(V)$(COMPILER) $(FFI_TEST_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
+
+$(TEST_BIN): $(TEST_OBJ)
+	@echo "   LD      $(TEST_BIN)"
+	$(V)$(COMPILER) $(TEST_OBJ) $(COMPILER_INCL) $(COMPILER_FLAGS) -lpthread -o $@
 
 -include $(ALL_DEPS)

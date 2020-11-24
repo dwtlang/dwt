@@ -1,9 +1,0 @@
----
-description:      "Use unicode sigmal in function identifier"
-name:             unicode_tc_1
-src:              unicode_tc_1.dwt
-out:              unicode_tc_1.out
-err:              unicode_tc_1.err
-exitcode:         0
-loop:             1
-skip:             false

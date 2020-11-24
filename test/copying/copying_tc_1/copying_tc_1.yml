@@ -1,9 +1,0 @@
----
-description:      "invoke built-in dup() to deep copy a function object"
-name:             copying_tc_1
-src:              copying_tc_1.dwt
-out:              copying_tc_1.out
-err:              copying_tc_1.err
-exitcode:         0
-loop:             1
-skip:             false

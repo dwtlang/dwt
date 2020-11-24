@@ -1,9 +1,0 @@
----
-description:      "Concatenate two strings and print the result"
-name:             concat_tc_1
-src:              concat_tc_1.dwt
-out:              concat_tc_1.out
-err:              concat_tc_1.err
-exitcode:         0
-loop:             1
-skip:             false

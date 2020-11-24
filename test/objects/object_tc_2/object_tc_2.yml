@@ -1,9 +1,0 @@
----
-description:      "Simple object method and inheritance"
-name:             object_tc_2
-src:              object_tc_2.dwt
-out:              object_tc_2.out
-err:              object_tc_2.err
-exitcode:         0
-loop:             1
-skip:             false

@@ -1,9 +1,0 @@
----
-description:      "Remove all occurrences of substring"
-name:             strsub_tc_1
-src:              strsub_tc_1.dwt
-out:              strsub_tc_1.out
-err:              strsub_tc_1.err
-exitcode:         0
-loop:             1
-skip:             false

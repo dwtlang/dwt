@@ -1,9 +1,0 @@
----
-description:        "closure test - simple adder, called within function"
-name:               closure_tc_3
-src:                closure_tc_3.dwt
-out:                closure_tc_3.out
-err:                closure_tc_3.err
-exitcode:           0
-skip:               false
-

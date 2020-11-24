@@ -1,9 +1,0 @@
----
-description:      "Concatenate and print two string literals"
-name:             concat_tc_2
-src:              concat_tc_2.dwt
-out:              concat_tc_2.out
-err:              concat_tc_2.err
-exitcode:         0
-loop:             1
-skip:             false

@@ -1,9 +1,0 @@
----
-description:        "closure test - reference upvar before it escapes"
-name:               closure_tc_2
-src:                closure_tc_2.dwt
-out:                closure_tc_2.out
-err:                closure_tc_2.err
-exitcode:           0
-skip:               false
-

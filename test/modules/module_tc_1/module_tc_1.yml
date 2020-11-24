@@ -1,9 +1,0 @@
----
-description:        "basic module scoping"
-name:               module_tc_1
-src:                module_tc_1.dwt
-out:                module_tc_1.out
-err:                module_tc_1.err
-exitcode:           0
-skip:               false
-
