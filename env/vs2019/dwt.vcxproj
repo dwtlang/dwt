@@ -209,7 +209,7 @@
     <ClCompile Include="..\..\src\lib\reporting.cpp" />
     <ClCompile Include="..\..\src\lib\sha3_algo.cpp" />
     <ClCompile Include="..\..\src\lib\version.cpp" />
-    <ClCompile Include="..\..\src\lib\vm\built_in.cpp" />
+    <ClCompile Include="..\..\src\lib\vm\inbuilt.cpp" />
     <ClCompile Include="..\..\src\lib\vm\constants.cpp" />
     <ClCompile Include="..\..\src\lib\vm\ffi.cpp" />
     <ClCompile Include="..\..\src\lib\vm\garbage_collector.cpp" />
