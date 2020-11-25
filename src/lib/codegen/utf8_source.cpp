@@ -7,6 +7,7 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/utf8_source.hpp>
+#include <dwt/exception.hpp>
 
 namespace dwt {
 
@@ -21,6 +22,8 @@ utf8_source::utf8_source(std::string filename)
   if (_bytes) {
     _char_code = decode();
     _char_size = _bytes_read;
+  } else {
+    throw exception("no such file: " + filename + "\n");
   }
 
   _tokens = std::make_shared<token_seq>(filename);
