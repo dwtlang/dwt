@@ -37,14 +37,20 @@ struct kv_pair {
   std::string value;
 };
 
-static std::atomic<int> total_iterations = 0;
-static std::atomic<int> total_tests = 0;
-static std::atomic<int> total_tests_passed = 0;
-static std::atomic<int> total_tests_failed = 0;
-static std::atomic<int> total_tests_skipped = 0;
+namespace {
+
+std::atomic<int> total_iterations = 0;
+std::atomic<int> total_tests = 0;
+std::atomic<int> total_tests_passed = 0;
+std::atomic<int> total_tests_failed = 0;
+std::atomic<int> total_tests_skipped = 0;
 
 std::mutex loglock;
-FILE *logfile = nullptr;
+std::ofstream logfile;
+
+bool interactive = false;
+
+}
 
 kv_pair parse_kv_pair(FILE *fd) {
   bool parsing_key = true;
@@ -254,13 +260,12 @@ void log(std::string txt, bool echo = false) {
   std::scoped_lock hold(loglock);
 
   if (echo) {
-    printf(txt.c_str());
+    printf("%s", txt.c_str());
     printf("\n");
   }
 
-  if (logfile) {
-    fprintf(logfile, txt.c_str());
-    fprintf(logfile, "\n");
+  if (logfile.is_open()) {
+    logfile << txt << "\n";
   }
 }
 
@@ -285,6 +290,7 @@ void stats() {
   std::scoped_lock hold(loglock);
   int completed = total_tests_passed + total_tests_failed + total_tests_skipped;
   int total = total_tests;
+
   printf("\r%d/%d", completed, total);
   fflush(stdout);
 }
@@ -323,7 +329,9 @@ void run_test(test_cfg test) {
     log_test(test, TEST_PASSED, elapsed.count());
   } while (0);
 
-  stats();
+  if (interactive) {
+    stats();
+  }
 }
 
 class thread_pool {
@@ -367,7 +375,7 @@ private:
   void run() {
     std::shared_ptr<test_cfg> test;
 
-    while (test = next_test()) {
+    while ((test = next_test())) {
       run_test(*test);
     }
   }
@@ -378,10 +386,7 @@ private:
 };
 
 void open_log() {
-  logfile = fopen("log.txt", "w");
-  if (!logfile) {
-    throw std::runtime_error("failed to create log.txt\n");
-  }
+  logfile.open("log.txt");
 }
 
 void close_log(unsigned int secs) {
@@ -390,9 +395,8 @@ void close_log(unsigned int secs) {
   log(" Failed: " + std::to_string(total_tests_failed.load()), true);
   log("Took " + std::to_string(secs) + " seconds", true);
 
-  if (logfile) {
-    fflush(logfile);
-    fclose(logfile);
+  if (logfile.is_open()) {
+    logfile.close();
   }
 }
 
@@ -410,10 +414,62 @@ void banner() {
     &datestr[0], datestr.size(), "%d/%m/%Y %H:%M:%S", std::localtime(&now));
   ss << datestr << "\n";
 
-  log(ss.str(), true);
+  log(ss.str().c_str(), true);
+}
+
+void generate_fuzz_test(test_cfg &test, unsigned int fuzz_tc_num) {
+  std::string fuzz_tc_name =
+    "fuzz_tc_" + std::to_string(fuzz_tc_num) + "_" + test.name;
+
+  std::string fuzz_base = "fuzz/" + fuzz_tc_name + "/" + fuzz_tc_name;
+  std::string orig_base = test.path.string() + "/" + test.name;
+
+  fs::create_directory("fuzz/" + fuzz_tc_name);
+
+  std::ofstream ofs;
+  ofs.open(std::string(fuzz_base + ".cfg").c_str());
+  ofs << "name: " << fuzz_tc_name.c_str() << "\n";
+  ofs << "command: " << test.command.c_str() << "\n";
+
+  std::string fuzzer_cmd =
+    "./fuzzer " + orig_base + ".dwt" + " > " + fuzz_base + ".dwt";
+
+  system(fuzzer_cmd.c_str());
+}
+
+bool generate_fuzz_tests(std::vector<std::shared_ptr<test_cfg>> &tests) {
+  if (!fs::exists("fuzz")) {
+    fs::create_directory("fuzz");
+  } else {
+    return false;
+  }
+
+  printf("Generating fuzz tests\n");
+
+  unsigned int fuzz_tc_num = 0;
+
+  for (auto &test : tests) {
+    for (int i = 0; i < 100; ++i) {
+      generate_fuzz_test(*test, ++fuzz_tc_num);
+      if (interactive) {
+        printf("\r%d/%ld", fuzz_tc_num, tests.size() * 100);
+        fflush(stdout);
+      }
+    }
+  }
+
+  printf("\n");
+
+  return true;
 }
 
 int main(int argc, char **argv) {
+  if (argc > 1) {
+    if (strcmp(argv[1], "-i") == 0) {
+      interactive = true;
+    }
+  }
+
   std::vector<std::shared_ptr<test_cfg>> tests;
 
   for (auto &test : find_tests()) {
@@ -422,6 +478,18 @@ int main(int argc, char **argv) {
 
   open_log();
   banner();
+
+  if (generate_fuzz_tests(tests)) {
+    tests.clear();
+    total_iterations = 0;
+    total_tests = 0;
+
+    for (auto &test : find_tests()) {
+      tests.push_back(parse_test(test));
+    }
+  }
+
+  printf("Running tests\n");
 
   auto start = std::chrono::system_clock::now();
   thread_pool pool(tests);
@@ -432,8 +500,8 @@ int main(int argc, char **argv) {
 
   printf("\n%.1f tps\n", tests_per_sec);
 
-  if (logfile) {
-    fprintf(logfile, "\n---\n%.1f tps\n", tests_per_sec);
+  if (logfile.is_open()) {
+    logfile << "\n---\n" << tests_per_sec << " tests/sec\n";
   }
 
   close_log(elapsed.count());

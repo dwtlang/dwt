@@ -16,6 +16,5 @@ jobs:
       run: |
         export PATH=$PWD/bin:$PATH
         dwt
-        test/fuzzgen.sh > /dev/null
         cd test
         ./tester

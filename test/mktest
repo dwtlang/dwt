@@ -5,23 +5,17 @@ NAME=$2
 
 mkdir -p $CATEGORY/$NAME
 
-YML=$CATEGORY/$NAME/$NAME.yml
+CFG=$CATEGORY/$NAME/$NAME.cfg
 DWT=$CATEGORY/$NAME/$NAME.dwt
 OUT=$CATEGORY/$NAME/$NAME.out
 ERR=$CATEGORY/$NAME/$NAME.err
 
-touch $YML
+touch $CFG
 touch $DWT
-touch $OUT
-touch $ERR
 
-echo "---" >> $YML
-echo "description:      \"short description goes here\"" >> $YML
-echo "name:             $NAME" >> $YML
-echo "src:              $NAME.dwt" >> $YML
-echo "out:              $NAME.out" >> $YML
-echo "err:              $NAME.err" >> $YML
-echo "exitcode:         0" >> $YML
-echo "loop:             1" >> $YML
-echo "skip:             false" >> $YML
+echo "---" >> $CFG
+echo "description: \"short description goes here\"" >> $CFG
+echo "name: $NAME" >> $CFG
+echo "loops: 1" >> $CFG
+echo "skip: no" >> $CFG
 

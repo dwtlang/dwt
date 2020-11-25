@@ -39,15 +39,14 @@ AR_NAME         := $(AR_BASENAME).$(MAJOR_VER).$(MINOR_VER).$(PATCH_VER)
 AR_LNK          := $(LIB_DIR)/$(AR_BASENAME).$(MAJOR_VER)
 DWT_AR          := $(LIB_DIR)/$(AR_NAME)
 DWT_CLI         := $(BIN_DIR)/dwt
-TOOLS_DIR       := tools
-FUZZ_DIR        := $(TOOLS_DIR)
-FUZZ_SRC        := $(FUZZ_DIR)/fuzzer.cpp
-FUZZ_OBS        := $(FUZZ_SRC:%.cpp=%.o)
-FUZZ_BIN        := $(FUZZ_DIR)/fuzzer
 TEST_DIR        := test
 TEST_SRC				:= $(TEST_DIR)/tester.cpp
 TEST_OBJ				:= $(TEST_SRC:%.cpp=%.o)
 TEST_BIN				:= $(TEST_DIR)/tester
+FUZZ_DIR        := $(TEST_DIR)
+FUZZ_SRC        := $(FUZZ_DIR)/fuzzer.cpp
+FUZZ_OBS        := $(FUZZ_SRC:%.cpp=%.o)
+FUZZ_BIN        := $(FUZZ_DIR)/fuzzer
 FFI_TEST_DIR    := $(TEST_DIR)/ffi
 FFI_TEST_BIN    := $(BIN_DIR)/ffi
 FFI_TEST_SRC    := $(shell find $(FFI_TEST_DIR) -name "*.cpp")
@@ -85,6 +84,9 @@ CLI_DEPS        := $(CLI_OBS:%.o=%.d)
 FFI_TEST_DEPS   := $(FFI_TEST_OBS:%.o=%.d)
 ALL_DEPS        := $(LIB_DEPS) $(CLI_DEPS) $(FFI_TEST_DEPS)
 GCDA_FILES      := $(shell find . -name "*.gcda")
+STDOUT_FILES    := $(shell find test -name "*.stdout")
+STDERR_FILES    := $(shell find test -name "*.stderr")
+TEST_LOGFILE    := $(TEST_DIR)/log.txt
 
 optimised: COMPILER_FLAGS += -O3 -fomit-frame-pointer -flto -DNDEBUG=1
 small: COMPILER_FLAGS += -Os -fomit-frame-pointer -flto -DNDEBUG=1
@@ -134,7 +136,9 @@ clean:
 .PHONY: purge
 purge: clean
 	$(V)rm -rf $(GCDA_FILES)
-	$(V)rm -f dwt_junit.xml
+	$(V)rm -rf $(STDOUT_FILES)
+	$(V)rm -rf $(STDERR_FILES)
+	$(V)rm -rf $(TEST_LOGFILE)
 
 .PHONY: all
 all: $(DWT_LIB) $(DWT_AR) $(DWT_CLI) $(FUZZ_BIN) $(TEST_BIN) $(FFI_TEST_BIN)
