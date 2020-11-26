@@ -406,6 +406,8 @@ void banner() {
   ifs.open("version.txt");
   std::stringstream ss;
   ss << "Dwt " << ifs.rdbuf();
+  ifs.close();
+  fs::remove("version.txt");
 
   std::time_t now =
     std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());

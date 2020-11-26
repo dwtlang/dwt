@@ -130,6 +130,7 @@ clean:
 	$(V)rm -f $(FUZZ_BIN)
 	$(V)rm -f $(FFI_TEST_OBS)
 	$(V)rm -f $(FFI_TEST_BIN)
+	$(V)rm -f $(TEST_BIN)
 	$(V)rm -f $(CLI_BIN)
 	$(V)rm -rf $(LIB_DIR)/libdwt.*
 

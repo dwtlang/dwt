@@ -3,8 +3,14 @@
 *.d
 *.swp
 *.gcda
+*.stdout
+*.stderr
 tags
 IDEAS
 bin/*
-tools/fuzzer
-test/fuzz_tc*
+lib/*
+scripts/*
+test/log.txt
+test/fuzz
+test/fuzzer
+test/tester
