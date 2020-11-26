@@ -38,13 +38,13 @@
 #define GET(n) exec_stack.get(n)
 #define SET(n, v) exec_stack.set(n, v)
 
-#define GC_MAYBE()                                    \
-  do {                                                \
-    if (unlikely(garbage_collector::is_waiting)) {    \
-      garbage_collector::get().collect_garbage(this); \
-      exec_stack.compact();                           \
-      call_stack.compact();                           \
-    }                                                 \
+#define GC_MAYBE()                                 \
+  do {                                             \
+    if (unlikely(garbage_collector::is_waiting)) { \
+      garbage_collector::get().collect_garbage();  \
+      exec_stack.compact();                        \
+      call_stack.compact();                        \
+    }                                              \
   } while (0)
 
 #define TOP_FRAME() call_stack.top_ref()
@@ -66,9 +66,12 @@ namespace dwt {
 
 interpreter::interpreter()
   : exec_stack(1024) {
+
+  garbage_collector::get().add(this);
 }
 
 interpreter::~interpreter() {
+  garbage_collector::get().remove(this);
 }
 
 void interpreter::mark_roots(std::vector<obj *> &grey_objs) {

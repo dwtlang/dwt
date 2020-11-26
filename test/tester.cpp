@@ -50,7 +50,7 @@ std::ofstream logfile;
 
 bool interactive = false;
 
-}
+} // namespace
 
 kv_pair parse_kv_pair(FILE *fd) {
   bool parsing_key = true;

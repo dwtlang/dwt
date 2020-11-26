@@ -73,6 +73,7 @@ const std::vector<std::pair<token_type, std::string>> token_info = {
   { KW_STR, "str" },
   { KW_LEN, "len" },
   { KW_API, "api" },
+  { KW_GC, "gc" },
   { KW_IS, "is" },
   { KW_MOD, "mod" },
   { KW_FUN, "fun" },
@@ -121,17 +122,23 @@ std::string symtext(token_type sym) {
 namespace {
 
 const std::vector<std::pair<token_type, std::string>> keywords = {
-  { KW_USE, "use" },     { KW_VER, "ver" },     { KW_DUP, "dup" },
-  { KW_STR, "str" },     { KW_LEN, "len" },     { KW_API, "api" },
-  { KW_IS, "is" },       { KW_MOD, "mod" },     { KW_FUN, "fun" },
-  { KW_FFI, "ffi" },     { KW_VAR, "var" },     { KW_TRUE, "true" },
-  { KW_FALSE, "false" }, { KW_NIL, "nil" },     { KW_OBJ, "obj" },
-  { KW_SELF, "self" },   { KW_FOR, "for" },     { KW_IN, "in" },
-  { KW_IF, "if" },       { KW_ELSE, "else" },   { KW_LOOP, "loop" },
-  { KW_WHILE, "while" }, { KW_PRINT, "print" }, { KW_UNTIL, "until" },
-  { KW_RET, "return" },  { KW_BREAK, "break" }, { KW_CONTINUE, "continue" },
-  { KW_LAMBDA, u8"λ" },  { KW_AS, "as" },       { KW_ENUM, "enum" },
-  { KW_AND, "and" },     { KW_OR, "or" },       { KW_XOR, "xor" }
+  { KW_USE, "use" },     { KW_VER, "ver" },
+  { KW_DUP, "dup" },     { KW_STR, "str" },
+  { KW_LEN, "len" },     { KW_API, "api" },
+  { KW_GC, "gc" },       { KW_IS, "is" },
+  { KW_MOD, "mod" },     { KW_FUN, "fun" },
+  { KW_FFI, "ffi" },     { KW_VAR, "var" },
+  { KW_TRUE, "true" },   { KW_FALSE, "false" },
+  { KW_NIL, "nil" },     { KW_OBJ, "obj" },
+  { KW_SELF, "self" },   { KW_FOR, "for" },
+  { KW_IN, "in" },       { KW_IF, "if" },
+  { KW_ELSE, "else" },   { KW_LOOP, "loop" },
+  { KW_WHILE, "while" }, { KW_PRINT, "print" },
+  { KW_UNTIL, "until" }, { KW_RET, "return" },
+  { KW_BREAK, "break" }, { KW_CONTINUE, "continue" },
+  { KW_LAMBDA, u8"λ" },  { KW_AS, "as" },
+  { KW_ENUM, "enum" },   { KW_AND, "and" },
+  { KW_OR, "or" },       { KW_XOR, "xor" }
 };
 
 }

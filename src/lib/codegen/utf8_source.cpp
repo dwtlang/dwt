@@ -6,8 +6,8 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#include <dwt/utf8_source.hpp>
 #include <dwt/exception.hpp>
+#include <dwt/utf8_source.hpp>
 
 namespace dwt {
 

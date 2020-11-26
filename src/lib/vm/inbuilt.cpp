@@ -7,6 +7,7 @@
 // Copyright (c) 2020  Andrew Scott
 
 #include <dwt/ffi.hpp>
+#include <dwt/garbage_collector.hpp>
 #include <dwt/inbuilt.hpp>
 #include <dwt/interpret_exception.hpp>
 #include <dwt/obj.hpp>
@@ -57,7 +58,21 @@ var len(size_t nr_args, var *args) {
 }
 
 var ver(size_t nr_args, var *args) {
+  if (nr_args != 0) {
+    throw interpret_exception("e@1 expected no arguments");
+  }
+
   return as_var(string_mgr::get().add(version::to_string()));
+}
+
+var gc(size_t nr_args, var *args) {
+  if (nr_args != 0) {
+    throw interpret_exception("e@1 expected no arguments");
+  }
+
+  garbage_collector::get().collect_garbage();
+
+  return nil;
 }
 
 void add_inbuilt_function(std::string name, ffi::syscall impl) {
@@ -72,6 +87,7 @@ inbuilt::inbuilt() {
   add_inbuilt_function("dup", dup);
   add_inbuilt_function("str", str);
   add_inbuilt_function("len", len);
+  add_inbuilt_function("gc", gc);
 }
 
 inbuilt::~inbuilt() {

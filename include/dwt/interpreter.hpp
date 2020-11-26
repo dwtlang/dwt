@@ -68,6 +68,22 @@ public:
 
   var interpret(obj *callable_obj, var *args, size_t nr_args);
 
+  inline void next(interpreter *vm) {
+    _next = vm;
+  }
+
+  inline void prev(interpreter *vm) {
+    _prev = vm;
+  }
+
+  inline interpreter *next() const {
+    return _next;
+  }
+
+  inline interpreter *prev() const {
+    return _prev;
+  }
+
 private:
   upvar_obj *capture_upvar(size_t, size_t);
   void close_upvars(size_t);
@@ -84,6 +100,8 @@ private:
   stack<call_frame> call_stack;
   stack<var> exec_stack;
   upvar_obj *open_upvars = nullptr;
+  interpreter *_next = nullptr;
+  interpreter *_prev = nullptr;
 };
 
 } // namespace dwt

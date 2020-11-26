@@ -31,6 +31,29 @@ garbage_collector &garbage_collector::get() {
   return instance;
 }
 
+void garbage_collector::add(interpreter *vm) {
+  vm->next(_interpreters);
+  vm->prev(nullptr);
+
+  if (_interpreters) {
+    _interpreters->prev(vm);
+  }
+
+  _interpreters = vm;
+}
+
+void garbage_collector::remove(interpreter *vm) {
+  if (vm->prev()) {
+    vm->prev()->next(vm->next());
+  }
+  if (vm->next()) {
+    vm->next()->prev(vm->prev());
+  }
+  if (_interpreters == vm) {
+    _interpreters = vm->next();
+  }
+}
+
 void garbage_collector::update_heap_size(int64_t delta) {
   _heap_size += delta;
 
@@ -54,14 +77,19 @@ void garbage_collector::track(obj *o) {
   _objs = o;
 }
 
-void garbage_collector::collect_garbage(interpreter *self) {
+void garbage_collector::collect_garbage() {
   dbg("-- marking constant roots\n");
   constants::table().get_all().for_all([this](auto &v) { mark(v); });
   dbg("-- marking global roots\n");
   globals::table().get_all().for_all([this](auto &v) { mark(v); });
 
   dbg("-- marking interpreter roots\n");
-  self->mark_roots(_grey_objs);
+
+  interpreter *vm = _interpreters;
+  while (vm) {
+    vm->mark_roots(_grey_objs);
+    vm = vm->next();
+  }
 
   blacken();
   sweep();

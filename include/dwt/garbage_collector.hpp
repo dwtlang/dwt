@@ -25,11 +25,14 @@ class garbage_collector : public uncopyable {
 public:
   static garbage_collector &get();
   void track(obj *o);
-  void collect_garbage(interpreter *);
+  void collect_garbage();
   void sweep();
   void update_heap_size(int64_t delta);
 
   static bool is_waiting;
+
+  void add(interpreter *vm);
+  void remove(interpreter *vm);
 
 private:
   garbage_collector();
@@ -46,6 +49,7 @@ private:
   uint64_t _heap_size;
   obj *_objs;
   std::vector<obj *> _grey_objs;
+  interpreter *_interpreters;
 };
 
 } // namespace dwt
