@@ -8,12 +8,11 @@
 
 #include <dwt/function_obj.hpp>
 #include <dwt/globals.hpp>
-#include <dwt/pho/tail_calls.hpp>
+#include <dwt/tail_calls.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
 namespace dwt {
-namespace pho {
 
 tail_calls::tail_calls(code_obj &code)
   : peephole({ { { OP_CALL, OP_RET }, 3 } })
@@ -71,5 +70,4 @@ void tail_calls::peep(uint8_t *op, size_t extent) {
   }
 }
 
-} // namespace pho
 } // namespace dwt

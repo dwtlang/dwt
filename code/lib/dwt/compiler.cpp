@@ -73,12 +73,12 @@
 #include <dwt/var.hpp>
 
 #if USE_BYTECODE_OPTIMISER
-#include <dwt/pho/constant_folding.hpp>
-#include <dwt/pho/merge_pops.hpp>
-#include <dwt/pho/set_pop_get.hpp>
-#include <dwt/pho/tail_calls.hpp>
-#include <dwt/pho/unreachable_code.hpp>
-#include <dwt/pho/zero_branching.hpp>
+#include <dwt/constant_folding.hpp>
+#include <dwt/merge_pops.hpp>
+#include <dwt/set_pop_get.hpp>
+#include <dwt/tail_calls.hpp>
+#include <dwt/unreachable_code.hpp>
+#include <dwt/zero_branching.hpp>
 #endif
 
 #include <memory>
@@ -459,12 +459,12 @@ function_obj *compiler::compile(std::unique_ptr<ir::ast> &&tree) {
 
 #if USE_BYTECODE_OPTIMISER
 void compiler::optimise(code_obj &code) {
-  { pho::unreachable_code pass(code); }
-  { pho::merge_pops pass(code); }
-  { pho::tail_calls pass(code); }
-  { pho::zero_branching pass(code); }
-  { pho::set_pop_get pass(code); }
-  { pho::constant_folding pass(code); }
+  { unreachable_code pass(code); }
+  { merge_pops pass(code); }
+  { tail_calls pass(code); }
+  { zero_branching pass(code); }
+  { set_pop_get pass(code); }
+  { constant_folding pass(code); }
 
   patch_jumps(code);
   remove_skips(code);

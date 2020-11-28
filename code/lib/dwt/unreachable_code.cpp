@@ -8,12 +8,11 @@
 
 #include <dwt/debug.hpp>
 #include <dwt/feedback.hpp>
-#include <dwt/pho/unreachable_code.hpp>
+#include <dwt/unreachable_code.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
 namespace dwt {
-namespace pho {
 
 unreachable_code::unreachable_code(code_obj &code)
   : peephole({ { { OP_RET }, 1 } })
@@ -81,5 +80,4 @@ void unreachable_code::peep(uint8_t *op, size_t extent) {
   }
 }
 
-} // namespace pho
 } // namespace dwt

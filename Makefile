@@ -9,12 +9,6 @@ V               := $(VERBOSE)
 
 MAKEFLAGS       += --no-print-directory #--keep-going
 
-ifeq "$(profile)" ""
-$(info Profile: performance (default))
-else
-$(info Profile: $(profile))
-endif
-
 profile ?= performance
 include profiles/$(profile)/profile.mk
 
@@ -22,8 +16,8 @@ BUILD_PROF := $(profile)
 
 LIB_DIR         := lib
 BIN_DIR         := bin
-INC_DIR         := include
-SRC_DIR         := src
+SRC_DIR         := code
+INC_DIR         := $(SRC_DIR)/api
 LIB_SRC_DIR     := $(SRC_DIR)/lib
 CLI_SRC_DIR     := $(SRC_DIR)/cli
 LIB_SRC         := $(shell find $(LIB_SRC_DIR) -name "*.cpp")
@@ -48,7 +42,7 @@ FUZZ_SRC        := $(FUZZ_DIR)/fuzzer.cpp
 FUZZ_OBS        := $(FUZZ_SRC:%.cpp=%.o)
 FUZZ_BIN        := $(FUZZ_DIR)/fuzzer
 FFI_TEST_DIR    := $(TEST_DIR)/ffi
-FFI_TEST_BIN    := $(BIN_DIR)/ffi
+FFI_TEST_BIN    := $(TEST_DIR)/ffi/dwt
 FFI_TEST_SRC    := $(shell find $(FFI_TEST_DIR) -name "*.cpp")
 FFI_TEST_OBS    := $(FFI_TEST_SRC:%.cpp=%.o)
 COMPILER         = $(CXX)
@@ -145,46 +139,46 @@ purge: clean
 all: $(DWT_LIB) $(DWT_AR) $(DWT_CLI) $(FUZZ_BIN) $(TEST_BIN) $(FFI_TEST_BIN)
 
 %.o: %.cpp
-	@echo "   CC      $(patsubst src/%.cpp,%.o,$<)"
+	@echo "Compiling $<"
 	$(V)$(COMPILER) $(COMPILER_FLAGS) $(COMPILER_INCL) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
 	$(V)$(COMPILER) -c $< $(COMPILER_INCL) $(COMPILER_FLAGS) -o $@
 
 $(DWT_LIB): $(LIB_OBS)
 	@mkdir -p $(LIB_DIR)
-	@echo "   LD      $(DWT_LIB)"
+	@echo "Linking $(DWT_LIB)"
 	$(V)$(COMPILER) $(LIB_OBS) $(COMPILER_FLAGS) -shared -fPIC -o $(DWT_LIB)
-	@echo "   LN      $(LIB_LNK) ~> $(DWT_LIB)"
+	@echo "Aliasing $(LIB_LNK) ~> $(DWT_LIB)"
 	$(V)ln -sf $(PWD)/$(DWT_LIB) $(LIB_LNK)
-	@echo "   LN      $(LIB_DIR)/$(LIB_BASENAME) ~> $(LIB_LNK)"
+	@echo "Aliasing $(LIB_DIR)/$(LIB_BASENAME) ~> $(LIB_LNK)"
 	$(V)ln -sf $(PWD)/$(LIB_LNK) $(PWD)/$(LIB_DIR)/$(LIB_BASENAME)
 
 $(DWT_AR): $(LIB_OBS)
 	@mkdir -p $(LIB_DIR)
-	@echo "   AR      $(DWT_AR)"
+	@echo "Archiving $(DWT_AR)"
 	$(V)ar -rcs $(DWT_AR) $(LIB_OBS)
 	$(V)ranlib $(DWT_AR)
-	@echo "   LN      $(AR_LNK) ~> $(DWT_AR)"
+	@echo "Aliasing $(AR_LNK) ~> $(DWT_AR)"
 	$(V)ln -sf $(PWD)/$(DWT_AR) $(AR_LNK)
-	@echo "   LN      $(LIB_DIR)/$(AR_BASENAME) ~> $(AR_LNK)"
+	@echo "Aliasing $(LIB_DIR)/$(AR_BASENAME) ~> $(AR_LNK)"
 	$(V)ln -sf $(PWD)/$(AR_LNK) $(PWD)/$(LIB_DIR)/$(AR_BASENAME)
 
 $(DWT_CLI): $(DWT_AR) $(DWT_LIB) $(CLI_OBS)
 	@mkdir -p $(BIN_DIR)
-	@echo "   LD      $(DWT_CLI)"
+	@echo "Linking $(DWT_CLI)"
 	$(V)$(COMPILER) $(CLI_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(FUZZ_BIN): $(DWT_LIB) $(FUZZ_OBS)
 	@mkdir -p $(FUZZ_DIR)
-	@echo "   LD      $(FUZZ_BIN)"
+	@echo "Linking $(FUZZ_BIN)"
 	$(V)$(COMPILER) $(FUZZ_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(FFI_TEST_BIN): $(DWT_LIB) $(FFI_TEST_OBS)
 	@mkdir -p $(BIN_DIR)
-	@echo "   LD      $(FFI_TEST_BIN)"
-	$(V)$(COMPILER) $(FFI_TEST_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
+	@echo "Linking $(FFI_TEST_BIN)"
+	$(V)$(COMPILER) $(FFI_TEST_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(TEST_BIN): $(TEST_OBJ)
-	@echo "   LD      $(TEST_BIN)"
+	@echo "Linking $(TEST_BIN)"
 	$(V)$(COMPILER) $(TEST_OBJ) $(COMPILER_INCL) $(COMPILER_FLAGS) -lpthread -o $@
 
 -include $(ALL_DEPS)

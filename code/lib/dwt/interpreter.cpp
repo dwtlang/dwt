@@ -291,7 +291,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
   auto &consts = constants::table().get_all();
   auto &global_vars = globals::table().get_all();
 
-#include <vm/interpreter.inc>
+#include <dwt/interpreter.inc>
 
   try {
 

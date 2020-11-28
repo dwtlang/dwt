@@ -6,10 +6,9 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#include <dwt/pho/zero_branching.hpp>
+#include <dwt/zero_branching.hpp>
 
 namespace dwt {
-namespace pho {
 
 zero_branching::zero_branching(code_obj &code)
   : peephole({ { { OP_ZERO, OP_EQ, OP_BRZ }, 5 },
@@ -32,5 +31,4 @@ void zero_branching::peep(uint8_t *op, size_t extent) {
   }
 }
 
-} // namespace pho
 } // namespace dwt

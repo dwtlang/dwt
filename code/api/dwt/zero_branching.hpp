@@ -6,13 +6,12 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_PHO_ZERO_BRANCHING_HPP
-#define GUARD_DWT_PHO_ZERO_BRANCHING_HPP
+#ifndef GUARD_DWT_ZERO_BRANCHING_HPP
+#define GUARD_DWT_ZERO_BRANCHING_HPP
 
 #include <dwt/peephole.hpp>
 
 namespace dwt {
-namespace pho {
 
 class zero_branching : public peephole {
 public:
@@ -23,7 +22,6 @@ private:
   virtual void peep(uint8_t *op, size_t extent) override;
 };
 
-} // namespace pho
 } // namespace dwt
 
 #endif

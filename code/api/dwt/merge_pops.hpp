@@ -6,24 +6,24 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_PHO_POP_AND_GET_HPP
-#define GUARD_DWT_PHO_POP_AND_GET_HPP
+#ifndef GUARD_DWT_MERGE_POPS_HPP
+#define GUARD_DWT_MERGE_POPS_HPP
 
 #include <dwt/peephole.hpp>
 
 namespace dwt {
-namespace pho {
 
-class pop_and_get : public peephole {
+class merge_pops : public peephole {
 public:
-  pop_and_get(code_obj &);
-  virtual ~pop_and_get();
+  merge_pops(code_obj &);
+  virtual ~merge_pops();
 
 private:
   virtual void peep(uint8_t *op, size_t extent) override;
+
+  code_obj &_code;
 };
 
-} // namespace pho
 } // namespace dwt
 
 #endif

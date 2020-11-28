@@ -6,28 +6,26 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_PHO_UNREACHABLE_CODE_HPP
-#define GUARD_DWT_PHO_UNREACHABLE_CODE_HPP
+#ifndef GUARD_DWT_TAIL_CALLS_HPP
+#define GUARD_DWT_TAIL_CALLS_HPP
 
 #include <dwt/peephole.hpp>
 
 namespace dwt {
-namespace pho {
 
-class unreachable_code : public peephole {
+class tail_calls : public peephole {
 public:
-  unreachable_code(code_obj &code);
-  virtual ~unreachable_code();
+  tail_calls(code_obj &);
+  virtual ~tail_calls();
 
 private:
-  size_t first_jump_after(size_t pos);
+  uint8_t *prev_op(uint8_t *this_op);
 
   virtual void peep(uint8_t *op, size_t extent) override;
 
   code_obj &_code;
 };
 
-} // namespace pho
 } // namespace dwt
 
 #endif

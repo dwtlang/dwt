@@ -6,12 +6,11 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#include <dwt/pho/set_pop_get.hpp>
+#include <dwt/set_pop_get.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
 namespace dwt {
-namespace pho {
 
 set_pop_get::set_pop_get(code_obj &code)
   : peephole({ { { OP_STORE, OP_POP, OP_GLOBAL }, 7 },
@@ -43,5 +42,4 @@ void set_pop_get::peep(uint8_t *op, size_t extent) {
   }
 }
 
-} // namespace pho
 } // namespace dwt

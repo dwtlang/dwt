@@ -6,29 +6,26 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#ifndef GUARD_DWT_PHO_CONSTANT_FOLDING_HPP
-#define GUARD_DWT_PHO_CONSTANT_FOLDING_HPP
+#ifndef GUARD_DWT_UNREACHABLE_CODE_HPP
+#define GUARD_DWT_UNREACHABLE_CODE_HPP
 
 #include <dwt/peephole.hpp>
-#include <dwt/var.hpp>
 
 namespace dwt {
-namespace pho {
 
-class constant_folding : public peephole {
+class unreachable_code : public peephole {
 public:
-  constant_folding(code_obj &);
-  virtual ~constant_folding();
+  unreachable_code(code_obj &code);
+  virtual ~unreachable_code();
 
 private:
-  void fold(uint8_t *op, size_t off, var v);
+  size_t first_jump_after(size_t pos);
 
   virtual void peep(uint8_t *op, size_t extent) override;
 
-  bool _repeat;
+  code_obj &_code;
 };
 
-} // namespace pho
 } // namespace dwt
 
 #endif

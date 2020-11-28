@@ -6,10 +6,9 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#include <dwt/pho/merge_pops.hpp>
+#include <dwt/merge_pops.hpp>
 
 namespace dwt {
-namespace pho {
 
 merge_pops::merge_pops(code_obj &code)
   : peephole({ { { OP_POP }, 1 } })
@@ -45,5 +44,4 @@ void merge_pops::peep(uint8_t *op, size_t extent) {
   }
 }
 
-} // namespace pho
 } // namespace dwt
