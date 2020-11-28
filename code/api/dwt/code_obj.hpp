@@ -9,8 +9,6 @@
 #ifndef GUARD_DWT_CODE_OBJ_HPP
 #define GUARD_DWT_CODE_OBJ_HPP
 
-#include <dwt/hash_map.hpp>
-#include <dwt/map_obj.hpp>
 #include <dwt/obj.hpp>
 #include <dwt/opcode.hpp>
 #include <dwt/token_ref.hpp>
@@ -64,15 +62,14 @@ public:
     return _bytes;
   }
 
-  void emit(uint8_t);
-  void emit(uint8_t, token_ref);
+  void emit(uint8_t, token_ref ref = token_ref());
   void token_at(size_t, token_ref);
   token_ref token_at(size_t);
   void unmap_token_at(size_t idx);
 
 private:
   std::vector<uint8_t> _bytes;
-  hash_map _token_map;
+  std::vector<token_ref> _tokens;
 };
 
 } // namespace dwt
