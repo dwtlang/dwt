@@ -10,7 +10,6 @@
 #define GUARD_DWT_OBJ_HPP
 
 #include <dwt/debug.hpp>
-#include <dwt/feedback.hpp>
 #include <dwt/fnv1a.hpp>
 #include <dwt/obj_type.hpp>
 #include <dwt/var.hpp>

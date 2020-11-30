@@ -6,17 +6,9 @@
 //
 // Copyright (c) 2020  Andrew Scott
 
-#include <dwt/compiler.hpp>
-#include <dwt/debug.hpp>
+#include <dwt.hpp>
 #include <dwt/feedback.hpp>
-#include <dwt/function_obj.hpp>
 #include <dwt/garbage_collector.hpp>
-#include <dwt/interpreter.hpp>
-#include <dwt/ir/printer.hpp>
-#include <dwt/ir/script.hpp>
-#include <dwt/parser.hpp>
-#include <dwt/scope.hpp>
-#include <dwt/string_mgr.hpp>
 
 #include <cstring>
 #include <ctime>
@@ -37,7 +29,7 @@ var ping(size_t nr_args, var *args) {
 }
 
 int main(int argc, char **argv) {
-  std::string filename;
+  const char *filename = nullptr;
   int ret = 0;
 
   if (argc > 1) {
@@ -48,16 +40,7 @@ int main(int argc, char **argv) {
 
   try {
     ffi::bind("::ping", ping);
-
-    utf8_source src(filename);
-    parser p(std::move(src));
-
-    compiler c;
-    auto fn = c.compile(p.parse());
-
-    interpreter interpreter;
-    interpreter.interpret(fn, nullptr, 0);
-
+    interpret(filename);
   } catch (std::exception &e) {
     err(e.what());
     ret = 1;

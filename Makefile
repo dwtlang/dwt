@@ -71,7 +71,7 @@ else
 COMPILER_FLAGS  += -std=c++17 -pedantic
 endif
 
-COMPILER_INCL   := -I$(INC_DIR) -I$(LIB_SRC_DIR) -I$(CLI_SRC_DIR) \
+#COMPILER_INCL   := -I$(INC_DIR) -I$(LIB_SRC_DIR) -I$(CLI_SRC_DIR) \
                    -I$(FFI_TEST_DIR)
 LIB_DEPS        := $(LIB_OBS:%.o=%.d)
 CLI_DEPS        := $(CLI_OBS:%.o=%.d)
@@ -138,10 +138,20 @@ purge: clean
 .PHONY: all
 all: $(DWT_LIB) $(DWT_AR) $(DWT_CLI) $(FUZZ_BIN) $(TEST_BIN) $(FFI_TEST_BIN)
 
+code/lib/%.o: code/lib/%.cpp
+	@echo "Compiling $<"
+	$(V)$(COMPILER) $(COMPILER_FLAGS) -I$(INC_DIR) -I$(LIB_SRC_DIR) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(V)$(COMPILER) -c $< -I$(INC_DIR) -I$(LIB_SRC_DIR) $(COMPILER_FLAGS) -o $@
+
+test/%.o: test/%.cpp
+	@echo "Compiling $<"
+	$(V)$(COMPILER) $(COMPILER_FLAGS) -I$(INC_DIR) -I$(LIB_SRC_DIR) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(V)$(COMPILER) -c $< -I$(INC_DIR) -I$(LIB_SRC_DIR) $(COMPILER_FLAGS) -o $@
+
 %.o: %.cpp
 	@echo "Compiling $<"
-	$(V)$(COMPILER) $(COMPILER_FLAGS) $(COMPILER_INCL) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
-	$(V)$(COMPILER) -c $< $(COMPILER_INCL) $(COMPILER_FLAGS) -o $@
+	$(V)$(COMPILER) $(COMPILER_FLAGS) -I$(INC_DIR) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(V)$(COMPILER) -c $< -I$(INC_DIR) $(COMPILER_FLAGS) -o $@
 
 $(DWT_LIB): $(LIB_OBS)
 	@mkdir -p $(LIB_DIR)
@@ -165,20 +175,20 @@ $(DWT_AR): $(LIB_OBS)
 $(DWT_CLI): $(DWT_AR) $(DWT_LIB) $(CLI_OBS)
 	@mkdir -p $(BIN_DIR)
 	@echo "Linking $(DWT_CLI)"
-	$(V)$(COMPILER) $(CLI_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
+	$(V)$(COMPILER) $(CLI_OBS) -I$(INC_DIR) -I$(CLI_SRC_DIR) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(FUZZ_BIN): $(DWT_LIB) $(FUZZ_OBS)
 	@mkdir -p $(FUZZ_DIR)
 	@echo "Linking $(FUZZ_BIN)"
-	$(V)$(COMPILER) $(FUZZ_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
+	$(V)$(COMPILER) $(FUZZ_OBS) -I$(INC_DIR) -I$(LIB_SRC_DIR) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(FFI_TEST_BIN): $(DWT_LIB) $(FFI_TEST_OBS)
 	@mkdir -p $(BIN_DIR)
 	@echo "Linking $(FFI_TEST_BIN)"
-	$(V)$(COMPILER) $(FFI_TEST_OBS) $(COMPILER_INCL) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
+	$(V)$(COMPILER) $(FFI_TEST_OBS) -I$(INC_DIR) -I$(LIB_SRC_DIR) -I$(FFI_TEST_DIR) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
 
 $(TEST_BIN): $(TEST_OBJ)
 	@echo "Linking $(TEST_BIN)"
-	$(V)$(COMPILER) $(TEST_OBJ) $(COMPILER_INCL) $(COMPILER_FLAGS) -lpthread -o $@
+	$(V)$(COMPILER) $(TEST_OBJ) -I$(TEST_DIR) $(COMPILER_FLAGS) -lpthread -o $@
 
 -include $(ALL_DEPS)

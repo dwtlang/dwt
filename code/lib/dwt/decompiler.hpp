@@ -9,9 +9,9 @@
 #ifndef GUARD_DWT_DECOMPILER_HPP
 #define GUARD_DWT_DECOMPILER_HPP
 
-#include <dwt/hash_map.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/function_obj.hpp>
+#include <dwt/hash_map.hpp>
 
 #include <memory>
 
