@@ -106,13 +106,13 @@ debug: all
 
 .PHONY: instrumented
 instrumented:
-ifneq "$(COMPILER)" "g++"
+ifneq "$(findstring g++,$(COMPILER))" "g++"
 	$(error use g++ for instrumented target)
 endif
 
 .PHONY: pgo
 pgo:
-ifneq "$(COMPILER)" "g++"
+ifneq "$(findstring g++,$(COMPILER))" "g++"
 	$(error use g++ for pgo target)
 endif
 
