@@ -50,7 +50,7 @@ size_t unreachable_code::first_jump_after(size_t pos) {
     if (operand) {
       size_t joff = operand + off;
 
-      if (joff > pos) {
+      if (joff >= pos) {
         if (jmp_off == 0 || joff < jmp_off) {
           jmp_off = joff;
         }
