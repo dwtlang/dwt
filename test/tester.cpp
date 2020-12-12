@@ -401,7 +401,9 @@ void close_log(unsigned int secs) {
 }
 
 void banner() {
-  system("dwt version.dwt > version.txt");
+  if (system("dwt version.dwt > version.txt") != 0) {
+    throw std::runtime_error("Could not execute version.dwt");
+  }
   std::ifstream ifs;
   ifs.open("version.txt");
   std::stringstream ss;
@@ -436,7 +438,9 @@ void generate_fuzz_test(test_cfg &test, unsigned int fuzz_tc_num) {
   std::string fuzzer_cmd =
     "./fuzzer " + orig_base + ".dwt" + " > " + fuzz_base + ".dwt";
 
-  system(fuzzer_cmd.c_str());
+  if (system(fuzzer_cmd.c_str()) != 0) {
+    throw std::runtime_error("Could not execute fuzzer");
+  }
 }
 
 bool generate_fuzz_tests(std::vector<std::shared_ptr<test_cfg>> &tests) {
