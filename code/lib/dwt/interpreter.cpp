@@ -357,6 +357,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         if (likely(call_stack.size() != 0)) {
           LOAD_STATE();
         } else {
+          BUG_UNLESS(exec_stack.size() == 1);
           return TOP_AND_POP();
         }
 
@@ -482,7 +483,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       CASE_OP(MBRGET) {
         v0 = consts.get(OPERAND(op));
         v1 = TOP();
-        PUSH(as_obj(v1)->op_mbrget(v0));
+        POP_AND_SWAP(as_obj(v1)->op_mbrget(v0));
         op += 2;
 
         DISPATCH();
@@ -493,6 +494,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         v1 = TOPN(1);
         as_obj(v1)->op_mbrset(v0, TOP());
         op += 2;
+        POP();
 
         DISPATCH();
       }
@@ -500,7 +502,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
       CASE_OP(KEYGET) {
         v1 = TOPN(1);
         v0 = TOP();
-        PUSH(as_obj(v1)->op_keyget(v0));
+        POP_AND_SWAP(as_obj(v1)->op_keyget(v0));
 
         DISPATCH();
       }
@@ -509,6 +511,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         v1 = TOPN(2);
         v0 = TOPN(1);
         as_obj(v1)->op_keyset(v0, TOP());
+        POPN(3);
 
         DISPATCH();
       }
@@ -517,6 +520,7 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
         v0 = TOPN(1);
         v1 = TOP();
         static_cast<map_obj *>(TOP_FRAME().map)->op_keyset(v0, v1);
+        POPN(2);
 
         DISPATCH();
       }
