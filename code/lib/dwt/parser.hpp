@@ -195,7 +195,6 @@ private:
   ir::var_decl *var_decl();
   ir::type5 *type5();
   ir::arguments *arguments();
-  ir::stmt *object_stmt();
   ir::stmt *stmt();
   ir::expr_stmt *expr_stmt();
   ir::for_stmt *for_stmt();

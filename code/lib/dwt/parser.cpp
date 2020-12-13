@@ -602,7 +602,7 @@ ir::object_body *parser::object_body() {
       body->splice(var_decl());
       break;
     default:
-      body->splice(object_stmt());
+      body->splice(stmt());
       break;
     }
   }
@@ -640,20 +640,9 @@ ir::var_decl *parser::var_decl() {
  * @return The statement.
  */
 ir::stmt *parser::stmt() {
-  if (peek(KW_RET)) {
-    return return_stmt();
-  } else {
-    return object_stmt();
-  }
-}
-
-/**
- * Parse a statement allowed within an object definition.
- *
- * @return the statement AST.
- */
-ir::stmt *parser::object_stmt() {
   switch (peek()) {
+  case KW_RET:
+    return return_stmt();
   case KW_PRINT:
     return print_stmt();
     break;
@@ -682,6 +671,8 @@ ir::stmt *parser::object_stmt() {
     return expr_stmt();
     break;
   }
+
+  BUG(); // should be unreachable
 
   return nullptr;
 }
@@ -825,8 +816,9 @@ ir::print_stmt *parser::print_stmt() {
  * @return The statement AST.
  */
 ir::return_stmt *parser::return_stmt() {
-  auto stmt = new ir::return_stmt();
   expect(KW_RET);
+
+  auto stmt = new ir::return_stmt(gettok());
 
   if (!accept_any(TOK_SEMICOLON, TOK_BREAK)) {
     stmt->splice(expr());

@@ -37,6 +37,7 @@
 #include <dwt/ir/lambda.hpp>
 #include <dwt/ir/lambda_decl.hpp>
 #include <dwt/ir/lambda_expr.hpp>
+#include <dwt/ir/lazy_visitor.hpp>
 #include <dwt/ir/loop_stmt.hpp>
 #include <dwt/ir/map_expr.hpp>
 #include <dwt/ir/map_impl.hpp>
@@ -1145,6 +1146,30 @@ void compiler::visit(ir::arguments &args) {
  * @param stmt The statement AST.
  */
 void compiler::visit(ir::return_stmt &stmt) {
+  class is_object_body : public ir::lazy_visitor {
+  public:
+    is_object_body() = default;
+    virtual ~is_object_body() = default;
+
+    bool answer = false;
+
+    virtual void visit(ir::object_body &body) override {
+      answer = true;
+    }
+
+    virtual void visit(ir::ast &node) override {
+    }
+  };
+
+  is_object_body is_object_body;
+  BUG_UNLESS(stmt.parent_of());
+  stmt.parent_of()->accept(is_object_body);
+
+  if (is_object_body.answer == true) {
+    oops("e@1 explicit return not allowed in object definition",
+         stmt.name_tok());
+  }
+
   if (stmt.nr_children() > 0) {
     walk(stmt.children_of());
   } else {
