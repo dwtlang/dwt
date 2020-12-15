@@ -18,8 +18,7 @@ with open('results.csv','r') as csvfile:
 y_pos = np.arange(len(objects))
 
 fig, ax = plt.subplots(1,1)
-bars = ax.barh(y_pos, performance, align='center', alpha=1, color=['purple','yellowgreen','orange','darkblue','firebrick','royalblue'])
-#ax.xaxis.grid()
+bars = ax.barh(y_pos, performance, align='center', alpha=1)
 
 for b in bars:
     x_val = b.get_width()
@@ -36,6 +35,7 @@ plt.axvline(performance[1], linestyle=':', color='lightgrey')
 plt.yticks(y_pos, objects)
 plt.xlabel('Seconds')
 plt.title('Benchmark - Fibonacci')
+plt.tight_layout()
 
-plt.savefig("results.png")
+plt.savefig("results.png", bbox_inches='tight')
 plt.show()
