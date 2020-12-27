@@ -154,6 +154,7 @@ ir::script *parser::script() {
 ir::declaration *parser::declaration() {
   skip_any(TOK_BREAK);
 
+  ir::declaration *decl = nullptr;
   bool api = accept(KW_API);
 
   if (api) {
@@ -162,18 +163,34 @@ ir::declaration *parser::declaration() {
 
   switch (peek()) {
   case KW_MOD:
-    return module_decl();
+    if (api) {
+      oops("e@1 keyword 'api' has no meaning here", gettok());
+    }
+    decl = module_decl();
+    break;
   case KW_FUN:
-    return function_decl(api);
+    decl = function_decl();
+    break;
   case KW_OBJ:
-    return object_decl();
+    decl = object_decl();
+    break;
   case KW_FFI:
-    return ffi_decl();
+    decl = ffi_decl();
+    break;
   case KW_VAR:
-    return var_decl();
+    decl = var_decl();
+    break;
   default:
-    return stmt();
+    if (api) {
+      oops("e@1 keyword 'api' has no meaning here", gettok());
+    }
+    decl = stmt();
+    break;
   }
+
+  decl->is_api(api);
+
+  return decl;
 }
 
 /**
@@ -414,11 +431,10 @@ ir::type3 *parser::type3() {
  *
  * @return The function declaration AST.
  */
-ir::declaration *parser::function_decl(bool api) {
+ir::declaration *parser::function_decl() {
   expect(KW_FUN);
   expect(TOK_IDENT);
   auto decl = new ir::function_decl(gettok());
-  decl->is_api(api);
   scope::open(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
   skip_any(TOK_BREAK);
 
@@ -585,6 +601,7 @@ ir::object_body *parser::object_body() {
   while (!accept(TOK_RCURLY)) {
     skip_any(TOK_BREAK);
 
+    ir::declaration *decl = nullptr;
     bool api = accept(KW_API);
 
     if (api) {
@@ -593,18 +610,24 @@ ir::object_body *parser::object_body() {
 
     switch (peek()) {
     case KW_FUN:
-      body->splice(function_decl(api));
+      decl = function_decl();
       break;
     case KW_OBJ:
-      body->splice(object_decl());
+      decl = object_decl();
       break;
     case KW_VAR:
-      body->splice(var_decl());
+      decl = var_decl();
       break;
     default:
-      body->splice(stmt());
+      if (api) {
+        oops("e@1 keyword 'api' has no meaning here", gettok());
+      }
+      decl = stmt();
       break;
     }
+
+    decl->is_api(api);
+    body->splice(decl);
   }
 
   skip_any(TOK_BREAK);

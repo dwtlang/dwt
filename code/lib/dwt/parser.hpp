@@ -178,7 +178,7 @@ private:
   ir::object_body *object_body();
   ir::object *object();
   ir::subscript_expr *subscript_expr();
-  ir::declaration *function_decl(bool api);
+  ir::declaration *function_decl();
   ir::lambda_decl *lambda_decl();
   ir::map_impl *map_impl();
   ir::type3 *type3();
