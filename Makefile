@@ -96,6 +96,7 @@ $(EXE_LIB): $(LIB_OBJS)
 	$(V)ranlib $(EXE_LIB)
 
 $(EXE_BIN): $(CLI_OBJS) $(EXE_LIB)
+	@mkdir -p $(EXE_BIN_DIR)
 	@echo "Linking $(EXE_BIN)"
 	$(V)$(COMPILER) $(COMPILER_FLAGS) $(CLI_OBJS) $(EXE_LIB) -o $@
 	$(V)strip $(EXE_BIN)
