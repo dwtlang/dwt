@@ -20,7 +20,7 @@ namespace dwt {
 
 parser::parser(utf8_source &&utf8)
   : scanner(utf8)
-  , _token_seq(utf8.tokens()) {
+  , _token_cache(utf8.tokens()) {
 }
 
 parser::~parser() {
@@ -1458,7 +1458,7 @@ ir::scoped_name *parser::scoped_name() {
     } while (accept(TOK_SCOPE));
   }
 
-  token_range range(_token_seq, begintok.pos(), gettok().pos());
+  token_range range(_token_cache, begintok.pos(), gettok().pos());
 
   name->set_token_range(range);
   name->set_scope(scope::current);

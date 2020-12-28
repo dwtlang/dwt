@@ -26,7 +26,7 @@ utf8_source::utf8_source(std::string filename)
     throw exception("no such file: " + filename + "\n");
   }
 
-  _tokens = std::make_shared<token_seq>(filename);
+  _tokens = std::make_shared<token_cache>(filename);
 }
 
 utf8_source::~utf8_source() {
@@ -39,7 +39,7 @@ std::string utf8_source::name() const {
   return _name;
 }
 
-std::shared_ptr<token_seq> utf8_source::tokens() {
+std::shared_ptr<token_cache> utf8_source::tokens() {
   return _tokens;
 }
 

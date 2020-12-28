@@ -9,8 +9,8 @@
 #ifndef GUARD_DWT_TOKEN_RANGE_HPP
 #define GUARD_DWT_TOKEN_RANGE_HPP
 
+#include <dwt/token_cache.hpp>
 #include <dwt/token_ref.hpp>
-#include <dwt/token_seq.hpp>
 
 #include <climits>
 #include <memory>
@@ -25,7 +25,7 @@ public:
     , _to(to.pos()) {
   }
 
-  token_range(std::shared_ptr<token_seq> seq, int from, int to)
+  token_range(std::shared_ptr<token_cache> seq, int from, int to)
     : _seq(seq)
     , _from(from)
     , _to(to) {
@@ -125,7 +125,7 @@ public:
   std::string in_context(int ctx_lines = 3);
 
 private:
-  std::shared_ptr<token_seq> _seq;
+  std::shared_ptr<token_cache> _seq;
   int _from;
   int _to;
 };

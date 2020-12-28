@@ -10,7 +10,7 @@
 #define GUARD_DWT_UTF8_SOURCE_HPP
 
 #include <dwt/sha3.hpp>
-#include <dwt/token_seq.hpp>
+#include <dwt/token_cache.hpp>
 #include <dwt/uncopyable.hpp>
 
 #include <cstdio>
@@ -27,7 +27,7 @@ public:
   int peek(int &nr_bytes);
   int get(int &nr_bytes);
   std::string name() const;
-  std::shared_ptr<token_seq> tokens();
+  std::shared_ptr<token_cache> tokens();
 
   sha3_digest<256> digest() {
     return _sha3.final();
@@ -43,7 +43,7 @@ private:
   int _char_code;
   int _char_size;
   std::string _name;
-  std::shared_ptr<token_seq> _tokens;
+  std::shared_ptr<token_cache> _tokens;
 };
 
 } // namespace dwt

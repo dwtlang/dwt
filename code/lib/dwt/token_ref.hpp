@@ -9,7 +9,7 @@
 #ifndef GUARD_DWT_TOKEN_REF_HPP
 #define GUARD_DWT_TOKEN_REF_HPP
 
-#include <dwt/token_seq.hpp>
+#include <dwt/token_cache.hpp>
 
 #include <memory>
 
@@ -19,7 +19,7 @@ class token_ref {
   friend class token_range;
 
 public:
-  token_ref(std::shared_ptr<token_seq> seq, int idx)
+  token_ref(std::shared_ptr<token_cache> seq, int idx)
     : _seq(seq)
     , _idx(idx) {
   }
@@ -93,7 +93,7 @@ public:
   std::string in_context(int ctx_lines = 3);
 
 private:
-  std::shared_ptr<token_seq> _seq;
+  std::shared_ptr<token_cache> _seq;
   int _idx;
   std::string _text;
 };

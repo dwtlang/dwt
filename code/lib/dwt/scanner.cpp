@@ -8,7 +8,7 @@
 
 #include <dwt/reporting.hpp>
 #include <dwt/scanner.hpp>
-#include <dwt/token_seq.hpp>
+#include <dwt/token_cache.hpp>
 #include <dwt/utf8.hpp>
 
 #include <cassert>

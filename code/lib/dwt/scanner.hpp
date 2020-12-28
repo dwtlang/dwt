@@ -9,8 +9,8 @@
 #ifndef GUARD_DWT_SCANNER_HPP
 #define GUARD_DWT_SCANNER_HPP
 
+#include <dwt/token_cache.hpp>
 #include <dwt/token_ref.hpp>
-#include <dwt/token_seq.hpp>
 #include <dwt/utf8_source.hpp>
 
 #include <memory>
@@ -48,7 +48,7 @@ private:
   size_t _lineno;
   size_t _column;
   size_t _prev_column;
-  std::shared_ptr<token_seq> _tokens;
+  std::shared_ptr<token_cache> _tokens;
 };
 
 } // namespace dwt

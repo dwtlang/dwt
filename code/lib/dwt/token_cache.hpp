@@ -15,13 +15,13 @@
 
 namespace dwt {
 
-class token_seq {
+class token_cache {
 public:
-  explicit token_seq(std::string source)
+  explicit token_cache(std::string source)
     : _src(source) {
   }
-  token_seq(const token_seq &) = default;
-  virtual ~token_seq() = default;
+  token_cache(const token_cache &) = default;
+  virtual ~token_cache() = default;
 
   void add(token tok) {
     _seq.emplace_back(tok);

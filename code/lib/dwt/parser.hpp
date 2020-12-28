@@ -65,7 +65,7 @@
 #include <dwt/ir/xor_expr.hpp>
 #include <dwt/scanner.hpp>
 #include <dwt/token.hpp>
-#include <dwt/token_seq.hpp>
+#include <dwt/token_cache.hpp>
 #include <dwt/token_type.hpp>
 
 #include <cassert>
@@ -242,7 +242,7 @@ private:
   std::vector<scope *> _self_stack;
   token_ref _this_token;
   token_ref _prev_token;
-  std::shared_ptr<token_seq> _token_seq;
+  std::shared_ptr<token_cache> _token_cache;
 };
 
 } // namespace dwt
