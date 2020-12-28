@@ -7,52 +7,34 @@ BUILD_YEAR      := $(shell date +"%Y")
 VERBOSE         := @
 V               := $(VERBOSE)
 
-MAKEFLAGS       += --no-print-directory #--keep-going
+MAKEFLAGS       += --no-print-directory --keep-going
 
 profile ?= performance
 include profiles/$(profile)/profile.mk
 
 BUILD_PROF := $(profile)
 
-LIB_DIR         := lib
-BIN_DIR         := bin
-SRC_DIR         := code
-INC_DIR         := $(SRC_DIR)/api
-API_INC_DIR			:= $(SRC_DIR)/api
-LIB_INC_DIR			:= $(SRC_DIR)/lib
-API_INC					:= -I$(API_INC_DIR)
-LIB_INC					:= -I$(LIB_INC_DIR) -I$(API_INC_DIR)
-LIB_SRC_DIR     := $(SRC_DIR)/lib
-CLI_SRC_DIR     := $(SRC_DIR)/cli
-LIB_SRC         := $(shell find $(LIB_SRC_DIR) -name "*.cpp")
-CLI_SRC         := $(shell find $(CLI_SRC_DIR) -name "*.cpp")
-LIB_OBS         := $(LIB_SRC:%.cpp=%.o)
-CLI_OBS         := $(CLI_SRC:%.cpp=%.o)
-LIB_BASENAME    := libdwt.so
-LIB_NAME        := $(LIB_BASENAME).$(MAJOR_VER).$(MINOR_VER).$(PATCH_VER)
-LIB_LNK         := $(LIB_DIR)/$(LIB_BASENAME).$(MAJOR_VER)
-DWT_LIB         := $(LIB_DIR)/$(LIB_NAME)
-AR_BASENAME     := libdwt.a
-AR_NAME         := $(AR_BASENAME).$(MAJOR_VER).$(MINOR_VER).$(PATCH_VER)
-AR_LNK          := $(LIB_DIR)/$(AR_BASENAME).$(MAJOR_VER)
-DWT_AR          := $(LIB_DIR)/$(AR_NAME)
-DWT_CLI         := $(BIN_DIR)/dwt
-TEST_DIR        := test
-TEST_INC				:= $(LIB_INC) -I$(TEST_DIR)
-TEST_SRC				:= $(TEST_DIR)/tester.cpp
-TEST_OBJ				:= $(TEST_SRC:%.cpp=%.o)
-TEST_BIN				:= $(TEST_DIR)/tester
-FUZZ_DIR        := $(TEST_DIR)
-FUZZ_SRC        := $(FUZZ_DIR)/fuzzer.cpp
-FUZZ_OBS        := $(FUZZ_SRC:%.cpp=%.o)
-FUZZ_BIN        := $(FUZZ_DIR)/fuzzer
-FFI_TEST_DIR    := $(TEST_DIR)/ffi
-FFI_TEST_BIN    := $(TEST_DIR)/ffi/dwt
-FFI_TEST_SRC    := $(shell find $(FFI_TEST_DIR) -name "*.cpp")
-FFI_TEST_OBS    := $(FFI_TEST_SRC:%.cpp=%.o)
+EXE_BIN_DIR     := bin
+EXE_LIB_DIR     := lib
+LIB_SRC_DIR     := code/lib
+API_INC_DIR     := code/api
+CLI_SRC_DIR     := code/cli
+LIB_SRCS        := $(shell find $(LIB_SRC_DIR) -name "*.cpp")
+LIB_OBJS        := $(LIB_SRCS:%.cpp=%.o)
+CLI_SRCS        := $(shell find $(CLI_SRC_DIR) -name "*.cpp")
+CLI_OBJS        := $(CLI_SRCS:%.cpp=%.o)
+API_INC_ARGS    := -I$(API_INC_DIR)
+LIB_INC_ARGS    := -I$(API_INC_DIR) -I$(LIB_SRC_DIR)
+LIB_NAME        := libdwt.a
+CLI_NAME        := dwt
+EXE_BIN         := $(EXE_BIN_DIR)/$(CLI_NAME)
+EXE_LIB         := $(EXE_LIB_DIR)/$(LIB_NAME)
+LIB_DEPS        := $(LIB_OBJS:%.o=%.d)
+CLI_DEPS        := $(CLI_OBJS:%.o=%.d)
+
 COMPILER         = $(CXX)
 COMPILER        ?= g++
-COMPILER_FLAGS   = -pipe -Wall -Wno-unused-parameter \
+COMPILER_FLAGS  += -pipe -Wall -Wno-unused-parameter \
                    -fno-rtti -march=native \
                    -D_FILE_OFFSET_BITS=64 -fPIC \
                    $(CXXFLAGS) $(USE_FLAGS) \
@@ -76,124 +58,46 @@ else
 COMPILER_FLAGS  += -std=c++17 -pedantic
 endif
 
-#COMPILER_INCL   := -I$(INC_DIR) -I$(LIB_SRC_DIR) -I$(CLI_SRC_DIR) \
-                   -I$(FFI_TEST_DIR)
-LIB_DEPS        := $(LIB_OBS:%.o=%.d)
-CLI_DEPS        := $(CLI_OBS:%.o=%.d)
-FFI_TEST_DEPS   := $(FFI_TEST_OBS:%.o=%.d)
-ALL_DEPS        := $(LIB_DEPS) $(CLI_DEPS) $(FFI_TEST_DEPS)
-GCDA_FILES      := $(shell find . -name "*.gcda")
-STDOUT_FILES    := $(shell find test -name "*.stdout")
-STDERR_FILES    := $(shell find test -name "*.stderr")
-TEST_LOGFILE    := $(TEST_DIR)/log.txt
-
-optimised: COMPILER_FLAGS += -O3 -fomit-frame-pointer -flto -DNDEBUG=1
-small: COMPILER_FLAGS += -Os -fomit-frame-pointer -flto -DNDEBUG=1
+release: COMPILER_FLAGS += -fomit-frame-pointer -flto -DNDEBUG=1
 debug: COMPILER_FLAGS += -O0 -g -DDEBUG=1
-instrumented: COMPILER_FLAGS += -fprofile-generate -O3 -flto -DNDEBUG=1
-pgo: COMPILER_FLAGS += -fprofile-use -O3 -fomit-frame-pointer -flto -DNDEBUG=1
-pgo: MAKEFLAGS += --always-make
 
 # default target
-.PHONY: optimised
-optimised: all
-
-.PHONY: small
-small: all
+.PHONY: release
+release: all
 
 .PHONY: debug
 debug: all
 
-.PHONY: instrumented
-instrumented:
-ifneq "$(findstring g++,$(COMPILER))" "g++"
-	$(error use g++ for instrumented target)
-endif
-
-.PHONY: pgo
-pgo:
-ifneq "$(findstring g++,$(COMPILER))" "g++"
-	$(error use g++ for pgo target)
-endif
-
-instrumented: optimised
-
-pgo: clean optimised
-
 .PHONY: clean
 clean:
-	$(V)rm -f $(ALL_DEPS)
-	$(V)rm -f $(LIB_OBS)
-	$(V)rm -f $(CLI_OBS)
-	$(V)rm -f $(FUZZ_OBS)
-	$(V)rm -f $(FUZZ_BIN)
-	$(V)rm -f $(FFI_TEST_OBS)
-	$(V)rm -f $(FFI_TEST_BIN)
-	$(V)rm -f $(TEST_BIN)
-	$(V)rm -f $(CLI_BIN)
-	$(V)rm -rf $(LIB_DIR)/libdwt.*
-
-.PHONY: purge
-purge: clean
-	$(V)rm -rf $(GCDA_FILES)
-	$(V)rm -rf $(STDOUT_FILES)
-	$(V)rm -rf $(STDERR_FILES)
-	$(V)rm -rf $(TEST_LOGFILE)
+	$(V)rm -f $(CLI_DEPS) $(LIB_DEPS)
+	$(V)rm -f $(LIB_OBJS)
+	$(V)rm -f $(CLI_OBJS)
+	$(V)rm -f $(EXE_BIN)
+	$(V)rm -f $(EXE_LIB)
 
 .PHONY: all
-all: $(DWT_LIB) $(DWT_AR) $(DWT_CLI) $(FUZZ_BIN) $(TEST_BIN) $(FFI_TEST_BIN)
+all: $(EXE_LIB) $(EXE_BIN)
 
-code/lib/%.o: code/lib/%.cpp
+$(LIB_SRC_DIR)/%.o: $(LIB_SRC_DIR)/%.cpp
 	@echo "Compiling $<"
-	$(V)$(COMPILER) $(COMPILER_FLAGS) $(LIB_INC) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
-	$(V)$(COMPILER) -c $< $(LIB_INC) $(COMPILER_FLAGS) -o $@
-
-test/%.o: test/%.cpp
-	@echo "Compiling $<"
-	$(V)$(COMPILER) $(COMPILER_FLAGS) $(TEST_INC) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
-	$(V)$(COMPILER) -c $< $(TEST_INC) $(COMPILER_FLAGS) -o $@
+	$(V)$(COMPILER) $(COMPILER_FLAGS) $(LIB_INC_ARGS) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(V)$(COMPILER) -c $< $(LIB_INC_ARGS) $(COMPILER_FLAGS) -o $@
 
 %.o: %.cpp
 	@echo "Compiling $<"
-	$(V)$(COMPILER) $(COMPILER_FLAGS) $(LIB_INC) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
-	$(V)$(COMPILER) -c $< $(LIB_INC) $(COMPILER_FLAGS) -o $@
+	$(V)$(COMPILER) $(COMPILER_FLAGS) $(API_INC_ARGS) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(V)$(COMPILER) -c $< $(API_INC_ARGS) $(COMPILER_FLAGS) -o $@
 
-$(DWT_LIB): $(LIB_OBS)
-	@mkdir -p $(LIB_DIR)
-	@echo "Linking $(DWT_LIB)"
-	$(V)$(COMPILER) $(LIB_OBS) $(COMPILER_FLAGS) -shared -fPIC -o $(DWT_LIB)
-	@echo "Aliasing $(LIB_LNK) ~> $(DWT_LIB)"
-	$(V)ln -sf $(PWD)/$(DWT_LIB) $(LIB_LNK)
-	@echo "Aliasing $(LIB_DIR)/$(LIB_BASENAME) ~> $(LIB_LNK)"
-	$(V)ln -sf $(PWD)/$(LIB_LNK) $(PWD)/$(LIB_DIR)/$(LIB_BASENAME)
+$(EXE_LIB): $(LIB_OBJS)
+	@mkdir -p $(EXE_LIB_DIR)
+	@echo "Archiving $(EXE_LIB)"
+	$(V)ar -rcs $(EXE_LIB) $(LIB_OBJS)
+	$(V)ranlib $(EXE_LIB)
 
-$(DWT_AR): $(LIB_OBS)
-	@mkdir -p $(LIB_DIR)
-	@echo "Archiving $(DWT_AR)"
-	$(V)ar -rcs $(DWT_AR) $(LIB_OBS)
-	$(V)ranlib $(DWT_AR)
-	@echo "Aliasing $(AR_LNK) ~> $(DWT_AR)"
-	$(V)ln -sf $(PWD)/$(DWT_AR) $(AR_LNK)
-	@echo "Aliasing $(LIB_DIR)/$(AR_BASENAME) ~> $(AR_LNK)"
-	$(V)ln -sf $(PWD)/$(AR_LNK) $(PWD)/$(LIB_DIR)/$(AR_BASENAME)
+$(EXE_BIN): $(CLI_OBJS) $(EXE_LIB)
+	@echo "Linking $(EXE_BIN)"
+	$(V)$(COMPILER) $(COMPILER_FLAGS) $(CLI_OBJS) $(EXE_LIB) -o $@
+	$(V)strip $(EXE_BIN)
 
-$(DWT_CLI): $(DWT_AR) $(DWT_LIB) $(CLI_OBS)
-	@mkdir -p $(BIN_DIR)
-	@echo "Linking $(DWT_CLI)"
-	$(V)$(COMPILER) $(CLI_OBS) $(API_INC) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
-
-$(FUZZ_BIN): $(DWT_LIB) $(FUZZ_OBS)
-	@mkdir -p $(FUZZ_DIR)
-	@echo "Linking $(FUZZ_BIN)"
-	$(V)$(COMPILER) $(FUZZ_OBS) $(TEST_INC) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
-
-$(FFI_TEST_BIN): $(DWT_LIB) $(FFI_TEST_OBS)
-	@mkdir -p $(BIN_DIR)
-	@echo "Linking $(FFI_TEST_BIN)"
-	$(V)$(COMPILER) $(FFI_TEST_OBS) $(TEST_INC) -I$(FFI_TEST_DIR) $(COMPILER_FLAGS) -L$(LIB_DIR) -Wl,-rpath='$$ORIGIN'/../../$(LIB_DIR) -ldwt $(EXT_LIBS) -o $@
-
-$(TEST_BIN): $(TEST_OBJ)
-	@echo "Linking $(TEST_BIN)"
-	$(V)$(COMPILER) $(TEST_OBJ) $(TEST_INC) $(COMPILER_FLAGS) -lpthread -o $@
-
--include $(ALL_DEPS)
+-include $(LIB_DEPS) $(CLI_DEPS)

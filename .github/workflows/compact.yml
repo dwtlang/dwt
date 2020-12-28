@@ -5,7 +5,6 @@ on: [push]
 jobs:
   build_and_test:
     runs-on: ubuntu-20.04
-    name: Build and test Dwt
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -17,4 +16,5 @@ jobs:
         export PATH=$PWD/bin:$PATH
         dwt
         cd test
+        make
         ./tester
