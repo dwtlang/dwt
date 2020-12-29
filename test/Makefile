@@ -25,7 +25,7 @@ DWT_LIB         := $(DWT_LIB_DIR)/$(LIB_NAME)
 COMPILER         = $(CXX)
 COMPILER        ?= g++
 COMPILER_FLAGS  += -pipe -Wall -Wno-unused-parameter \
-                   -fno-rtti -march=native -O3 -flto\
+                   -fno-rtti -march=native -O3 \
                    -D_FILE_OFFSET_BITS=64 -fPIC -std=c++17 -pedantic -pthread \
                    $(CXXFLAGS)
 

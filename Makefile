@@ -58,7 +58,7 @@ else
 COMPILER_FLAGS  += -std=c++17 -pedantic
 endif
 
-release: COMPILER_FLAGS += -fomit-frame-pointer -flto -DNDEBUG=1
+release: COMPILER_FLAGS += -fomit-frame-pointer -DNDEBUG=1
 debug: COMPILER_FLAGS += -O0 -g -DDEBUG=1
 
 # default target
