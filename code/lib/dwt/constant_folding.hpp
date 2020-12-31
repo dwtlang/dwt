@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 //
-// Copyright (c) 2020  Andrew Scott
+// Copyright (c) 2020-2021 Andrew Scott and Contributors
 
 #ifndef GUARD_DWT_CONSTANT_FOLDING_HPP
 #define GUARD_DWT_CONSTANT_FOLDING_HPP

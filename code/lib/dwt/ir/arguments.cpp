@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 //
-// Copyright (c) 2020  Andrew Scott
+// Copyright (c) 2020-2021 Andrew Scott and Contributors
 
 #include <dwt/ir/arguments.hpp>
 #include <dwt/ir/visitor.hpp>
