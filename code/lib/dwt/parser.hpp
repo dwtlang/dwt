@@ -239,6 +239,7 @@ private:
     return _self_stack.back();
   }
 
+  bool _comma_stmt_sep = false;
   std::vector<scope *> _self_stack;
   token_ref _this_token;
   token_ref _prev_token;

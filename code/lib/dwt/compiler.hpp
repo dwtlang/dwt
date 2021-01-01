@@ -30,9 +30,9 @@ class function_obj;
 
 class loop_info {
 public:
-  loop_info(std::string identifier, size_t base_pos)
+  loop_info(std::string identifier, size_t stack_pos)
     : _identifier(identifier)
-    , _base_pos(base_pos) {
+    , _stack_pos(stack_pos) {
   }
 
   void add_patch_point(size_t patch_point) {
@@ -43,8 +43,8 @@ public:
     return _patch_points;
   }
 
-  size_t base_pos() const {
-    return _base_pos;
+  size_t stack_pos() const {
+    return _stack_pos;
   }
 
   std::string name() const {
@@ -53,7 +53,7 @@ public:
 
 private:
   std::string _identifier;
-  size_t _base_pos;
+  size_t _stack_pos;
   std::vector<size_t> _patch_points;
 };
 

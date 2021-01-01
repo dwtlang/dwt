@@ -111,7 +111,11 @@ void parser::skip_any(token_type tok) {
  */
 void parser::stmt_end() {
   if (!peek_any(TOK_LCURLY, TOK_RCURLY)) {
-    expect_any(TOK_SEMICOLON, TOK_BREAK);
+    if (_comma_stmt_sep) {
+      expect_any(TOK_COMMA, TOK_BREAK);
+    } else {
+      expect_any(TOK_SEMICOLON, TOK_BREAK);
+    }
   }
   skip_any(TOK_BREAK);
 }
@@ -905,6 +909,7 @@ ir::loop_stmt *parser::loop_stmt() {
     body = stmt();
   } else if (accept(KW_FOR)) {
     loop_type = ir::FOR_LOOP;
+    _comma_stmt_sep = true;
     skip_any(TOK_BREAK);
     if (!accept(TOK_SEMICOLON)) {
       before = expr_stmt();
@@ -920,6 +925,7 @@ ir::loop_stmt *parser::loop_stmt() {
     } else {
       skip_any(TOK_BREAK);
     }
+    _comma_stmt_sep = false;
     body = stmt();
   } else {
     body = stmt();

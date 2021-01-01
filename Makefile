@@ -59,11 +59,12 @@ COMPILER_FLAGS  += -std=c++17 -pedantic
 endif
 
 release: COMPILER_FLAGS += -fomit-frame-pointer -DNDEBUG=1
-debug: COMPILER_FLAGS += -O0 -g -DDEBUG=1
+debug: COMPILER_FLAGS += -O0 -ggdb -DDEBUG=1
 
 # default target
 .PHONY: release
 release: all
+	$(V)strip $(EXE_BIN)
 
 .PHONY: debug
 debug: all
@@ -99,6 +100,5 @@ $(EXE_BIN): $(CLI_OBJS) $(EXE_LIB)
 	@mkdir -p $(EXE_BIN_DIR)
 	@echo "Linking $(EXE_BIN)"
 	$(V)$(COMPILER) $(COMPILER_FLAGS) $(CLI_OBJS) $(EXE_LIB) -o $@
-	$(V)strip $(EXE_BIN)
 
 -include $(LIB_DEPS) $(CLI_DEPS)

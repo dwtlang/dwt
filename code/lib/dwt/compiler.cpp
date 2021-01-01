@@ -1179,7 +1179,7 @@ void compiler::visit(ir::return_stmt &stmt) {
 }
 
 /**
- * Compile a "loop for x, y, z { .. }" statement.
+ * Compile a "loop for x; y; z { .. }" statement.
  *
  * @param loop The loop AST.
  */
@@ -1198,6 +1198,8 @@ void compiler::for_loop(ir::loop_stmt &loop) {
 
   walk(loop.body());
 
+  auto instr_after_body = code_obj_pos();
+
   if (loop.after()) {
     walk(loop.after());
   }
@@ -1208,13 +1210,15 @@ void compiler::for_loop(ir::loop_stmt &loop) {
   if (loop.is_tagged()) {
     auto info = find_loop_info(loop.name(), _continue_stack);
 
-    for (auto pp : info->patch_points()) {
-      patch_jump(pp, instr_before_cond);
+    for (auto cp : info->patch_points()) {
+      patch_op(cp - 1, OP_BRA);
+      patch_jump(cp, instr_after_body);
     }
-  }
-
-  for (auto cp : _continue_stack.back().patch_points()) {
-    patch_jump(cp, instr_before_cond);
+  } else {
+    for (auto cp : _continue_stack.back().patch_points()) {
+      patch_op(cp - 1, OP_BRA);
+      patch_jump(cp, instr_after_body);
+    }
   }
 
   for (auto bp : _break_stack.back().patch_points()) {
@@ -1228,23 +1232,23 @@ void compiler::for_loop(ir::loop_stmt &loop) {
  * @param loop The loop AST.
  */
 void compiler::while_loop(ir::loop_stmt &loop) {
-  auto instr_before_loop = code_obj_pos();
+  auto instr_before_cond = code_obj_pos();
   walk(loop.cond());
   auto instr_after_cond = mark_jump(OP_BRZ, TBD);
   walk(loop.body());
-  mark_jump(OP_LOOP, instr_before_loop);
+  mark_jump(OP_LOOP, instr_before_cond);
   patch_jump(instr_after_cond);
 
   if (loop.is_tagged()) {
     auto info = find_loop_info(loop.name(), _continue_stack);
 
-    for (auto pp : info->patch_points()) {
-      patch_jump(pp, instr_before_loop);
+    for (auto cp : info->patch_points()) {
+      patch_jump(cp, instr_before_cond);
     }
-  }
-
-  for (auto cp : _continue_stack.back().patch_points()) {
-    patch_jump(cp, instr_before_loop);
+  } else {
+    for (auto cp : _continue_stack.back().patch_points()) {
+      patch_jump(cp, instr_before_cond);
+    }
   }
 
   for (auto bp : _break_stack.back().patch_points()) {
@@ -1747,7 +1751,7 @@ void compiler::visit(ir::break_stmt &stmt) {
   if (stmt.name() != "") {
     auto info = find_loop_info(stmt.name(), _break_stack);
 
-    auto nr_pops = _stack_pos - info->base_pos();
+    auto nr_pops = _stack_pos - info->stack_pos();
 
     while (nr_pops--) {
       emit_op(OP_POP);
@@ -1755,7 +1759,7 @@ void compiler::visit(ir::break_stmt &stmt) {
 
     info->add_patch_point(mark_jump(OP_BRA, TBD));
   } else {
-    auto nr_pops = _stack_pos - _break_stack.back().base_pos();
+    auto nr_pops = _stack_pos - _break_stack.back().stack_pos();
 
     while (nr_pops--) {
       emit_op(OP_POP);
@@ -1776,7 +1780,7 @@ void compiler::visit(ir::continue_stmt &stmt) {
   if (stmt.name() != "") {
     auto info = find_loop_info(stmt.name(), _continue_stack);
 
-    auto nr_pops = _stack_pos - info->base_pos();
+    auto nr_pops = _stack_pos - info->stack_pos();
 
     while (nr_pops--) {
       emit_op(OP_POP);
@@ -1784,7 +1788,7 @@ void compiler::visit(ir::continue_stmt &stmt) {
 
     info->add_patch_point(mark_jump(OP_LOOP, TBD));
   } else {
-    auto nr_pops = _stack_pos - _continue_stack.back().base_pos();
+    auto nr_pops = _stack_pos - _continue_stack.back().stack_pos();
 
     while (nr_pops--) {
       emit_op(OP_POP);
