@@ -515,7 +515,7 @@ function_obj *compiler::operator()(ir::ast *tree) {
 #endif
 
 #if USE_BYTECODE_OPTIMISER
-  optimise(_fun_obj->code());
+  // optimise(_fun_obj->code());
 #endif
 
   debug {
@@ -1179,6 +1179,50 @@ void compiler::visit(ir::return_stmt &stmt) {
 }
 
 /**
+ * Compile a "loop for x, y, z { .. }" statement.
+ *
+ * @param loop The loop AST.
+ */
+void compiler::for_loop(ir::loop_stmt &loop) {
+  if (loop.before()) {
+    walk(loop.before());
+  }
+
+  auto instr_before_cond = code_obj_pos();
+
+  if (loop.cond()) {
+    walk(loop.cond());
+  }
+
+  auto instr_after_cond = mark_jump(OP_BRZ, TBD);
+
+  walk(loop.body());
+
+  if (loop.after()) {
+    walk(loop.after());
+  }
+
+  mark_jump(OP_LOOP, instr_before_cond);
+  patch_jump(instr_after_cond);
+
+  if (loop.is_tagged()) {
+    auto info = find_loop_info(loop.name(), _continue_stack);
+
+    for (auto pp : info->patch_points()) {
+      patch_jump(pp, instr_before_cond);
+    }
+  }
+
+  for (auto cp : _continue_stack.back().patch_points()) {
+    patch_jump(cp, instr_before_cond);
+  }
+
+  for (auto bp : _break_stack.back().patch_points()) {
+    patch_jump(bp);
+  }
+}
+
+/**
  * Compile a "loop while { .. }" statement.
  *
  * @param loop The loop AST.
@@ -1580,6 +1624,9 @@ void compiler::visit(ir::loop_stmt &loop) {
   }
 
   switch (loop.get_type()) {
+  case ir::FOR_LOOP:
+    for_loop(loop);
+    break;
   case ir::WHILE_LOOP:
     while_loop(loop);
     break;

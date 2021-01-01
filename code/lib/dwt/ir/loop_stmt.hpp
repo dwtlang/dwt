@@ -21,6 +21,7 @@ enum loop_type {
   BASIC_LOOP = 0,
   LOOP_WHILE,
   WHILE_LOOP,
+  FOR_LOOP,
   LOOP_UNTIL,
   UNTIL_LOOP
 };
@@ -40,6 +41,16 @@ public:
     return _type;
   }
 
+  void before(stmt *s) {
+    splice(s);
+    _before = s;
+  }
+
+  void after(stmt *s) {
+    splice(s);
+    _after = s;
+  }
+
   void cond(expr *e) {
     splice(e);
     _cond = e;
@@ -50,6 +61,10 @@ public:
     _body = s;
   }
 
+  stmt *before() {
+    return _before;
+  }
+
   expr *cond() {
     return _cond;
   }
@@ -58,14 +73,20 @@ public:
     return _body;
   }
 
+  stmt *after() {
+    return _after;
+  }
+
   bool is_tagged() {
     return name() != "";
   }
 
 private:
   loop_type _type;
+  stmt *_before = nullptr;
   expr *_cond = nullptr;
   stmt *_body = nullptr;
+  stmt *_after = nullptr;
 };
 
 } // namespace ir

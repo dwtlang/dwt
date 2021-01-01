@@ -210,6 +210,7 @@ private:
   size_t find_global(std::string);
 
   void while_loop(ir::loop_stmt &);
+  void for_loop(ir::loop_stmt &);
   void loop_while(ir::loop_stmt &);
   void loop_until(ir::loop_stmt &);
   void until_loop(ir::loop_stmt &);

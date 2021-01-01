@@ -1,7 +1,7 @@
 MAJOR_VER       := 0
 MINOR_VER       := 0
 PATCH_VER       := 0
-BUILD_TAG       :=
+BUILD_TAG       := alpha
 BUILD_YEAR      := $(shell date +"%Y")
 
 VERBOSE         := @

@@ -110,7 +110,7 @@ void parser::skip_any(token_type tok) {
  * Expect any valid token that can end a statement.
  */
 void parser::stmt_end() {
-  if (!peek(TOK_RCURLY)) {
+  if (!peek_any(TOK_LCURLY, TOK_RCURLY)) {
     expect_any(TOK_SEMICOLON, TOK_BREAK);
   }
   skip_any(TOK_BREAK);
@@ -679,9 +679,6 @@ ir::stmt *parser::stmt() {
   case KW_LOOP:
     return loop_stmt();
     break;
-  case KW_FOR:
-    return for_stmt();
-    break;
   case KW_USE:
     return use_stmt();
     break;
@@ -724,47 +721,7 @@ ir::expr_stmt *parser::expr_stmt() {
  * @return The statement AST.
  */
 ir::for_stmt *parser::for_stmt() {
-  auto forstmt = new ir::for_stmt();
-  scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
-
-  expect(KW_FOR);
-  skip_any(TOK_BREAK);
-  expect(TOK_IDENT);
-  skip_any(TOK_BREAK);
-  // auto param = new ir::parameter(gettok());
-  expect(KW_IN);
-  skip_any(TOK_BREAK);
-  expr();
-  skip_any(TOK_BREAK);
-  stmt();
-
-  return forstmt;
-
-#if 0
-
-
-  expect(KW_FOR);
-  expect(TOK_LPAREN);
-  if (peek(KW_VAR)) {
-    stmt->splice(var_decl());
-  } else if (!accept(TOK_SEMICOLON)) {
-    stmt->splice(expr_stmt());
-  }
-
-  if (!accept(TOK_SEMICOLON)) {
-    expr();
-    expect(TOK_SEMICOLON);
-  }
-
-  if (!accept(TOK_RPAREN)) {
-    expr();
-    expect(TOK_RPAREN);
-  }
-
-  scope::close();
-
-  return stmt;
-#endif
+  return nullptr;
 }
 
 /**
@@ -928,6 +885,8 @@ ir::loop_stmt *parser::loop_stmt() {
   ir::loop_stmt *loop = nullptr;
   ir::expr *cond = nullptr;
   ir::stmt *body = nullptr;
+  ir::stmt *before = nullptr;
+  ir::stmt *after = nullptr;
 
   loop = loop_decl();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
@@ -943,6 +902,24 @@ ir::loop_stmt *parser::loop_stmt() {
     skip_any(TOK_BREAK);
     cond = expr();
     skip_any(TOK_BREAK);
+    body = stmt();
+  } else if (accept(KW_FOR)) {
+    loop_type = ir::FOR_LOOP;
+    skip_any(TOK_BREAK);
+    if (!accept(TOK_SEMICOLON)) {
+      before = expr_stmt();
+    }
+    if (!accept(TOK_SEMICOLON)) {
+      cond = expr();
+      stmt_end();
+    } else {
+      skip_any(TOK_BREAK);
+    }
+    if (!accept(TOK_SEMICOLON)) {
+      after = expr_stmt();
+    } else {
+      skip_any(TOK_BREAK);
+    }
     body = stmt();
   } else {
     body = stmt();
@@ -963,8 +940,16 @@ ir::loop_stmt *parser::loop_stmt() {
 
   loop->set_type(loop_type);
 
+  if (before) {
+    loop->before(before);
+  }
+
   if (cond) {
     loop->cond(cond);
+  }
+
+  if (after) {
+    loop->after(after);
   }
 
   loop->body(body);
