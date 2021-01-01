@@ -10,7 +10,7 @@
 #define GUARD_DWT_IR_OR_EXPR_HPP
 
 #include <dwt/ir/expr.hpp>
-#include <dwt/token.hpp>
+#include <dwt/token_ref.hpp>
 #include <vector>
 
 namespace dwt {
@@ -18,7 +18,7 @@ namespace ir {
 
 class or_expr : public expr {
 public:
-  or_expr(expr *, expr *, token_ref);
+  or_expr(std::unique_ptr<expr>, std::unique_ptr<expr>, token_ref);
   virtual ~or_expr();
   virtual void accept(ir::visitor &visitor);
 };

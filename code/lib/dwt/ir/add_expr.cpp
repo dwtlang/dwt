@@ -12,10 +12,12 @@
 namespace dwt {
 namespace ir {
 
-add_expr::add_expr(expr *lhs, expr *rhs, token_ref tok)
+add_expr::add_expr(std::unique_ptr<expr> lhs,
+                   std::unique_ptr<expr> rhs,
+                   token_ref tok)
   : _tok(tok) {
-  splice(lhs);
-  splice(rhs);
+  splice(std::move(lhs));
+  splice(std::move(rhs));
 }
 
 add_expr::~add_expr() {

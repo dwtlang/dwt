@@ -16,7 +16,7 @@ namespace ir {
 
 class subscript_expr : public expr {
 public:
-  subscript_expr(expr *, expr *);
+  subscript_expr(std::unique_ptr<expr>, std::unique_ptr<expr>);
   subscript_expr();
   virtual ~subscript_expr();
   virtual void accept(ir::visitor &visitor);

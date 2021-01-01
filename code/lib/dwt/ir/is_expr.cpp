@@ -12,9 +12,11 @@
 namespace dwt {
 namespace ir {
 
-is_expr::is_expr(expr *lhs, expr *rhs, token_ref tok) {
-  splice(lhs);
-  splice(rhs);
+is_expr::is_expr(std::unique_ptr<expr> lhs,
+                 std::unique_ptr<expr> rhs,
+                 token_ref tok) {
+  splice(std::move(lhs));
+  splice(std::move(rhs));
   set_name(tok);
 }
 

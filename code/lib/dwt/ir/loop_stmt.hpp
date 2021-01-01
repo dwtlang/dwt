@@ -41,24 +41,24 @@ public:
     return _type;
   }
 
-  void before(stmt *s) {
-    splice(s);
-    _before = s;
+  void before(std::unique_ptr<stmt> s) {
+    _before = s.get();
+    splice(std::move(s));
   }
 
-  void after(stmt *s) {
-    splice(s);
-    _after = s;
+  void after(std::unique_ptr<stmt> s) {
+    _after = s.get();
+    splice(std::move(s));
   }
 
-  void cond(expr *e) {
-    splice(e);
-    _cond = e;
+  void cond(std::unique_ptr<expr> e) {
+    _cond = e.get();
+    splice(std::move(e));
   }
 
-  void body(stmt *s) {
-    splice(s);
-    _body = s;
+  void body(std::unique_ptr<stmt> s) {
+    _body = s.get();
+    splice(std::move(s));
   }
 
   stmt *before() {

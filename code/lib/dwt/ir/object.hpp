@@ -26,7 +26,7 @@ public:
   virtual void accept(ir::visitor &visitor);
 
   expr *super() const;
-  void super(expr *);
+  void super(std::unique_ptr<expr>);
 
 private:
   expr *_super = nullptr;

@@ -19,7 +19,7 @@ namespace ir {
 
 class call_expr : public expr {
 public:
-  call_expr(expr *, arguments *);
+  call_expr(std::unique_ptr<expr>, std::unique_ptr<arguments>);
   virtual ~call_expr();
   virtual void accept(ir::visitor &visitor);
 

@@ -11,9 +11,9 @@
 
 namespace dwt {
 
-ir::kv_pair::kv_pair(expr *k, expr *v) {
-  splice(k);
-  splice(v);
+ir::kv_pair::kv_pair(std::unique_ptr<expr> k, std::unique_ptr<expr> v) {
+  splice(std::move(k));
+  splice(std::move(v));
 }
 
 ir::kv_pair::~kv_pair() {

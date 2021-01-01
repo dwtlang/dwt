@@ -34,14 +34,14 @@ public:
     return _impl;
   }
 
-  void args(ir::arguments *args) {
-    splice(args);
-    _args = args;
+  void args(std::unique_ptr<ir::arguments> args) {
+    _args = args.get();
+    splice(std::move(args));
   }
 
-  void impl(ir::lambda_decl *lambda) {
-    splice(lambda);
-    _impl = lambda;
+  void impl(std::unique_ptr<ir::lambda_decl> lambda) {
+    _impl = lambda.get();
+    splice(std::move(lambda));
   }
 
 private:

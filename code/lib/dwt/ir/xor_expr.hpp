@@ -17,7 +17,7 @@ namespace ir {
 
 class xor_expr : public expr {
 public:
-  xor_expr(expr *, expr *, token_ref);
+  xor_expr(std::unique_ptr<expr>, std::unique_ptr<expr>, token_ref);
   xor_expr();
   virtual ~xor_expr();
   virtual void accept(ir::visitor &visitor);

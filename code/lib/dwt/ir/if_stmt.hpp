@@ -26,19 +26,19 @@ public:
 
   virtual void accept(ir::visitor &visitor);
 
-  void cond(ir::expr *e) {
-    splice(e);
-    _cond = e;
+  void cond(std::unique_ptr<ir::expr> e) {
+    _cond = e.get();
+    splice(std::move(e));
   }
 
-  void if_body(ir::stmt *s) {
-    splice(s);
-    _true = s;
+  void if_body(std::unique_ptr<ir::stmt> s) {
+    _true = s.get();
+    splice(std::move(s));
   }
 
-  void else_body(ir::stmt *s) {
-    splice(s);
-    _false = s;
+  void else_body(std::unique_ptr<ir::stmt> s) {
+    _false = s.get();
+    splice(std::move(s));
   }
 
   ir::expr *cond() {

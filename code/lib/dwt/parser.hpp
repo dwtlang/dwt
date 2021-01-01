@@ -56,10 +56,6 @@
 #include <dwt/ir/stmt.hpp>
 #include <dwt/ir/subscript_expr.hpp>
 #include <dwt/ir/super_expr.hpp>
-#include <dwt/ir/type2.hpp>
-#include <dwt/ir/type3.hpp>
-#include <dwt/ir/type4.hpp>
-#include <dwt/ir/type5.hpp>
 #include <dwt/ir/use_stmt.hpp>
 #include <dwt/ir/var_decl.hpp>
 #include <dwt/ir/xor_expr.hpp>
@@ -172,60 +168,56 @@ private:
   void skip_any(token_type s);
   void stmt_end();
 
-  ir::script *script();
-  ir::declaration *declaration();
-  ir::object_decl *object_decl();
-  ir::object_body *object_body();
-  ir::object *object();
-  ir::subscript_expr *subscript_expr();
-  ir::declaration *function_decl();
-  ir::lambda_decl *lambda_decl();
-  ir::map_impl *map_impl();
-  ir::type3 *type3();
-  ir::ffi_decl *ffi_decl();
-  ir::function *function();
-  ir::module_decl *module_decl();
-  ir::lambda_expr *lambda_expr();
-  ir::lambda *lambda();
-  ir::parameters *parameters();
-  ir::kv_pair *kv_pair(size_t idx);
-  ir::type4 *type4();
-  ir::block *block();
-  ir::function_body *function_body();
-  ir::var_decl *var_decl();
-  ir::type5 *type5();
-  ir::arguments *arguments();
-  ir::stmt *stmt();
-  ir::expr_stmt *expr_stmt();
-  ir::for_stmt *for_stmt();
-  ir::use_stmt *use_stmt();
-  ir::if_stmt *if_stmt();
-  ir::print_stmt *print_stmt();
-  ir::loop_stmt *loop_decl();
-  ir::loop_stmt *loop_stmt();
-  ir::continue_stmt *continue_stmt();
-  ir::break_stmt *break_stmt();
-  ir::return_stmt *return_stmt();
-  ir::expr *expr();
-  ir::expr *assign_expr();
-  ir::expr *or_expr();
-  ir::expr *xor_expr();
-  ir::expr *and_expr();
-  ir::expr *equality_expr();
-  ir::expr *is_expr();
-  ir::expr *compare_expr();
-  ir::expr *add_expr();
-  ir::expr *mult_expr();
-  ir::expr *unary_expr();
-  ir::expr *call_expr();
-  ir::expr *primary_expr();
-  ir::expr *paren_expr();
-  ir::expr *member_expr();
-  ir::expr *map_expr();
-  ir::expr *type2();
-  ir::expr *nil_expr();
-  ir::expr *super_expr();
-  ir::scoped_name *scoped_name();
+  std::unique_ptr<ir::script> script();
+  std::unique_ptr<ir::declaration> declaration();
+  std::unique_ptr<ir::object_decl> object_decl();
+  std::unique_ptr<ir::object_body> object_body();
+  std::unique_ptr<ir::object> object();
+  std::unique_ptr<ir::subscript_expr> subscript_expr();
+  std::unique_ptr<ir::declaration> function_decl();
+  std::unique_ptr<ir::lambda_decl> lambda_decl();
+  std::unique_ptr<ir::map_impl> map_impl();
+  std::unique_ptr<ir::ffi_decl> ffi_decl();
+  std::unique_ptr<ir::function> function();
+  std::unique_ptr<ir::module_decl> module_decl();
+  std::unique_ptr<ir::lambda_expr> lambda_expr();
+  std::unique_ptr<ir::lambda> lambda();
+  std::unique_ptr<ir::parameters> parameters();
+  std::unique_ptr<ir::kv_pair> kv_pair(size_t idx);
+  std::unique_ptr<ir::block> block();
+  std::unique_ptr<ir::function_body> function_body();
+  std::unique_ptr<ir::var_decl> var_decl();
+  std::unique_ptr<ir::arguments> arguments();
+  std::unique_ptr<ir::stmt> stmt();
+  std::unique_ptr<ir::expr_stmt> expr_stmt();
+  std::unique_ptr<ir::for_stmt> for_stmt();
+  std::unique_ptr<ir::use_stmt> use_stmt();
+  std::unique_ptr<ir::if_stmt> if_stmt();
+  std::unique_ptr<ir::print_stmt> print_stmt();
+  std::unique_ptr<ir::loop_stmt> loop_decl();
+  std::unique_ptr<ir::loop_stmt> loop_stmt();
+  std::unique_ptr<ir::continue_stmt> continue_stmt();
+  std::unique_ptr<ir::break_stmt> break_stmt();
+  std::unique_ptr<ir::return_stmt> return_stmt();
+  std::unique_ptr<ir::expr> expr();
+  std::unique_ptr<ir::expr> assign_expr();
+  std::unique_ptr<ir::expr> or_expr();
+  std::unique_ptr<ir::expr> xor_expr();
+  std::unique_ptr<ir::expr> and_expr();
+  std::unique_ptr<ir::expr> equality_expr();
+  std::unique_ptr<ir::expr> is_expr();
+  std::unique_ptr<ir::expr> compare_expr();
+  std::unique_ptr<ir::expr> add_expr();
+  std::unique_ptr<ir::expr> mult_expr();
+  std::unique_ptr<ir::expr> unary_expr();
+  std::unique_ptr<ir::expr> call_expr();
+  std::unique_ptr<ir::expr> primary_expr();
+  std::unique_ptr<ir::expr> paren_expr();
+  std::unique_ptr<ir::expr> member_expr();
+  std::unique_ptr<ir::expr> map_expr();
+  std::unique_ptr<ir::expr> nil_expr();
+  std::unique_ptr<ir::expr> super_expr();
+  std::unique_ptr<ir::scoped_name> scoped_name();
 
   void push_self(scope *scope_ptr) {
     _self_stack.push_back(scope_ptr);

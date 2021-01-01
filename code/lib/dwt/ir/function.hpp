@@ -32,14 +32,14 @@ public:
     return _body;
   }
 
-  void params(ir::parameters *params) {
-    splice(params);
-    _params = params;
+  void params(std::unique_ptr<ir::parameters> params) {
+    _params = params.get();
+    splice(std::move(params));
   }
 
-  void body(ir::function_body *block) {
-    splice(block);
-    _body = block;
+  void body(std::unique_ptr<ir::function_body> block) {
+    _body = block.get();
+    splice(std::move(block));
   }
 
 private:

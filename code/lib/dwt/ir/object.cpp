@@ -25,8 +25,9 @@ void ir::object::accept(ir::visitor &visitor) {
   visitor.visit(*this);
 }
 
-void ir::object::super(expr *s) {
-  _super = s;
+void ir::object::super(std::unique_ptr<expr> s) {
+  _super = s.get();
+  splice(std::move(s));
 }
 
 ir::expr *ir::object::super() const {

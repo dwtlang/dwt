@@ -11,9 +11,9 @@
 
 namespace dwt {
 
-ir::member_expr::member_expr(expr *prec_expr, token_ref tok) {
+ir::member_expr::member_expr(std::unique_ptr<expr> prec_expr, token_ref tok) {
   set_name(tok);
-  splice(prec_expr);
+  splice(std::move(prec_expr));
 }
 
 ir::member_expr::member_expr() {

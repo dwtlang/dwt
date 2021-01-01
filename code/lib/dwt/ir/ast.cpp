@@ -46,6 +46,11 @@ ast *ast::parent_of() {
   return _parent;
 }
 
+void ast::splice(std::unique_ptr<ast> obj) {
+  obj->_parent = this;
+  _children.emplace_back(std::move(obj));
+}
+
 void ast::splice(ast *obj) {
   obj->_parent = this;
   _children.emplace_back(std::unique_ptr<ast>(obj));

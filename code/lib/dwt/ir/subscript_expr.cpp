@@ -11,9 +11,10 @@
 
 namespace dwt {
 
-ir::subscript_expr::subscript_expr(expr *e, expr *i) {
-  splice(e);
-  splice(i);
+ir::subscript_expr::subscript_expr(std::unique_ptr<expr> e,
+                                   std::unique_ptr<expr> i) {
+  splice(std::move(e));
+  splice(std::move(i));
 }
 
 ir::subscript_expr::subscript_expr() {

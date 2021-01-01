@@ -18,7 +18,7 @@ namespace ir {
 
 class unary_expr : public expr {
 public:
-  unary_expr(expr *, token_ref);
+  unary_expr(std::unique_ptr<expr>, token_ref);
   unary_expr();
   virtual ~unary_expr();
   virtual void accept(ir::visitor &visitor);

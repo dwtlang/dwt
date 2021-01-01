@@ -136,8 +136,8 @@ std::unique_ptr<ir::ast> parser::parse() {
  *
  * @return The script AST
  */
-ir::script *parser::script() {
-  auto scr = new ir::script();
+std::unique_ptr<ir::script> parser::script() {
+  auto scr = std::make_unique<ir::script>();
 
   push_self(scope::current);
 
@@ -155,10 +155,10 @@ ir::script *parser::script() {
  *
  * @return The declaration AST.
  */
-ir::declaration *parser::declaration() {
+std::unique_ptr<ir::declaration> parser::declaration() {
   skip_any(TOK_BREAK);
 
-  ir::declaration *decl = nullptr;
+  std::unique_ptr<ir::declaration> decl;
   bool api = accept(KW_API);
 
   if (api) {
@@ -202,11 +202,11 @@ ir::declaration *parser::declaration() {
  *
  * @return The declaration AST.
  */
-ir::object_decl *parser::object_decl() {
+std::unique_ptr<ir::object_decl> parser::object_decl() {
   expect(KW_OBJ);
   skip_any(TOK_BREAK);
   expect(TOK_IDENT);
-  auto decl = new ir::object_decl(gettok());
+  auto decl = std::make_unique<ir::object_decl>(gettok());
   scope::open(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
   skip_any(TOK_BREAK);
 
@@ -222,7 +222,7 @@ ir::object_decl *parser::object_decl() {
     decl->arity(0);
   }
 
-  decl->splice(impl);
+  decl->splice(std::move(impl));
 
   skip_any(TOK_BREAK);
 
@@ -236,8 +236,8 @@ ir::object_decl *parser::object_decl() {
  *
  * @return The lambda expression AST.
  */
-ir::lambda_expr *parser::lambda_expr() {
-  auto exp = new ir::lambda_expr();
+std::unique_ptr<ir::lambda_expr> parser::lambda_expr() {
+  auto exp = std::make_unique<ir::lambda_expr>();
 
   expect_any(TOK_BSLASH, KW_LAMBDA);
   skip_any(TOK_BREAK);
@@ -247,8 +247,7 @@ ir::lambda_expr *parser::lambda_expr() {
     exp->args(arguments());
     expect(TOK_RPAREN);
   } else {
-    auto args = new ir::arguments();
-    exp->args(args);
+    exp->args(std::make_unique<ir::arguments>());
   }
   skip_any(TOK_BREAK);
 
@@ -262,8 +261,8 @@ ir::lambda_expr *parser::lambda_expr() {
  *
  * @return The lambda definition AST.
  */
-ir::lambda *parser::lambda() {
-  auto lam = new ir::lambda();
+std::unique_ptr<ir::lambda> parser::lambda() {
+  auto lam = std::make_unique<ir::lambda>();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   if (accept(TOK_OR)) {
@@ -277,14 +276,14 @@ ir::lambda *parser::lambda() {
   expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
 
-  auto body = new ir::function_body();
+  auto body = std::make_unique<ir::function_body>();
 
   while (!accept(TOK_RCURLY)) {
     skip_any(TOK_BREAK);
     body->splice(declaration());
   }
 
-  lam->body(body);
+  lam->body(std::move(body));
 
   scope::close();
 
@@ -296,11 +295,11 @@ ir::lambda *parser::lambda() {
  *
  * @return The FFI declaration AST.
  */
-ir::ffi_decl *parser::ffi_decl() {
+std::unique_ptr<ir::ffi_decl> parser::ffi_decl() {
   expect(KW_FFI);
   expect(TOK_IDENT);
 
-  auto decl = new ir::ffi_decl(gettok());
+  auto decl = std::make_unique<ir::ffi_decl>(gettok());
   scope::add(gettok(), SCOPE_CREATE);
 
   skip_any(TOK_BREAK);
@@ -322,10 +321,10 @@ ir::ffi_decl *parser::ffi_decl() {
  *
  * @return The module declaration AST.
  */
-ir::module_decl *parser::module_decl() {
+std::unique_ptr<ir::module_decl> parser::module_decl() {
   expect(KW_MOD);
   expect(TOK_IDENT);
-  auto module = new ir::module_decl(gettok());
+  auto module = std::make_unique<ir::module_decl>(gettok());
   scope::open(gettok(), SCOPE_APPEND | SCOPE_CREATE);
 
   skip_any(TOK_BREAK);
@@ -349,8 +348,8 @@ ir::module_decl *parser::module_decl() {
  *
  * @return The lambda declaration AST.
  */
-ir::lambda_decl *parser::lambda_decl() {
-  auto decl = new ir::lambda_decl();
+std::unique_ptr<ir::lambda_decl> parser::lambda_decl() {
+  auto decl = std::make_unique<ir::lambda_decl>();
   scope::open(decl->name_tok(), SCOPE_CREATE);
 
   push_self(scope::current);
@@ -365,7 +364,7 @@ ir::lambda_decl *parser::lambda_decl() {
     decl->arity(0);
   }
 
-  decl->splice(impl);
+  decl->splice(std::move(impl));
 
   pop_self();
 
@@ -377,8 +376,8 @@ ir::lambda_decl *parser::lambda_decl() {
  *
  * @return The map definition AST.
  */
-ir::map_impl *parser::map_impl() {
-  auto impl = new ir::map_impl();
+std::unique_ptr<ir::map_impl> parser::map_impl() {
+  auto impl = std::make_unique<ir::map_impl>();
   scope::open(impl->name_tok(), SCOPE_CREATE);
 
   push_self(scope::current);
@@ -402,43 +401,14 @@ ir::map_impl *parser::map_impl() {
 }
 
 /**
- * Parse a vector definition.
- *
- * @return The vector definition AST.
- */
-ir::type3 *parser::type3() {
-  auto impl = new ir::type3();
-  scope::open(impl->name_tok(), SCOPE_CREATE);
-
-  push_self(scope::current);
-
-  expect(TOK_LSQUARE);
-  skip_any(TOK_BREAK);
-
-  if (!accept(TOK_RSQUARE)) {
-    do {
-      skip_any(TOK_BREAK);
-      impl->splice(type4());
-      skip_any(TOK_BREAK);
-    } while (accept(TOK_COMMA));
-
-    expect(TOK_RSQUARE);
-  }
-
-  pop_self();
-
-  return impl;
-}
-
-/**
  * Parse a function declaration.
  *
  * @return The function declaration AST.
  */
-ir::declaration *parser::function_decl() {
+std::unique_ptr<ir::declaration> parser::function_decl() {
   expect(KW_FUN);
   expect(TOK_IDENT);
-  auto decl = new ir::function_decl(gettok());
+  auto decl = std::make_unique<ir::function_decl>(gettok());
   scope::open(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
   skip_any(TOK_BREAK);
 
@@ -454,7 +424,7 @@ ir::declaration *parser::function_decl() {
     decl->arity(0);
   }
 
-  decl->splice(impl);
+  decl->splice(std::move(impl));
 
   skip_any(TOK_BREAK);
 
@@ -468,8 +438,8 @@ ir::declaration *parser::function_decl() {
  *
  * @return The function definition AST.
  */
-ir::function *parser::function() {
-  auto fun = new ir::function();
+std::unique_ptr<ir::function> parser::function() {
+  auto fun = std::make_unique<ir::function>();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(TOK_LPAREN);
@@ -494,8 +464,8 @@ ir::function *parser::function() {
  *
  * @return The object definiton AST.
  */
-ir::object *parser::object() {
-  auto obj = new ir::object();
+std::unique_ptr<ir::object> parser::object() {
+  auto obj = std::make_unique<ir::object>();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(TOK_LPAREN);
@@ -526,8 +496,8 @@ ir::object *parser::object() {
  *
  * @return The parameters AST.
  */
-ir::parameters *parser::parameters() {
-  auto params = new ir::parameters();
+std::unique_ptr<ir::parameters> parser::parameters() {
+  auto params = std::make_unique<ir::parameters>();
   do {
     if (prev(TOK_COMMA)) {
       skip_any(TOK_BREAK);
@@ -535,8 +505,8 @@ ir::parameters *parser::parameters() {
     accept(KW_VAR);
     expect(TOK_IDENT);
     auto identifier = gettok();
-    auto param = new ir::parameter(gettok());
-    params->splice(param);
+    auto param = std::make_unique<ir::parameter>(gettok());
+    params->splice(std::move(param));
     skip_any(TOK_BREAK);
     scope::add(identifier, SCOPE_EXCLUSIVE | SCOPE_CREATE);
   } while (accept(TOK_COMMA));
@@ -551,8 +521,8 @@ ir::parameters *parser::parameters() {
  *
  * @return The scoped block AST.
  */
-ir::block *parser::block() {
-  auto blk = new ir::block();
+std::unique_ptr<ir::block> parser::block() {
+  auto blk = std::make_unique<ir::block>();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(TOK_LCURLY);
@@ -575,8 +545,8 @@ ir::block *parser::block() {
  *
  * @return The function body AST.
  */
-ir::function_body *parser::function_body() {
-  auto body = new ir::function_body();
+std::unique_ptr<ir::function_body> parser::function_body() {
+  auto body = std::make_unique<ir::function_body>();
 
   expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
@@ -596,8 +566,8 @@ ir::function_body *parser::function_body() {
  *
  * @return The object body AST.
  */
-ir::object_body *parser::object_body() {
-  auto body = new ir::object_body();
+std::unique_ptr<ir::object_body> parser::object_body() {
+  auto body = std::make_unique<ir::object_body>();
 
   expect(TOK_LCURLY);
   skip_any(TOK_BREAK);
@@ -605,7 +575,7 @@ ir::object_body *parser::object_body() {
   while (!accept(TOK_RCURLY)) {
     skip_any(TOK_BREAK);
 
-    ir::declaration *decl = nullptr;
+    std::unique_ptr<ir::declaration> decl;
     bool api = accept(KW_API);
 
     if (api) {
@@ -631,7 +601,7 @@ ir::object_body *parser::object_body() {
     }
 
     decl->is_api(api);
-    body->splice(decl);
+    body->splice(std::move(decl));
   }
 
   skip_any(TOK_BREAK);
@@ -644,11 +614,11 @@ ir::object_body *parser::object_body() {
  *
  * @return The variable declaration AST.
  */
-ir::var_decl *parser::var_decl() {
+std::unique_ptr<ir::var_decl> parser::var_decl() {
   expect(KW_VAR);
   expect(TOK_IDENT);
 
-  auto decl = new ir::var_decl(gettok());
+  auto decl = std::make_unique<ir::var_decl>(gettok());
   scope::add(gettok(), SCOPE_EXCLUSIVE | SCOPE_CREATE);
 
   if (accept(TOK_ASSIGN)) {
@@ -670,7 +640,7 @@ ir::var_decl *parser::var_decl() {
  *
  * @return The statement.
  */
-ir::stmt *parser::stmt() {
+std::unique_ptr<ir::stmt> parser::stmt() {
   switch (peek()) {
   case KW_RET:
     return return_stmt();
@@ -710,8 +680,8 @@ ir::stmt *parser::stmt() {
  *
  * @return The expression statement.
  */
-ir::expr_stmt *parser::expr_stmt() {
-  auto stmt = new ir::expr_stmt();
+std::unique_ptr<ir::expr_stmt> parser::expr_stmt() {
+  auto stmt = std::make_unique<ir::expr_stmt>();
   stmt->splice(expr());
 
   stmt_end();
@@ -724,7 +694,7 @@ ir::expr_stmt *parser::expr_stmt() {
  *
  * @return The statement AST.
  */
-ir::for_stmt *parser::for_stmt() {
+std::unique_ptr<ir::for_stmt> parser::for_stmt() {
   return nullptr;
 }
 
@@ -733,16 +703,16 @@ ir::for_stmt *parser::for_stmt() {
  *
  * @return The statement AST.
  */
-ir::use_stmt *parser::use_stmt() {
+std::unique_ptr<ir::use_stmt> parser::use_stmt() {
   expect(KW_USE);
 
-  auto stmt = new ir::use_stmt();
+  auto stmt = std::make_unique<ir::use_stmt>();
 
   expect(TOK_STRING);
 
-  auto file = new ir::string_spec(gettok());
+  auto file = std::make_unique<ir::string_spec>(gettok());
 
-  stmt->splice(file);
+  stmt->splice(std::move(file));
 
   stmt_end();
 
@@ -754,8 +724,8 @@ ir::use_stmt *parser::use_stmt() {
  *
  * @return the statement AST.
  */
-ir::if_stmt *parser::if_stmt() {
-  auto statement = new ir::if_stmt();
+std::unique_ptr<ir::if_stmt> parser::if_stmt() {
+  auto statement = std::make_unique<ir::if_stmt>();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
 
   expect(KW_IF);
@@ -788,8 +758,8 @@ ir::if_stmt *parser::if_stmt() {
  *
  * @return The statement AST.
  */
-ir::print_stmt *parser::print_stmt() {
-  auto stmt = new ir::print_stmt();
+std::unique_ptr<ir::print_stmt> parser::print_stmt() {
+  auto stmt = std::make_unique<ir::print_stmt>();
   expect(KW_PRINT);
   skip_any(TOK_BREAK);
   stmt->splice(expr());
@@ -803,10 +773,10 @@ ir::print_stmt *parser::print_stmt() {
  *
  * @return The statement AST.
  */
-ir::return_stmt *parser::return_stmt() {
+std::unique_ptr<ir::return_stmt> parser::return_stmt() {
   expect(KW_RET);
 
-  auto stmt = new ir::return_stmt(gettok());
+  auto stmt = std::make_unique<ir::return_stmt>(gettok());
 
   if (!accept_any(TOK_SEMICOLON, TOK_BREAK)) {
     stmt->splice(expr());
@@ -823,16 +793,16 @@ ir::return_stmt *parser::return_stmt() {
  *
  * @return The statement AST.
  */
-ir::continue_stmt *parser::continue_stmt() {
-  ir::continue_stmt *statement;
+std::unique_ptr<ir::continue_stmt> parser::continue_stmt() {
+  std::unique_ptr<ir::continue_stmt> statement;
 
   expect(KW_CONTINUE);
 
   if (accept(TOK_IDENT)) {
-    statement = new ir::continue_stmt(gettok());
+    statement = std::make_unique<ir::continue_stmt>(gettok());
     stmt_end();
   } else {
-    statement = new ir::continue_stmt();
+    statement = std::make_unique<ir::continue_stmt>();
     stmt_end();
   }
 
@@ -844,16 +814,16 @@ ir::continue_stmt *parser::continue_stmt() {
  *
  * @return The statement AST.
  */
-ir::break_stmt *parser::break_stmt() {
-  ir::break_stmt *statement;
+std::unique_ptr<ir::break_stmt> parser::break_stmt() {
+  std::unique_ptr<ir::break_stmt> statement;
 
   expect(KW_BREAK);
 
   if (accept(TOK_IDENT)) {
-    statement = new ir::break_stmt(gettok());
+    statement = std::make_unique<ir::break_stmt>(gettok());
     stmt_end();
   } else {
-    statement = new ir::break_stmt();
+    statement = std::make_unique<ir::break_stmt>();
     stmt_end();
   }
 
@@ -865,7 +835,7 @@ ir::break_stmt *parser::break_stmt() {
  *
  * @return The loop declaration AST.
  */
-ir::loop_stmt *parser::loop_decl() {
+std::unique_ptr<ir::loop_stmt> parser::loop_decl() {
   token_ref tag;
 
   expect(KW_LOOP);
@@ -875,7 +845,7 @@ ir::loop_stmt *parser::loop_decl() {
     skip_any(TOK_BREAK);
   }
 
-  auto decl = new ir::loop_stmt(tag);
+  auto decl = std::make_unique<ir::loop_stmt>(tag);
   return decl;
 }
 
@@ -884,13 +854,13 @@ ir::loop_stmt *parser::loop_decl() {
  *
  * @return The loop statement AST.
  */
-ir::loop_stmt *parser::loop_stmt() {
+std::unique_ptr<ir::loop_stmt> parser::loop_stmt() {
   ir::loop_type loop_type = ir::BASIC_LOOP;
-  ir::loop_stmt *loop = nullptr;
-  ir::expr *cond = nullptr;
-  ir::stmt *body = nullptr;
-  ir::stmt *before = nullptr;
-  ir::stmt *after = nullptr;
+  std::unique_ptr<ir::loop_stmt> loop;
+  std::unique_ptr<ir::expr> cond;
+  std::unique_ptr<ir::stmt> body;
+  std::unique_ptr<ir::stmt> before;
+  std::unique_ptr<ir::stmt> after;
 
   loop = loop_decl();
   scope::open(SCOPE_CREATE | SCOPE_ANONYMOUS);
@@ -947,18 +917,18 @@ ir::loop_stmt *parser::loop_stmt() {
   loop->set_type(loop_type);
 
   if (before) {
-    loop->before(before);
+    loop->before(std::move(before));
   }
 
   if (cond) {
-    loop->cond(cond);
+    loop->cond(std::move(cond));
   }
 
   if (after) {
-    loop->after(after);
+    loop->after(std::move(after));
   }
 
-  loop->body(body);
+  loop->body(std::move(body));
 
   scope::close();
 
@@ -970,8 +940,8 @@ ir::loop_stmt *parser::loop_stmt() {
  *
  * @return The function arguments AST.
  */
-ir::arguments *parser::arguments() {
-  auto args = new ir::arguments();
+std::unique_ptr<ir::arguments> parser::arguments() {
+  auto args = std::make_unique<ir::arguments>();
   do {
     skip_any(TOK_BREAK);
     args->splice(expr());
@@ -987,7 +957,7 @@ ir::arguments *parser::arguments() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::expr() {
+std::unique_ptr<ir::expr> parser::expr() {
   return assign_expr();
 }
 
@@ -996,7 +966,7 @@ ir::expr *parser::expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::assign_expr() {
+std::unique_ptr<ir::expr> parser::assign_expr() {
   class setter : public ir::lazy_visitor {
   public:
     setter() = default;
@@ -1024,10 +994,10 @@ ir::expr *parser::assign_expr() {
     setter s;
     lhs->accept(s);
     skip_any(TOK_BREAK);
-    auto expr = new ir::assign_expr();
-    expr->splice(lhs);
+    auto expr = std::make_unique<ir::assign_expr>();
+    expr->splice(std::move(lhs));
     auto rhs = assign_expr();
-    expr->splice(rhs);
+    expr->splice(std::move(rhs));
     return expr;
   } else if (accept(TOK_ASSIGN)) {
     oops("e@1 use ':=' for assignment within expressions", gettok());
@@ -1041,15 +1011,15 @@ ir::expr *parser::assign_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::or_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::or_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::or_expr(e, xor_expr(), t);
+      e = std::make_unique<ir::or_expr>(std::move(e), xor_expr(), t);
     } else {
       e = xor_expr();
     }
@@ -1063,15 +1033,15 @@ ir::expr *parser::or_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::xor_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::xor_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::xor_expr(e, and_expr(), t);
+      e = std::make_unique<ir::xor_expr>(std::move(e), and_expr(), t);
     } else {
       e = and_expr();
     }
@@ -1085,15 +1055,15 @@ ir::expr *parser::xor_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::and_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::and_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::and_expr(e, equality_expr(), t);
+      e = std::make_unique<ir::and_expr>(std::move(e), equality_expr(), t);
     } else {
       e = equality_expr();
     }
@@ -1107,15 +1077,15 @@ ir::expr *parser::and_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::equality_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::equality_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::equality_expr(e, is_expr(), t);
+      e = std::make_unique<ir::equality_expr>(std::move(e), is_expr(), t);
     } else {
       e = is_expr();
     }
@@ -1129,15 +1099,15 @@ ir::expr *parser::equality_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::is_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::is_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::is_expr(e, compare_expr(), t);
+      e = std::make_unique<ir::is_expr>(std::move(e), compare_expr(), t);
     } else {
       e = compare_expr();
     }
@@ -1151,15 +1121,15 @@ ir::expr *parser::is_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::compare_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::compare_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::compare_expr(e, add_expr(), t);
+      e = std::make_unique<ir::compare_expr>(std::move(e), add_expr(), t);
     } else {
       e = add_expr();
     }
@@ -1173,15 +1143,15 @@ ir::expr *parser::compare_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::add_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::add_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::add_expr(e, mult_expr(), t);
+      e = std::make_unique<ir::add_expr>(std::move(e), mult_expr(), t);
     } else {
       e = mult_expr();
     }
@@ -1195,15 +1165,15 @@ ir::expr *parser::add_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::mult_expr() {
-  ir::expr *e = nullptr;
+std::unique_ptr<ir::expr> parser::mult_expr() {
+  std::unique_ptr<ir::expr> e;
   token_ref t;
 
   do {
     if (e) {
       t = gettok();
       skip_any(TOK_BREAK);
-      e = new ir::mult_expr(e, unary_expr(), t);
+      e = std::make_unique<ir::mult_expr>(std::move(e), unary_expr(), t);
     } else {
       e = unary_expr();
     }
@@ -1217,11 +1187,11 @@ ir::expr *parser::mult_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::unary_expr() {
+std::unique_ptr<ir::expr> parser::unary_expr() {
   if (accept_any(TOK_BANG, TOK_MINUS, TOK_PLUS)) {
     auto t = gettok();
     skip_any(TOK_BREAK);
-    return new ir::unary_expr(unary_expr(), t);
+    return std::make_unique<ir::unary_expr>(unary_expr(), t);
   } else {
     return call_expr();
   }
@@ -1232,13 +1202,13 @@ ir::expr *parser::unary_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::call_expr() {
-  ir::expr *e = primary_expr();
+std::unique_ptr<ir::expr> parser::call_expr() {
+  std::unique_ptr<ir::expr> e = primary_expr();
   token_ref lparen;
 
   while (1) {
     if (accept(TOK_LPAREN)) {
-      ir::arguments *args = nullptr;
+      std::unique_ptr<ir::arguments> args;
       auto tok = gettok();
       skip_any(TOK_BREAK);
 
@@ -1247,17 +1217,17 @@ ir::expr *parser::call_expr() {
         expect(TOK_RPAREN);
       }
 
-      e = new ir::call_expr(e, args);
+      e = std::make_unique<ir::call_expr>(std::move(e), std::move(args));
       e->set_name(tok);
     } else if (accept(TOK_LSQUARE)) {
       skip_any(TOK_BREAK);
-      e = new ir::subscript_expr(e, expr());
+      e = std::make_unique<ir::subscript_expr>(std::move(e), expr());
       skip_any(TOK_BREAK);
       expect(TOK_RSQUARE);
     } else if (accept(TOK_DOT)) {
       skip_any(TOK_BREAK);
       expect(TOK_IDENT);
-      e = new ir::member_expr(e, gettok());
+      e = std::make_unique<ir::member_expr>(std::move(e), gettok());
     } else {
       break;
     }
@@ -1271,30 +1241,21 @@ ir::expr *parser::call_expr() {
  *
  * @return The key/value pair AST.
  */
-ir::kv_pair *parser::kv_pair(size_t idx) {
-  ir::kv_pair *pair;
+std::unique_ptr<ir::kv_pair> parser::kv_pair(size_t idx) {
+  std::unique_ptr<ir::kv_pair> pair;
 
   auto k_or_v = expr();
   skip_any(TOK_BREAK);
 
   if (accept(TOK_COLON)) {
     skip_any(TOK_BREAK);
-    pair = new ir::kv_pair(k_or_v, expr());
+    pair = std::make_unique<ir::kv_pair>(std::move(k_or_v), expr());
   } else {
-    auto k = new ir::numeric_expr(idx);
-    pair = new ir::kv_pair(k, k_or_v);
+    auto k = std::make_unique<ir::numeric_expr>(idx);
+    pair = std::make_unique<ir::kv_pair>(std::move(k), std::move(k_or_v));
   }
 
   return pair;
-}
-
-/**
- * Parse a vector type4.
- *
- * @return The vector type4 AST.
- */
-ir::type4 *parser::type4() {
-  return new ir::type4(expr());
 }
 
 /**
@@ -1302,8 +1263,8 @@ ir::type4 *parser::type4() {
  *
  * @return the expression AST.
  */
-ir::expr *parser::map_expr() {
-  auto map = new ir::map_expr();
+std::unique_ptr<ir::expr> parser::map_expr() {
+  auto map = std::make_unique<ir::map_expr>();
 
   map->splice(map_impl());
 
@@ -1311,26 +1272,13 @@ ir::expr *parser::map_expr() {
 }
 
 /**
- * Parse a vector expression.
- *
- * @return the expression AST.
- */
-ir::expr *parser::type2() {
-  auto vec = new ir::type2();
-
-  vec->splice(type3());
-
-  return vec;
-}
-
-/**
  * Parse a nil expression.
  *
  * @return The expression AST.
  */
-ir::expr *parser::nil_expr() {
+std::unique_ptr<ir::expr> parser::nil_expr() {
   expect(KW_NIL);
-  return new ir::nil_expr(gettok());
+  return std::make_unique<ir::nil_expr>(gettok());
 }
 
 /**
@@ -1338,8 +1286,8 @@ ir::expr *parser::nil_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::primary_expr() {
-  ir::expr *e;
+std::unique_ptr<ir::expr> parser::primary_expr() {
+  std::unique_ptr<ir::expr> e;
 
   switch (peek()) {
   case KW_NIL:
@@ -1348,18 +1296,18 @@ ir::expr *parser::primary_expr() {
   case KW_TRUE:
   case KW_FALSE:
     accept();
-    e = new ir::boolean(gettok());
+    e = std::make_unique<ir::boolean>(gettok());
     break;
   case TOK_DEC:
   case TOK_INT:
   case TOK_HEX:
   case TOK_OCT:
     accept();
-    e = new ir::numeric_expr(gettok());
+    e = std::make_unique<ir::numeric_expr>(gettok());
     break;
   case TOK_STRING:
     accept();
-    e = new ir::string_spec(gettok());
+    e = std::make_unique<ir::string_spec>(gettok());
     break;
   case TOK_LPAREN:
     e = paren_expr();
@@ -1370,9 +1318,6 @@ ir::expr *parser::primary_expr() {
     break;
   case TOK_LCURLY:
     e = map_expr();
-    break;
-  case TOK_LSQUARE:
-    e = type2();
     break;
   case KW_VER:
   case KW_DUP:
@@ -1392,9 +1337,9 @@ ir::expr *parser::primary_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::super_expr() {
+std::unique_ptr<ir::expr> parser::super_expr() {
   expect(TOK_COLON);
-  auto e = new ir::super_expr(gettok());
+  auto e = std::make_unique<ir::super_expr>(gettok());
   skip_any(TOK_BREAK);
   e->splice(expr());
 
@@ -1406,7 +1351,7 @@ ir::expr *parser::super_expr() {
  *
  * @return The expression AST.
  */
-ir::expr *parser::paren_expr() {
+std::unique_ptr<ir::expr> parser::paren_expr() {
   expect(TOK_LPAREN);
   skip_any(TOK_BREAK);
   auto e = expr();
@@ -1421,8 +1366,8 @@ ir::expr *parser::paren_expr() {
  *
  * @return The expression AST.
  */
-ir::scoped_name *parser::scoped_name() {
-  auto name = new ir::scoped_name();
+std::unique_ptr<ir::scoped_name> parser::scoped_name() {
+  auto name = std::make_unique<ir::scoped_name>();
   token_ref begintok;
   std::string s;
 

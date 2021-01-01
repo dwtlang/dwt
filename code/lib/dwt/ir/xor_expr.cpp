@@ -11,9 +11,11 @@
 
 namespace dwt {
 
-ir::xor_expr::xor_expr(ir::expr *lhs, ir::expr *rhs, token_ref tok) {
-  splice(lhs);
-  splice(rhs);
+ir::xor_expr::xor_expr(std::unique_ptr<ir::expr> lhs,
+                       std::unique_ptr<ir::expr> rhs,
+                       token_ref tok) {
+  splice(std::move(lhs));
+  splice(std::move(rhs));
   set_name(tok);
 }
 

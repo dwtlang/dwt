@@ -39,6 +39,7 @@ public:
   virtual ~ast();
 
   virtual void accept(ir::visitor &visitor) = 0;
+  void splice(std::unique_ptr<ir::ast> ast);
   void splice(ir::ast *ast);
   void set_name(token_ref tok);
   uint64_t id() const;

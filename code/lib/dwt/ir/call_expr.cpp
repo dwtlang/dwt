@@ -12,14 +12,15 @@
 namespace dwt {
 namespace ir {
 
-call_expr::call_expr(expr *callee, arguments *args)
-  : _callee(callee)
-  , _args(args) {
+call_expr::call_expr(std::unique_ptr<expr> callee,
+                     std::unique_ptr<arguments> args)
+  : _callee(callee.get())
+  , _args(args.get()) {
   if (args) {
-    splice(args);
+    splice(std::move(args));
   }
 
-  splice(callee);
+  splice(std::move(callee));
 }
 
 call_expr::~call_expr() {

@@ -12,10 +12,12 @@
 namespace dwt {
 namespace ir {
 
-mult_expr::mult_expr(expr *lhs, expr *rhs, token_ref tok)
+mult_expr::mult_expr(std::unique_ptr<expr> lhs,
+                     std::unique_ptr<expr> rhs,
+                     token_ref tok)
   : _tok(tok) {
-  splice(lhs);
-  splice(rhs);
+  splice(std::move(lhs));
+  splice(std::move(rhs));
 }
 
 mult_expr::~mult_expr() {

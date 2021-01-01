@@ -11,8 +11,8 @@
 
 namespace dwt {
 
-ir::unary_expr::unary_expr(expr *e, token_ref tok) {
-  splice(e);
+ir::unary_expr::unary_expr(std::unique_ptr<expr> e, token_ref tok) {
+  splice(std::move(e));
   set_name(tok);
 }
 

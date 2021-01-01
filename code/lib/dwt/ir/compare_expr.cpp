@@ -12,10 +12,12 @@
 namespace dwt {
 namespace ir {
 
-compare_expr::compare_expr(expr *lhs, expr *rhs, token_ref t)
+compare_expr::compare_expr(std::unique_ptr<expr> lhs,
+                           std::unique_ptr<expr> rhs,
+                           token_ref t)
   : _tok(t) {
-  splice(lhs);
-  splice(rhs);
+  splice(std::move(lhs));
+  splice(std::move(rhs));
 }
 
 compare_expr::~compare_expr() {
