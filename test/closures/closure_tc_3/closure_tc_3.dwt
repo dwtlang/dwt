@@ -6,7 +6,7 @@ fun adder(var i) {
 }
 
 fun f() {
-	var add_5 := adder(5)
+	var add_5 = adder(5)
 	print add_5(10)
 }
 

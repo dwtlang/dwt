@@ -650,6 +650,10 @@ ir::var_decl *parser::var_decl() {
   if (accept(TOK_ASSIGN)) {
     skip_any(TOK_BREAK);
     decl->splice(expr());
+  } else if (accept(TOK_WALRUS)) {
+    oops(
+      "e@1 did you mean '='? Use ':=' only for assignment within expressions",
+      gettok());
   }
 
   stmt_end();
@@ -1025,7 +1029,7 @@ ir::expr *parser::assign_expr() {
   };
 
   auto lhs = or_expr();
-  if (accept(TOK_ASSIGN)) {
+  if (accept(TOK_WALRUS)) {
     setter s;
     lhs->accept(s);
     skip_any(TOK_BREAK);
@@ -1034,6 +1038,8 @@ ir::expr *parser::assign_expr() {
     auto rhs = assign_expr();
     expr->splice(rhs);
     return expr;
+  } else if (accept(TOK_ASSIGN)) {
+    oops("e@1 use ':=' for assignment within expressions", gettok());
   }
 
   return lhs;

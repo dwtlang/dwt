@@ -5,6 +5,6 @@ fun adder(var i) {
         return add
 }
 
-var add_5 := adder(5)
+var add_5 = adder(5)
 print add_5(10)
 

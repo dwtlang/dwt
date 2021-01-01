@@ -48,6 +48,7 @@ const std::vector<std::pair<token_type, std::string>> token_info = {
   { TOK_RPAREN, ")" },
   { TOK_COMMA, "," },
   { TOK_ASSIGN, "=" },
+  { TOK_WALRUS, ":=" },
   { TOK_QMARK, "?" },
   { TOK_STAR, "*" },
   { TOK_FWDSLASH, "/" },

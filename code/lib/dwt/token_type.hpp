@@ -45,6 +45,7 @@ typedef enum {
   TOK_RPAREN,
   TOK_COMMA,
   TOK_ASSIGN,
+  TOK_WALRUS,
   TOK_QMARK,
   TOK_STAR,
   TOK_FWDSLASH,

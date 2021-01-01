@@ -4,6 +4,6 @@ obj foo() {
     }
 }
 
-var o := foo()
+var o = foo()
 o["bar"]()
 

@@ -7,6 +7,6 @@ obj dog(var name): pet() {
     }
 }
 
-var fido := dog("Fido")
+var fido = dog("Fido")
 print fido.nameOf()
 

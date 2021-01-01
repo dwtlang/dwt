@@ -1,4 +1,4 @@
-var whatis := {
+var whatis = {
     "apple" : "fruit",
     "carrot" : "vegetable",
     "banana" : "fruit"

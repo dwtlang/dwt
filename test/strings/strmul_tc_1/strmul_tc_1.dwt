@@ -1,5 +1,5 @@
-var s := "abc"
-var n := 3
+var s = "abc"
+var n = 3
 
 loop while n > 0 {
   s := s * 2

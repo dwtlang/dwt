@@ -1,16 +1,16 @@
-var x := 0
+var x = 0
 
 loop l until (x == 10) {
     x := x + 1
 }
 
-var y := 20
+var y = 20
 
 loop {
     y := y + 1
 } while y < 30
 
-var z := 100
+var z = 100
 
 loop while z < 150 {
     x := x + z
