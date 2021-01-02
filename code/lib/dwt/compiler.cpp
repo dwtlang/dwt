@@ -1202,6 +1202,7 @@ void compiler::for_loop(ir::loop_stmt &loop) {
 
   if (loop.after()) {
     walk(loop.after());
+    emit_op(OP_POP);
   }
 
   mark_jump(OP_LOOP, instr_before_cond);
