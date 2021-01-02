@@ -27,6 +27,7 @@ public:
 
   virtual void op_keyset(var key, var val) override;
   virtual var op_keyget(var key) override;
+  virtual size_t length() override;
 
 protected:
   hash_map _map;

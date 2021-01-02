@@ -81,4 +81,8 @@ var map_obj::op_keyget(var key) {
   }
 }
 
+size_t map_obj::length() {
+  return _map.size();
+}
+
 } // namespace dwt
