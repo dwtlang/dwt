@@ -14,7 +14,6 @@
 #include <dwt/decompiler.hpp>
 #include <dwt/ffi.hpp>
 #include <dwt/globals.hpp>
-#include <dwt/inbuilt.hpp>
 #include <dwt/ir/add_expr.hpp>
 #include <dwt/ir/and_expr.hpp>
 #include <dwt/ir/arguments.hpp>
@@ -454,7 +453,6 @@ code_obj &compiler::current_code_obj() {
  * @return The executable function object.
  */
 function_obj *compiler::compile(std::unique_ptr<ir::ast> &&tree) {
-  inbuilt::get(); // registers built-in functions
   return (*this)(tree.get());
 }
 

@@ -9,6 +9,7 @@
 #include <dwt/debug.hpp>
 #include <dwt/feedback.hpp>
 #include <dwt/globals.hpp>
+#include <dwt/inbuilt.hpp>
 #include <dwt/ir/lazy_visitor.hpp>
 #include <dwt/ir/string_spec.hpp>
 #include <dwt/ir/unary_expr.hpp>
@@ -21,6 +22,8 @@ namespace dwt {
 parser::parser(utf8_source &&utf8)
   : scanner(utf8)
   , _token_cache(utf8.tokens()) {
+
+  inbuilt::get(); // register inbuilt functions
 }
 
 parser::~parser() {
