@@ -108,8 +108,9 @@ scope *scope::add(token_ref name_ref, int flags) {
   scope *scope_ptr = current->find_ident(name_ref.text());
 
   if (!scope_ptr) {
-    scope_ptr = new scope(current, name_ref, flags);
-    current->_identifiers.emplace_back(std::unique_ptr<scope>(scope_ptr));
+    auto new_scope = std::make_unique<scope>(current, name_ref, flags);
+    scope_ptr = new_scope.get();
+    current->_identifiers.emplace_back(std::move(new_scope));
   } else if (flags & SCOPE_EXCLUSIVE) {
     oops("e@1 redefinition of '$1' n@2 first defined here...",
          name_ref,
@@ -123,16 +124,17 @@ scope *scope::open(token_ref name_ref, int flags) {
   scope *scope_ptr = nullptr;
 
   if (flags & SCOPE_ANONYMOUS) {
-    scope_ptr = new scope(current, name_ref, flags);
-    current->_private_subscopes.emplace_back(std::unique_ptr<scope>(scope_ptr));
+    auto new_scope = std::make_unique<scope>(current, name_ref, flags);
+    scope_ptr = new_scope.get();
+    current->_private_subscopes.emplace_back(std::move(new_scope));
   } else {
     scope_ptr = current->find_scope(name_ref.text());
 
     if (!scope_ptr) {
       if (flags & SCOPE_CREATE) {
-        scope_ptr = new scope(current, name_ref, flags);
-        current->_visible_subscopes.emplace_back(
-          std::unique_ptr<scope>(scope_ptr));
+        auto new_scope = std::make_unique<scope>(current, name_ref, flags);
+        scope_ptr = new_scope.get();
+        current->_visible_subscopes.emplace_back(std::move(new_scope));
       }
     } else if (flags & SCOPE_EXCLUSIVE) {
       oops(
