@@ -651,6 +651,9 @@ std::unique_ptr<ir::stmt> parser::stmt() {
     return if_stmt();
     break;
   case KW_LOOP:
+  case KW_WHILE:
+  case KW_UNTIL:
+  case KW_FOR:
     return loop_stmt();
     break;
   case KW_USE:
@@ -838,11 +841,12 @@ std::unique_ptr<ir::break_stmt> parser::break_stmt() {
 std::unique_ptr<ir::loop_stmt> parser::loop_decl() {
   token_ref tag;
 
-  expect(KW_LOOP);
-  skip_any(TOK_BREAK);
-  if (accept(TOK_IDENT)) {
-    tag = gettok(); // tagged loop
+  if (accept(KW_LOOP)) {
     skip_any(TOK_BREAK);
+    if (accept(TOK_IDENT)) {
+      tag = gettok(); // tagged loop
+      skip_any(TOK_BREAK);
+    }
   }
 
   auto decl = std::make_unique<ir::loop_stmt>(tag);
