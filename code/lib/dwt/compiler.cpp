@@ -27,7 +27,6 @@
 #include <dwt/ir/equality_expr.hpp>
 #include <dwt/ir/expr_stmt.hpp>
 #include <dwt/ir/ffi_decl.hpp>
-#include <dwt/ir/for_stmt.hpp>
 #include <dwt/ir/function.hpp>
 #include <dwt/ir/function_decl.hpp>
 #include <dwt/ir/if_stmt.hpp>
@@ -66,6 +65,7 @@
 #include <dwt/ir/use_stmt.hpp>
 #include <dwt/ir/var_decl.hpp>
 #include <dwt/ir/xor_expr.hpp>
+#include <dwt/ir/yield_stmt.hpp>
 #include <dwt/mapfn_obj.hpp>
 #include <dwt/opcode.hpp>
 #include <dwt/reporting.hpp>
@@ -1325,7 +1325,7 @@ void compiler::visit(ir::if_stmt &stmt) {
  *
  * @param stmt The statement AST.
  */
-void compiler::visit(ir::for_stmt &stmt) {
+void compiler::visit(ir::yield_stmt &stmt) {
   walk(stmt.children_of());
 }
 

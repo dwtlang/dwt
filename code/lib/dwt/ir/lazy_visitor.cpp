@@ -19,7 +19,6 @@
 #include <dwt/ir/equality_expr.hpp>
 #include <dwt/ir/expr_stmt.hpp>
 #include <dwt/ir/ffi_decl.hpp>
-#include <dwt/ir/for_stmt.hpp>
 #include <dwt/ir/function.hpp>
 #include <dwt/ir/function_decl.hpp>
 #include <dwt/ir/if_stmt.hpp>
@@ -58,6 +57,7 @@
 #include <dwt/ir/use_stmt.hpp>
 #include <dwt/ir/var_decl.hpp>
 #include <dwt/ir/xor_expr.hpp>
+#include <dwt/ir/yield_stmt.hpp>
 
 namespace dwt {
 namespace ir {
@@ -164,7 +164,7 @@ void lazy_visitor::visit(ir::if_stmt &stmt) {
   visit(static_cast<ir::ast &>(stmt));
 }
 
-void lazy_visitor::visit(ir::for_stmt &stmt) {
+void lazy_visitor::visit(ir::yield_stmt &stmt) {
   visit(static_cast<ir::ast &>(stmt));
 }
 

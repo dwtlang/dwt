@@ -40,7 +40,7 @@ class return_stmt;
 class type1;
 class print_stmt;
 class if_stmt;
-class for_stmt;
+class yield_stmt;
 class expr_stmt;
 class block;
 class parameters;
@@ -103,7 +103,7 @@ public:
   virtual void visit(ir::type1 &) = 0;
   virtual void visit(ir::print_stmt &) = 0;
   virtual void visit(ir::if_stmt &) = 0;
-  virtual void visit(ir::for_stmt &) = 0;
+  virtual void visit(ir::yield_stmt &) = 0;
   virtual void visit(ir::expr_stmt &) = 0;
   virtual void visit(ir::block &) = 0;
   virtual void visit(ir::parameters &) = 0;

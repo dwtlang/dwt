@@ -645,8 +645,12 @@ std::unique_ptr<ir::var_decl> parser::var_decl() {
  */
 std::unique_ptr<ir::stmt> parser::stmt() {
   switch (peek()) {
-  case KW_RET:
+  case KW_RETURN:
     return return_stmt();
+    break;
+  case KW_YIELD:
+    return yield_stmt();
+    break;
   case KW_PRINT:
     return print_stmt();
     break;
@@ -693,15 +697,6 @@ std::unique_ptr<ir::expr_stmt> parser::expr_stmt() {
   stmt_end();
 
   return stmt;
-}
-
-/**
- * Parse a "for" statement.
- *
- * @return The statement AST.
- */
-std::unique_ptr<ir::for_stmt> parser::for_stmt() {
-  return nullptr;
 }
 
 /**
@@ -780,9 +775,29 @@ std::unique_ptr<ir::print_stmt> parser::print_stmt() {
  * @return The statement AST.
  */
 std::unique_ptr<ir::return_stmt> parser::return_stmt() {
-  expect(KW_RET);
+  expect(KW_RETURN);
 
   auto stmt = std::make_unique<ir::return_stmt>(gettok());
+
+  if (!accept_any(TOK_SEMICOLON, TOK_BREAK)) {
+    stmt->splice(expr());
+    stmt_end();
+  }
+
+  skip_any(TOK_BREAK);
+
+  return stmt;
+}
+
+/**
+ * Parse a yield statement.
+ *
+ * @return The statement AST.
+ */
+std::unique_ptr<ir::yield_stmt> parser::yield_stmt() {
+  expect(KW_YIELD);
+
+  auto stmt = std::make_unique<ir::yield_stmt>(gettok());
 
   if (!accept_any(TOK_SEMICOLON, TOK_BREAK)) {
     stmt->splice(expr());
@@ -866,7 +881,7 @@ std::unique_ptr<ir::loop_stmt> parser::loop_stmt() {
   std::unique_ptr<ir::loop_stmt> loop;
   std::unique_ptr<ir::expr> cond;
   std::unique_ptr<ir::stmt> body;
-  std::unique_ptr<ir::stmt> before;
+  std::unique_ptr<ir::declaration> before;
   std::unique_ptr<ir::stmt> after;
 
   loop = loop_decl();
@@ -889,7 +904,11 @@ std::unique_ptr<ir::loop_stmt> parser::loop_stmt() {
     _comma_stmt_sep = true;
     skip_any(TOK_BREAK);
     if (!accept(TOK_SEMICOLON)) {
-      before = expr_stmt();
+      if (peek(KW_VAR)) {
+        before = var_decl();
+      } else {
+        before = expr_stmt();
+      }
     }
     if (!accept(TOK_SEMICOLON)) {
       cond = expr();

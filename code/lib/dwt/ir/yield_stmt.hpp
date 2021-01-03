@@ -16,11 +16,11 @@
 namespace dwt {
 namespace ir {
 
-class for_stmt : public stmt {
+class yield_stmt : public stmt {
 public:
-  for_stmt(token_ref tok);
-  for_stmt();
-  virtual ~for_stmt();
+  yield_stmt(token_ref tok);
+  yield_stmt();
+  virtual ~yield_stmt();
   virtual void accept(ir::visitor &visitor);
 };
 

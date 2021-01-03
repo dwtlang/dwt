@@ -24,7 +24,6 @@
 #include <dwt/ir/expr.hpp>
 #include <dwt/ir/expr_stmt.hpp>
 #include <dwt/ir/ffi_decl.hpp>
-#include <dwt/ir/for_stmt.hpp>
 #include <dwt/ir/function.hpp>
 #include <dwt/ir/function_body.hpp>
 #include <dwt/ir/function_decl.hpp>
@@ -59,6 +58,7 @@
 #include <dwt/ir/use_stmt.hpp>
 #include <dwt/ir/var_decl.hpp>
 #include <dwt/ir/xor_expr.hpp>
+#include <dwt/ir/yield_stmt.hpp>
 #include <dwt/scanner.hpp>
 #include <dwt/token.hpp>
 #include <dwt/token_cache.hpp>
@@ -190,7 +190,6 @@ private:
   std::unique_ptr<ir::arguments> arguments();
   std::unique_ptr<ir::stmt> stmt();
   std::unique_ptr<ir::expr_stmt> expr_stmt();
-  std::unique_ptr<ir::for_stmt> for_stmt();
   std::unique_ptr<ir::use_stmt> use_stmt();
   std::unique_ptr<ir::if_stmt> if_stmt();
   std::unique_ptr<ir::print_stmt> print_stmt();
@@ -199,6 +198,7 @@ private:
   std::unique_ptr<ir::continue_stmt> continue_stmt();
   std::unique_ptr<ir::break_stmt> break_stmt();
   std::unique_ptr<ir::return_stmt> return_stmt();
+  std::unique_ptr<ir::yield_stmt> yield_stmt();
   std::unique_ptr<ir::expr> expr();
   std::unique_ptr<ir::expr> assign_expr();
   std::unique_ptr<ir::expr> or_expr();

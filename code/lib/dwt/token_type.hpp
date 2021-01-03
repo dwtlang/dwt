@@ -91,13 +91,12 @@ typedef enum {
   KW_LOOP,
   KW_WHILE,
   KW_UNTIL,
-  KW_RET,
+  KW_RETURN,
+  KW_YIELD,
   KW_BREAK,
   KW_CONTINUE,
 
   KW_LAMBDA,
-  KW_AS,
-  KW_ENUM,
   KW_AND,
   KW_OR,
   KW_XOR

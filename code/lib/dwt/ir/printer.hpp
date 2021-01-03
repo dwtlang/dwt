@@ -47,7 +47,7 @@ public:
   virtual void visit(ir::type1 &);
   virtual void visit(ir::print_stmt &);
   virtual void visit(ir::if_stmt &);
-  virtual void visit(ir::for_stmt &);
+  virtual void visit(ir::yield_stmt &);
   virtual void visit(ir::expr_stmt &);
   virtual void visit(ir::block &);
   virtual void visit(ir::parameters &);

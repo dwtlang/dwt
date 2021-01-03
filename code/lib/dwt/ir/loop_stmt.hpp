@@ -41,9 +41,9 @@ public:
     return _type;
   }
 
-  void before(std::unique_ptr<stmt> s) {
-    _before = s.get();
-    splice(std::move(s));
+  void before(std::unique_ptr<declaration> d) {
+    _before = d.get();
+    splice(std::move(d));
   }
 
   void after(std::unique_ptr<stmt> s) {
@@ -61,7 +61,7 @@ public:
     splice(std::move(s));
   }
 
-  stmt *before() {
+  declaration *before() {
     return _before;
   }
 
@@ -83,7 +83,7 @@ public:
 
 private:
   loop_type _type;
-  stmt *_before = nullptr;
+  declaration *_before = nullptr;
   expr *_cond = nullptr;
   stmt *_body = nullptr;
   stmt *_after = nullptr;

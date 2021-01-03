@@ -6,22 +6,22 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#include <dwt/ir/for_stmt.hpp>
 #include <dwt/ir/visitor.hpp>
+#include <dwt/ir/yield_stmt.hpp>
 
 namespace dwt {
 
-ir::for_stmt::for_stmt(token_ref tok) {
+ir::yield_stmt::yield_stmt(token_ref tok) {
   set_name(tok);
 }
 
-ir::for_stmt::for_stmt() {
+ir::yield_stmt::yield_stmt() {
 }
 
-ir::for_stmt::~for_stmt() {
+ir::yield_stmt::~yield_stmt() {
 }
 
-void ir::for_stmt::accept(ir::visitor &visitor) {
+void ir::yield_stmt::accept(ir::visitor &visitor) {
   visitor.visit(*this);
 }
 

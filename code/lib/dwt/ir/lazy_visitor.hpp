@@ -44,7 +44,7 @@ public:
   virtual void visit(ir::type1 &) override;
   virtual void visit(ir::print_stmt &) override;
   virtual void visit(ir::if_stmt &) override;
-  virtual void visit(ir::for_stmt &) override;
+  virtual void visit(ir::yield_stmt &) override;
   virtual void visit(ir::expr_stmt &) override;
   virtual void visit(ir::block &) override;
   virtual void visit(ir::parameters &) override;
