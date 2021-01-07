@@ -276,17 +276,7 @@ std::unique_ptr<ir::lambda> parser::lambda() {
     skip_any(TOK_BREAK);
   }
 
-  expect(TOK_LCURLY);
-  skip_any(TOK_BREAK);
-
-  auto body = std::make_unique<ir::function_body>();
-
-  while (!accept(TOK_RCURLY)) {
-    skip_any(TOK_BREAK);
-    body->splice(declaration());
-  }
-
-  lam->body(std::move(body));
+  lam->body(function_body());
 
   scope::close();
 
@@ -454,7 +444,6 @@ std::unique_ptr<ir::function> parser::function() {
     expect(TOK_RPAREN);
   }
 
-  skip_any(TOK_BREAK);
   fun->body(function_body());
 
   scope::close();
@@ -551,15 +540,20 @@ std::unique_ptr<ir::block> parser::block() {
 std::unique_ptr<ir::function_body> parser::function_body() {
   auto body = std::make_unique<ir::function_body>();
 
-  expect(TOK_LCURLY);
+  if (accept(TOK_BREAK)) {
+    skip_any(TOK_BREAK);
+    expect(TOK_LCURLY);
+  } else if (!accept(TOK_LCURLY)) {
+    body->splice(stmt());
+    return body;
+  }
+
   skip_any(TOK_BREAK);
 
   while (!accept(TOK_RCURLY)) {
     skip_any(TOK_BREAK);
     body->splice(declaration());
   }
-
-  skip_any(TOK_BREAK);
 
   return body;
 }
