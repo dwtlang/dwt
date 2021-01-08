@@ -15,8 +15,8 @@ FFI_SRC         := ffi/ffi.cpp
 FFI_OBJS        := $(FFI_SRC:%.cpp=%.o)
 
 DWT_LIB_DIR     := ../lib
-LIB_SRC_DIR     := ../code/lib
-API_INC_DIR     := ../code/api
+LIB_SRC_DIR     := ../src/lib
+API_INC_DIR     := ../src/api
 API_INC_ARGS    := -I$(API_INC_DIR)
 LIB_INC_ARGS    := -I$(API_INC_DIR) -I$(LIB_SRC_DIR)
 LIB_NAME        := libdwt.a

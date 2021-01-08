@@ -16,9 +16,9 @@ BUILD_PROF := $(profile)
 
 EXE_BIN_DIR     := bin
 EXE_LIB_DIR     := lib
-LIB_SRC_DIR     := code/lib
-API_INC_DIR     := code/api
-CLI_SRC_DIR     := code/cli
+LIB_SRC_DIR     := src/lib
+API_INC_DIR     := src/api
+CLI_SRC_DIR     := src/cli
 LIB_SRCS        := $(shell find $(LIB_SRC_DIR) -name "*.cpp")
 LIB_OBJS        := $(LIB_SRCS:%.cpp=%.o)
 CLI_SRCS        := $(shell find $(CLI_SRC_DIR) -name "*.cpp")
