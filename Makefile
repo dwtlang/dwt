@@ -77,6 +77,11 @@ clean:
 	$(V)rm -f $(EXE_BIN)
 	$(V)rm -f $(EXE_LIB)
 
+.PHONY: ctags
+ctags:
+	@echo "Generating tagfile"
+	@ctags . -BR
+
 .PHONY: all
 all: $(EXE_LIB) $(EXE_BIN)
 
