@@ -6,21 +6,21 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#include <dwt/zero_branching.hpp>
+#include <dwt/conditionals_pass.hpp>
 
 namespace dwt {
 
-zero_branching::zero_branching(code_obj &code)
+conditionals_pass::conditionals_pass(code_obj &code)
   : peephole({ { { OP_ZERO, OP_EQ, OP_BRZ }, 5 },
                { { OP_ZERO, OP_EQ, OP_BNZ }, 5 } }) {
 
   (*this)(code);
 }
 
-zero_branching::~zero_branching() {
+conditionals_pass::~conditionals_pass() {
 }
 
-void zero_branching::peep(uint8_t *op, size_t extent) {
+void conditionals_pass::peep(uint8_t *op, size_t extent) {
   op[0] = OP_SKIP;
   op[1] = OP_SKIP;
 

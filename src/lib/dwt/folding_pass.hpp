@@ -6,18 +6,18 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#ifndef GUARD_DWT_CONSTANT_FOLDING_HPP
-#define GUARD_DWT_CONSTANT_FOLDING_HPP
+#ifndef GUARD_DWT_FOLDING_PASS_HPP
+#define GUARD_DWT_FOLDING_PASS_HPP
 
 #include <dwt/peephole.hpp>
 #include <dwt/var.hpp>
 
 namespace dwt {
 
-class constant_folding : public peephole {
+class folding_pass : public peephole {
 public:
-  constant_folding(code_obj &);
-  virtual ~constant_folding();
+  folding_pass(code_obj &);
+  virtual ~folding_pass();
 
 private:
   void fold(uint8_t *op, size_t off, var v);

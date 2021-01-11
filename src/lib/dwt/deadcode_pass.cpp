@@ -6,25 +6,25 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
+#include <dwt/deadcode_pass.hpp>
 #include <dwt/debug.hpp>
 #include <dwt/feedback.hpp>
-#include <dwt/unreachable_code.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
 namespace dwt {
 
-unreachable_code::unreachable_code(code_obj &code)
+deadcode_pass::deadcode_pass(code_obj &code)
   : peephole({ { { OP_RET }, 1 } })
   , _code(code) {
 
   (*this)(code);
 }
 
-unreachable_code::~unreachable_code() {
+deadcode_pass::~deadcode_pass() {
 }
 
-size_t unreachable_code::first_jump_after(size_t pos) {
+size_t deadcode_pass::first_jump_after(size_t pos) {
   std::vector<uint8_t> &ops = _code.byte_vec();
   size_t off = 0;
   uint8_t *op = &ops[0];
@@ -64,7 +64,7 @@ size_t unreachable_code::first_jump_after(size_t pos) {
   return jmp_off;
 }
 
-void unreachable_code::peep(uint8_t *op, size_t extent) {
+void deadcode_pass::peep(uint8_t *op, size_t extent) {
   std::vector<uint8_t> &ops = _code.byte_vec();
   uintptr_t pos = op - &ops[0];
   size_t jmp_off = first_jump_after(pos);

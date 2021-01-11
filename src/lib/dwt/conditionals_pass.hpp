@@ -6,17 +6,17 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#ifndef GUARD_DWT_SET_POP_GET_HPP
-#define GUARD_DWT_SET_POP_GET_HPP
+#ifndef GUARD_DWT_CONDITIONALS_PASS_HPP
+#define GUARD_DWT_CONDITIONALS_PASS_HPP
 
 #include <dwt/peephole.hpp>
 
 namespace dwt {
 
-class set_pop_get : public peephole {
+class conditionals_pass : public peephole {
 public:
-  set_pop_get(code_obj &);
-  virtual ~set_pop_get();
+  conditionals_pass(code_obj &);
+  virtual ~conditionals_pass();
 
 private:
   virtual void peep(uint8_t *op, size_t extent) override;

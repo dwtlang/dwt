@@ -6,21 +6,21 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#include <dwt/merge_pops.hpp>
+#include <dwt/popn_pass.hpp>
 
 namespace dwt {
 
-merge_pops::merge_pops(code_obj &code)
+popn_pass::popn_pass(code_obj &code)
   : peephole({ { { OP_POP }, 1 } })
   , _code(code) {
 
   (*this)(code);
 }
 
-merge_pops::~merge_pops() {
+popn_pass::~popn_pass() {
 }
 
-void merge_pops::peep(uint8_t *op, size_t extent) {
+void popn_pass::peep(uint8_t *op, size_t extent) {
   size_t off = op - _code.entry();
   size_t pop_count = 0;
 

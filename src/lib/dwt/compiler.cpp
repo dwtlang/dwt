@@ -73,12 +73,12 @@
 #include <dwt/var.hpp>
 
 #if USE_BYTECODE_OPTIMISER
-#include <dwt/constant_folding.hpp>
-#include <dwt/merge_pops.hpp>
-#include <dwt/set_pop_get.hpp>
-#include <dwt/tail_calls.hpp>
-#include <dwt/unreachable_code.hpp>
-#include <dwt/zero_branching.hpp>
+#include <dwt/conditionals_pass.hpp>
+#include <dwt/deadcode_pass.hpp>
+#include <dwt/folding_pass.hpp>
+#include <dwt/init_reload_pass.hpp>
+#include <dwt/popn_pass.hpp>
+#include <dwt/tco_pass.hpp>
 #endif
 
 #include <memory>
@@ -458,12 +458,12 @@ function_obj *compiler::compile(std::unique_ptr<ir::ast> &&tree) {
 
 #if USE_BYTECODE_OPTIMISER
 void compiler::optimise(code_obj &code) {
-  { unreachable_code pass(code); }
-  { merge_pops pass(code); }
-  { tail_calls pass(code); }
-  { zero_branching pass(code); }
-  { set_pop_get pass(code); }
-  { constant_folding pass(code); }
+  { deadcode_pass pass(code); }
+  { popn_pass pass(code); }
+  { tco_pass pass(code); }
+  { conditionals_pass pass(code); }
+  { init_reload_pass pass(code); }
+  { folding_pass pass(code); }
 
   patch_jumps(code);
   remove_skips(code);

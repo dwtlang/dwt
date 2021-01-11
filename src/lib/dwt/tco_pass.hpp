@@ -6,20 +6,20 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#ifndef GUARD_DWT_UNREACHABLE_CODE_HPP
-#define GUARD_DWT_UNREACHABLE_CODE_HPP
+#ifndef GUARD_DWT_TCO_PASS_HPP
+#define GUARD_DWT_TCO_PASS_HPP
 
 #include <dwt/peephole.hpp>
 
 namespace dwt {
 
-class unreachable_code : public peephole {
+class tco_pass : public peephole {
 public:
-  unreachable_code(code_obj &code);
-  virtual ~unreachable_code();
+  tco_pass(code_obj &);
+  virtual ~tco_pass();
 
 private:
-  size_t first_jump_after(size_t pos);
+  uint8_t *prev_op(uint8_t *this_op);
 
   virtual void peep(uint8_t *op, size_t extent) override;
 

@@ -6,8 +6,8 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#include <dwt/constant_folding.hpp>
 #include <dwt/constants.hpp>
+#include <dwt/folding_pass.hpp>
 #include <dwt/function_obj.hpp>
 #include <dwt/globals.hpp>
 #include <dwt/interpret_exception.hpp>
@@ -16,7 +16,7 @@
 
 namespace dwt {
 
-constant_folding::constant_folding(code_obj &code)
+folding_pass::folding_pass(code_obj &code)
   : peephole({ { { OP_CONST }, 3 },
                { { OP_ZERO }, 1 },
                { { OP_ONE }, 1 },
@@ -30,10 +30,10 @@ constant_folding::constant_folding(code_obj &code)
   } while (_repeat);
 }
 
-constant_folding::~constant_folding() {
+folding_pass::~folding_pass() {
 }
 
-void constant_folding::fold(uint8_t *op, size_t off, var v) {
+void folding_pass::fold(uint8_t *op, size_t off, var v) {
   int remaining_bytes = off;
 
   if (v == NUM_AS_VAR(0.0)) {
@@ -68,7 +68,7 @@ void constant_folding::fold(uint8_t *op, size_t off, var v) {
   _repeat = true;
 }
 
-void constant_folding::peep(uint8_t *op, size_t extent) {
+void folding_pass::peep(uint8_t *op, size_t extent) {
   var x = OBJ_AS_VAR(nullptr);
   var y = OBJ_AS_VAR(nullptr);
   size_t off = 0;

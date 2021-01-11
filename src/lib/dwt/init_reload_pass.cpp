@@ -6,23 +6,23 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#include <dwt/set_pop_get.hpp>
+#include <dwt/init_reload_pass.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
 namespace dwt {
 
-set_pop_get::set_pop_get(code_obj &code)
+init_reload_pass::init_reload_pass(code_obj &code)
   : peephole({ { { OP_STORE, OP_POP, OP_GLOBAL }, 7 },
                { { OP_SET, OP_POP, OP_GET }, 7 } }) {
 
   (*this)(code);
 }
 
-set_pop_get::~set_pop_get() {
+init_reload_pass::~init_reload_pass() {
 }
 
-void set_pop_get::peep(uint8_t *op, size_t extent) {
+void init_reload_pass::peep(uint8_t *op, size_t extent) {
   uint16_t idx0 = OPERAND(&op[1]);
   uint16_t idx1 = OPERAND(&op[5]);
   bool unnecessary = false;

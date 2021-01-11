@@ -6,17 +6,17 @@
 //
 // Copyright (c) 2020-2021 Andrew Scott and Contributors
 
-#ifndef GUARD_DWT_ZERO_BRANCHING_HPP
-#define GUARD_DWT_ZERO_BRANCHING_HPP
+#ifndef GUARD_DWT_INIT_RELOAD_PASS_HPP
+#define GUARD_DWT_INIT_RELOAD_PASS_HPP
 
 #include <dwt/peephole.hpp>
 
 namespace dwt {
 
-class zero_branching : public peephole {
+class init_reload_pass : public peephole {
 public:
-  zero_branching(code_obj &);
-  virtual ~zero_branching();
+  init_reload_pass(code_obj &);
+  virtual ~init_reload_pass();
 
 private:
   virtual void peep(uint8_t *op, size_t extent) override;

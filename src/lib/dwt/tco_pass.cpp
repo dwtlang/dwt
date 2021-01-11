@@ -8,23 +8,23 @@
 
 #include <dwt/function_obj.hpp>
 #include <dwt/globals.hpp>
-#include <dwt/tail_calls.hpp>
+#include <dwt/tco_pass.hpp>
 
 #define OPERAND(op) ((*(op)) | ((*((op) + 1)) << 8))
 
 namespace dwt {
 
-tail_calls::tail_calls(code_obj &code)
+tco_pass::tco_pass(code_obj &code)
   : peephole({ { { OP_CALL, OP_RET }, 3 } })
   , _code(code) {
 
   (*this)(code);
 }
 
-tail_calls::~tail_calls() {
+tco_pass::~tco_pass() {
 }
 
-uint8_t *tail_calls::prev_op(uint8_t *this_op) {
+uint8_t *tco_pass::prev_op(uint8_t *this_op) {
   uint8_t *op = _code.entry();
   uint8_t *prev_op = nullptr;
 
@@ -36,7 +36,7 @@ uint8_t *tail_calls::prev_op(uint8_t *this_op) {
   return prev_op;
 }
 
-void tail_calls::peep(uint8_t *op, size_t extent) {
+void tco_pass::peep(uint8_t *op, size_t extent) {
   static int op_eff[] = {
 #define OP(_, eff, __) eff,
 #include <dwt/opcodes.inc>

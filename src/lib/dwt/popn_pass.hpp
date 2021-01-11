@@ -13,10 +13,10 @@
 
 namespace dwt {
 
-class merge_pops : public peephole {
+class popn_pass : public peephole {
 public:
-  merge_pops(code_obj &);
-  virtual ~merge_pops();
+  popn_pass(code_obj &);
+  virtual ~popn_pass();
 
 private:
   virtual void peep(uint8_t *op, size_t extent) override;
