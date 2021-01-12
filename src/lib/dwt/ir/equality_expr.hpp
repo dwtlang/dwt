@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 //
-// Copyright (c) 2020-2021 Andrew Scott and Contributors
+// Copyright (C) 2020-2021 Andrew Scott-Jones and Contributors
 
 #ifndef GUARD_DWT_IR_EQUALITY_EXPR_HPP
 #define GUARD_DWT_IR_EQUALITY_EXPR_HPP
