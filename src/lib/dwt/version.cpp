@@ -59,7 +59,7 @@ std::string version::notice() {
   notice_str += version::to_string();
   notice_str += TERM_BOLD "\n   (A" TERM_RESET "|" TERM_BOLD "A)" TERM_RESET
                           "   Copyright (C) ";
-  notice_str += year_range + " Andrew Scott and Contributors\n";
+  notice_str += year_range + " Andrew Scott-Jones and Contributors\n";
   notice_str += TERM_BOLD " <(  " TERM_YELLOW TERM_BOLD "V" TERM_RESET TERM_BOLD
                           "  )>" TERM_RESET " All rights reserved.\n";
   notice_str += "    " TERM_YELLOW TERM_BOLD "^ ^" TERM_RESET
