@@ -17,8 +17,8 @@
 #include <dwt/utf8.hpp>
 #include <dwt/version.hpp>
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 namespace dwt {
 
@@ -87,7 +87,7 @@ var sleep(size_t nr_args, var *args) {
     double usecs = VAR_AS_NUM(args[0]) * 1000000;
 
     std::this_thread::sleep_for(
-        std::chrono::microseconds(static_cast<unsigned int>(usecs)));
+      std::chrono::microseconds(static_cast<unsigned int>(usecs)));
   } else {
     throw interpret_exception("e@1 sleep function expects a value in seconds");
   }

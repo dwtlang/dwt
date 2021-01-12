@@ -68,14 +68,15 @@ const std::vector<std::pair<token_type, std::string>> token_info = {
   { TOK_STRING, "string" },
   { TOK_COMMENT, "comment" },
 
+  { FFI_VER, "ver" },
+  { FFI_DUP, "dup" },
+  { FFI_STR, "str" },
+  { FFI_LEN, "len" },
+  { FFI_GC, "gc" },
+  { FFI_SLEEP, "sleep" },
+
   { KW_USE, "use" },
-  { KW_VER, "ver" },
-  { KW_DUP, "dup" },
-  { KW_STR, "str" },
-  { KW_LEN, "len" },
   { KW_API, "api" },
-  { KW_GC, "gc" },
-  { KW_SLEEP, "sleep" },
   { KW_IS, "is" },
   { KW_MOD, "mod" },
   { KW_FUN, "fun" },
@@ -123,9 +124,10 @@ std::string symtext(token_type sym) {
 namespace {
 
 const std::vector<std::pair<token_type, std::string>> keywords = {
-  { KW_USE, "use" },     { KW_VER, "ver" },     { KW_DUP, "dup" },
-  { KW_STR, "str" },     { KW_LEN, "len" },     { KW_API, "api" },
-  { KW_GC, "gc" },       { KW_SLEEP, "sleep" }, { KW_IS, "is" },
+  { FFI_VER, "ver" },    { FFI_DUP, "dup" },    { FFI_STR, "str" },
+  { FFI_LEN, "len" },    { FFI_GC, "gc" },      { FFI_SLEEP, "sleep" },
+
+  { KW_USE, "use" },     { KW_API, "api" },     { KW_IS, "is" },
   { KW_MOD, "mod" },     { KW_FUN, "fun" },     { KW_FFI, "ffi" },
   { KW_VAR, "var" },     { KW_TRUE, "true" },   { KW_FALSE, "false" },
   { KW_NIL, "nil" },     { KW_OBJ, "obj" },     { KW_SELF, "self" },
