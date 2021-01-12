@@ -5,5 +5,5 @@ fun fibonacci(n) {
     return self(n - 1) + self(n - 2)
 }
 
-print fibonacci(28)
+println fibonacci(28)
 

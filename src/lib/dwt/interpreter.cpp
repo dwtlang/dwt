@@ -108,9 +108,13 @@ void interpreter::mark_roots(std::vector<obj *> &grey_objs) {
   }
 }
 
-void interpreter::print(var v) {
+void interpreter::println(var v) {
   out(var_to_string(v));
   out("\n");
+}
+
+void interpreter::print(var v) {
+  out(var_to_string(v));
 }
 
 upvar_obj *interpreter::capture_upvar(size_t slot, size_t fp) {
@@ -664,6 +668,12 @@ var interpreter::interpret(obj *callable_obj, var *args, size_t nr_args) {
 
       CASE_OP(PRINT) {
         print(TOP_AND_POP());
+
+        DISPATCH();
+      }
+
+      CASE_OP(PRINTLN) {
+        println(TOP_AND_POP());
 
         DISPATCH();
       }

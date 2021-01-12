@@ -6,5 +6,5 @@ fun adder(var i) {
 }
 
 var add_5 = adder(5)
-print dup(add_5)(10)
+println dup(add_5)(10)
 

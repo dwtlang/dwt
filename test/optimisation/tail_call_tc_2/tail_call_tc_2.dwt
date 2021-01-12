@@ -12,4 +12,4 @@ fun always_zero(var n) {
     return always_zero(n - 1)
 }
 
-print always_zero(100)
+println always_zero(100)

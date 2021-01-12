@@ -647,6 +647,7 @@ std::unique_ptr<stmt> parser::parse_stmt() {
   case KW_YIELD:
     return parse_yield_stmt();
     break;
+  case KW_PRINTLN:
   case KW_PRINT:
     return parse_print_stmt();
     break;
@@ -756,8 +757,8 @@ std::unique_ptr<if_stmt> parser::parse_if_stmt() {
  * @return The statement AST.
  */
 std::unique_ptr<print_stmt> parser::parse_print_stmt() {
-  auto stmt = std::make_unique<print_stmt>();
-  expect(KW_PRINT);
+  expect_any(KW_PRINT, KW_PRINTLN);
+  auto stmt = std::make_unique<print_stmt>(gettok());
   skip_any(TOK_BREAK);
   stmt->splice(parse_expr());
   stmt_end();
@@ -1413,7 +1414,8 @@ std::unique_ptr<scoped_name> parser::parse_scoped_name() {
         skip_any(TOK_BREAK);
       }
 
-      expect_any(TOK_IDENT, FFI_VER, FFI_DUP, FFI_STR, FFI_LEN, FFI_GC, FFI_SLEEP);
+      expect_any(
+        TOK_IDENT, FFI_VER, FFI_DUP, FFI_STR, FFI_LEN, FFI_GC, FFI_SLEEP);
       s += gettok().text();
 
       if (begintok.type() == TOK_INV) {

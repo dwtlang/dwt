@@ -5,4 +5,4 @@ fun factorial(var n) {
     return 1
 }
 
-print factorial(10)
+println factorial(10)

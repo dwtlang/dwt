@@ -2,7 +2,7 @@ mod A {
   mod B {
     mod C {
       fun foo(n) {
-        print n
+        println n
       }
       B::C::foo(1)
     }

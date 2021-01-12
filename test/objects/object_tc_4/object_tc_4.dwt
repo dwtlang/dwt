@@ -1,6 +1,6 @@
 obj foo() {
     api fun bar() {
-        print "bar"
+        println "bar"
     }
 }
 

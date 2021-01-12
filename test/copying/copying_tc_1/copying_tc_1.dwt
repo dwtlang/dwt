@@ -1,5 +1,5 @@
 fun f() {
-  print "f()"
+  println "f()"
 }
 
 var g = dup(f)

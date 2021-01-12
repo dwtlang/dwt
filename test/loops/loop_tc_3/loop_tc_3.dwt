@@ -4,4 +4,4 @@ loop foo while 1 {
   }
 }
 
-print "done"
+println "done"

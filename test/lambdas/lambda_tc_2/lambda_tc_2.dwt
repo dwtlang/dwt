@@ -1,2 +1,2 @@
-print λ() { return "Hello, world!" }
+println λ() { return "Hello, world!" }
 

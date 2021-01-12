@@ -1296,8 +1296,11 @@ void compiler::visit(ir::type1 &expr) {
  */
 void compiler::visit(ir::print_stmt &stmt) {
   walk(stmt.children_of());
-
-  emit_op(OP_PRINT);
+  if (stmt.name() == "print") {
+    emit_op(OP_PRINT);
+  } else {
+    emit_op(OP_PRINTLN);
+  }
 }
 
 /**

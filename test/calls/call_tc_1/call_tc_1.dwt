@@ -11,5 +11,5 @@ loop while x > 0 {
 	x := x - 1
 }
 
-print y
+println y
 

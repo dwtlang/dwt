@@ -4,5 +4,5 @@ var whatis = {
     "banana" : "fruit"
 }
 
-print whatis["carrot"]
+println whatis["carrot"]
 

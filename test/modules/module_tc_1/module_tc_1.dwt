@@ -1,6 +1,6 @@
 mod foo {
     fun bar() {
-        print "bar()"
+        println "bar()"
     }
 }
 
@@ -8,7 +8,7 @@ foo::bar()
 
 mod foo {
     fun abc(var x) {
-        print x
+        println x
     }
 }
 

@@ -22,4 +22,4 @@ loop {
     y := y - 1
 } until y == 0
 
-print x
+println x

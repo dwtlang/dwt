@@ -8,5 +8,5 @@
 /*
  * and this */
 
-print /* here too */ "happy"
+println /* here too */ "happy"
 

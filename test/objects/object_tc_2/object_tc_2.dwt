@@ -8,5 +8,5 @@ obj dog(var name): pet() {
 }
 
 var fido = dog("Fido")
-print fido.nameOf()
+println fido.nameOf()
 

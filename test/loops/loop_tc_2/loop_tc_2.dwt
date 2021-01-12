@@ -1,7 +1,7 @@
 var i = 10
 
 loop {
-  print i
+  println i
   i := i - 1
 
   if i == 0 {

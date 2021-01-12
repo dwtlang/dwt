@@ -1,4 +1,4 @@
 obj foo() {
 }
 
-print foo
+println foo

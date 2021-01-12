@@ -86,6 +86,7 @@ typedef enum {
   KW_OBJ,
   KW_SELF,
   KW_PRINT,
+  KW_PRINTLN,
   KW_FOR,
   KW_IN,
   KW_IF,

@@ -93,6 +93,7 @@ private:
   // void dump_state(frame *, uint8_t *&);
   std::string stack_trace();
 
+  void println(var);
   void print(var);
 
   closure_obj *op_closure(uint32_t, size_t fp);

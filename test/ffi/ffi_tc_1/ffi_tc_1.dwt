@@ -2,7 +2,7 @@ ffi ping()
 ping(3)
 
 fun pong(n) {
-  print "pong"
+  println "pong"
   if n >= 0 {
     ping(n - 1)
   }

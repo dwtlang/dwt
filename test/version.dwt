@@ -1,1 +1,1 @@
-print ver()
+println ver()

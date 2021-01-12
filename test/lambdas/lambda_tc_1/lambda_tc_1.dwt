@@ -2,5 +2,5 @@ var l = \(){
         return self
 }
 
-print l()
+println l()
 
