@@ -35,7 +35,7 @@ CLI_DEPS        := $(CLI_OBJS:%.o=%.d)
 COMPILER         = $(CXX)
 COMPILER        ?= g++
 COMPILER_FLAGS  += -pipe -Wall -Wno-unused-parameter \
-                   -fno-rtti -march=native \
+                   -fno-rtti \
                    -D_FILE_OFFSET_BITS=64 -fPIC \
                    $(CXXFLAGS) $(USE_FLAGS) \
                    -DMAJOR_VER=$(MAJOR_VER) \

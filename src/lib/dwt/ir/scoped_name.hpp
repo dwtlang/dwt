@@ -14,7 +14,9 @@
 #include <dwt/token.hpp>
 #include <dwt/token_range.hpp>
 
+#if USE_THREADED_COMPILER
 #include <mutex>
+#endif
 #include <vector>
 
 namespace dwt {
@@ -57,7 +59,9 @@ public:
   }
 
   void set_referenced_scope(dwt::scope *scope_ptr) {
-    std::scoped_lock<std::mutex> hold(_namelock);
+#if USE_THREADED_COMPILER
+    std::scoped_lock<std::mutex> hold(_mutex);
+#endif
     _referenced_scope = scope_ptr;
   }
 
@@ -66,7 +70,9 @@ public:
 
 private:
   scope *_referenced_scope = nullptr;
-  std::mutex _namelock;
+#if USE_THREADED_COMPILER
+  std::mutex _mutex;
+#endif
   bool _is_setter = false;
   bool abs;
   bool _is_self;

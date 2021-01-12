@@ -34,7 +34,10 @@ void ir::scoped_name::accept(ir::visitor &visitor) {
 }
 
 dwt::scope *ir::scoped_name::get_scope() {
-  std::scoped_lock hold(_namelock);
+#if USE_THREADED_COMPILER
+  std::scoped_lock hold(_mutex);
+#endif
+
   dwt::scope *scope_ptr = _referenced_scope;
 
   if (!scope_ptr) {
