@@ -111,10 +111,12 @@ void interpreter::mark_roots(std::vector<obj *> &grey_objs) {
 void interpreter::println(var v) {
   out(var_to_string(v));
   out("\n");
+  fflush(stdout);
 }
 
 void interpreter::print(var v) {
   out(var_to_string(v));
+  fflush(stdout);
 }
 
 upvar_obj *interpreter::capture_upvar(size_t slot, size_t fp) {
