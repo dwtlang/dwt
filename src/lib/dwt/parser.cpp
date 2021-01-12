@@ -1346,6 +1346,7 @@ std::unique_ptr<expr> parser::parse_primary_expr() {
   case KW_STR:
   case KW_LEN:
   case KW_GC:
+  case KW_SLEEP:
   default:
     e = parse_scoped_name();
     break;
@@ -1412,7 +1413,7 @@ std::unique_ptr<scoped_name> parser::parse_scoped_name() {
         skip_any(TOK_BREAK);
       }
 
-      expect_any(TOK_IDENT, KW_VER, KW_DUP, KW_STR, KW_LEN, KW_GC);
+      expect_any(TOK_IDENT, KW_VER, KW_DUP, KW_STR, KW_LEN, KW_GC, KW_SLEEP);
       s += gettok().text();
 
       if (begintok.type() == TOK_INV) {

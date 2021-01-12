@@ -73,6 +73,7 @@ typedef enum {
   KW_LEN,
   KW_API,
   KW_GC,
+  KW_SLEEP,
   KW_IS,
   KW_MOD,
   KW_FUN,

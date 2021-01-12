@@ -17,6 +17,9 @@
 #include <dwt/utf8.hpp>
 #include <dwt/version.hpp>
 
+#include <thread>
+#include <chrono>
+
 namespace dwt {
 
 namespace {
@@ -75,6 +78,23 @@ var gc(size_t nr_args, var *args) {
   return nil;
 }
 
+var sleep(size_t nr_args, var *args) {
+  if (nr_args != 1) {
+    throw interpret_exception("e@1 expected a single argument");
+  }
+
+  if (VAR_IS_NUM(args[0])) {
+    double usecs = VAR_AS_NUM(args[0]) * 1000000;
+
+    std::this_thread::sleep_for(
+        std::chrono::microseconds(static_cast<unsigned int>(usecs)));
+  } else {
+    throw interpret_exception("e@1 sleep function expects a value in seconds");
+  }
+
+  return BOOL_AS_VAR(true);
+}
+
 void add_inbuilt_function(std::string name, ffi::syscall impl) {
   scope::global->add(name, SCOPE_CREATE | SCOPE_EXCLUSIVE);
   ffi::bind("::" + name, impl);
@@ -88,6 +108,7 @@ inbuilt::inbuilt() {
   add_inbuilt_function("str", str);
   add_inbuilt_function("len", len);
   add_inbuilt_function("gc", gc);
+  add_inbuilt_function("sleep", sleep);
 }
 
 inbuilt::~inbuilt() {
